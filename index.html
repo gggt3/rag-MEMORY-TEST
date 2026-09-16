@@ -3,2834 +3,2481 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
-      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 
-<title>AETHER V2.0</title>
+<title>NEURAL MEMORY — Embedding RAG Lab</title>
 
 <style>
+:root{
+  --bg:#020308;
+  --panel:#060914;
+  --panel2:#09101d;
+  --cyan:#00f5ff;
+  --cyan2:#00aaff;
+  --pink:#ff00aa;
+  --green:#4aff88;
+  --yellow:#ffe600;
+  --red:#ff3355;
+  --text:#d9faff;
+  --muted:#62818c;
+  --line:rgba(0,245,255,.22);
+  --glow:0 0 12px rgba(0,245,255,.55),
+         0 0 35px rgba(0,245,255,.18);
+}
+
 *{
-    box-sizing:border-box;
-    -webkit-tap-highlight-color:transparent;
+  box-sizing:border-box;
 }
 
 html,body{
-    margin:0;
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:#07090d;
-    color:#edf2f7;
-    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",
-                 "Segoe UI",sans-serif;
+  margin:0;
+  width:100%;
+  height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font-family:
+    "Courier New",
+    monospace;
+  overflow-x:hidden;
 }
 
-button,input,textarea{
-    font:inherit;
+body{
+  background:
+    radial-gradient(
+      circle at 50% 20%,
+      rgba(0,245,255,.08),
+      transparent 35%
+    ),
+    linear-gradient(
+      rgba(0,245,255,.018) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(0,245,255,.018) 1px,
+      transparent 1px
+    ),
+    var(--bg);
+
+  background-size:
+    auto,
+    40px 40px,
+    40px 40px;
 }
+
+/* SCANLINES */
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:9999;
+
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,.018) 0px,
+      rgba(255,255,255,.018) 1px,
+      transparent 2px,
+      transparent 5px
+    );
+}
+
+/* HEADER */
+
+header{
+  position:sticky;
+  top:0;
+  z-index:100;
+
+  height:72px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:0 22px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(0,245,255,.05),
+      rgba(255,0,170,.05)
+    ),
+    rgba(2,3,8,.92);
+
+  border-bottom:1px solid var(--line);
+
+  box-shadow:
+    0 0 25px rgba(0,245,255,.08);
+
+  backdrop-filter:blur(8px);
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.logoMark{
+  width:34px;
+  height:34px;
+
+  border:1px solid var(--cyan);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  color:var(--cyan);
+
+  box-shadow:var(--glow);
+
+  font-size:18px;
+}
+
+.logoText{
+  letter-spacing:3px;
+  font-size:15px;
+}
+
+.logoText span{
+  color:var(--cyan);
+}
+
+.status{
+  display:flex;
+  align-items:center;
+  gap:8px;
+
+  font-size:11px;
+  color:var(--muted);
+
+  letter-spacing:1px;
+}
+
+.statusDot{
+  width:8px;
+  height:8px;
+
+  border-radius:50%;
+
+  background:var(--red);
+
+  box-shadow:0 0 10px var(--red);
+
+  transition:.3s;
+}
+
+.statusDot.online{
+  background:var(--green);
+  box-shadow:0 0 12px var(--green);
+}
+
+/* LAYOUT */
+
+main{
+  width:min(1500px,100%);
+  margin:auto;
+
+  padding:22px;
+
+  display:grid;
+
+  grid-template-columns:
+    minmax(280px,360px)
+    minmax(420px,1fr)
+    minmax(280px,360px);
+
+  gap:18px;
+}
+
+@media(max-width:1100px){
+
+  main{
+    grid-template-columns:1fr;
+  }
+
+}
+
+/* PANELS */
+
+.panel{
+  position:relative;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0,245,255,.025),
+      rgba(255,0,170,.018)
+    ),
+    var(--panel);
+
+  border:1px solid var(--line);
+
+  min-height:100px;
+
+  box-shadow:
+    inset 0 0 30px rgba(0,245,255,.025);
+
+  overflow:hidden;
+}
+
+.panel::before{
+  content:"";
+  position:absolute;
+
+  left:0;
+  top:0;
+
+  width:70px;
+  height:1px;
+
+  background:var(--cyan);
+
+  box-shadow:0 0 10px var(--cyan);
+}
+
+.panelTitle{
+  padding:14px 16px;
+
+  border-bottom:1px solid rgba(0,245,255,.12);
+
+  font-size:11px;
+
+  letter-spacing:2px;
+
+  color:var(--cyan);
+}
+
+.panelBody{
+  padding:16px;
+}
+
+/* INPUT */
+
+textarea,
+input{
+  width:100%;
+
+  background:#02050b;
+
+  color:var(--text);
+
+  border:1px solid rgba(0,245,255,.25);
+
+  outline:none;
+
+  padding:12px;
+
+  font-family:inherit;
+
+  font-size:13px;
+
+  resize:vertical;
+
+  transition:.2s;
+}
+
+textarea{
+  min-height:120px;
+}
+
+textarea:focus,
+input:focus{
+  border-color:var(--cyan);
+
+  box-shadow:
+    0 0 15px rgba(0,245,255,.15);
+}
+
+/* BUTTONS */
 
 button{
-    border:0;
-    color:inherit;
-    cursor:pointer;
-}
-
-.app{
-    width:100%;
-    height:100%;
-    position:relative;
-}
-
-/* =========================================================
-   START
-========================================================= */
-
-.start{
-    position:absolute;
-    inset:0;
-    display:flex;
-    flex-direction:column;
-    padding:
-        max(28px,env(safe-area-inset-top))
-        22px
-        max(24px,env(safe-area-inset-bottom));
-    background:
-        radial-gradient(circle at 50% 10%,rgba(77,135,255,.12),transparent 34%),
-        #07090d;
-}
-
-.brand{
-    display:flex;
-    align-items:center;
-    gap:11px;
-    margin-top:12px;
-}
-
-.aether-dot{
-    width:13px;
-    height:13px;
-    border-radius:50%;
-    background:#78a9ff;
-    box-shadow:
-        0 0 14px #78a9ff,
-        0 0 35px rgba(120,169,255,.35);
-}
-
-.brand-name{
-    font-weight:700;
-    letter-spacing:.18em;
-    font-size:13px;
-}
-
-.hero{
-    margin:auto 0;
-}
-
-.hero h1{
-    font-size:38px;
-    line-height:1.04;
-    letter-spacing:-.04em;
-    margin:0 0 14px;
-    max-width:430px;
-}
-
-.hero p{
-    color:#8d98a8;
-    font-size:16px;
-    line-height:1.55;
-    max-width:470px;
-    margin:0;
-}
-
-.prompt{
-    width:100%;
-    min-height:170px;
-    resize:none;
-    border:1px solid #202733;
-    border-radius:22px;
-    background:#0d1118;
-    color:#eef3f9;
-    padding:18px;
-    outline:none;
-    line-height:1.5;
-    font-size:16px;
-    box-shadow:0 12px 50px rgba(0,0,0,.2);
-}
-
-.prompt:focus{
-    border-color:#4c72aa;
-}
-
-.quick{
-    display:flex;
-    gap:8px;
-    overflow-x:auto;
-    margin:10px 0 12px;
-    scrollbar-width:none;
-}
-
-.quick::-webkit-scrollbar{
-    display:none;
-}
-
-.quick button{
-    flex:none;
-    padding:10px 13px;
-    border-radius:999px;
-    background:#111722;
-    color:#aeb9c9;
-    border:1px solid #202938;
-    font-size:13px;
-}
-
-.preview-btn{
-    width:100%;
-    min-height:56px;
-    border-radius:18px;
-    background:#edf3ff;
-    color:#080b10;
-    font-weight:800;
-    letter-spacing:.03em;
-}
-
-/* =========================================================
-   WORKSPACE
-========================================================= */
-
-.workspace{
-    position:absolute;
-    inset:0;
-    display:none;
-    flex-direction:column;
-    background:#080b10;
-}
-
-.workspace.active{
-    display:flex;
-}
-
-.topbar{
-    flex:none;
-    min-height:58px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:
-        max(8px,env(safe-area-inset-top))
-        14px 8px;
-    border-bottom:1px solid #171d27;
-    background:rgba(8,11,16,.92);
-    backdrop-filter:blur(18px);
-}
-
-.top-left{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    min-width:0;
-}
-
-.back{
-    width:38px;
-    height:38px;
-    border-radius:12px;
-    background:#121720;
-    color:#aeb9c8;
-    font-size:20px;
-}
-
-.project-title{
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    font-size:14px;
-    font-weight:700;
-}
-
-.state{
-    font-size:10px;
-    letter-spacing:.12em;
-    color:#8da7ce;
-    margin-top:2px;
-}
-
-.apply-top{
-    padding:10px 14px;
-    border-radius:12px;
-    background:#dfeaff;
-    color:#080b10;
-    font-size:12px;
-    font-weight:800;
-}
-
-.surface{
-    flex:1;
-    overflow:auto;
-    padding:18px 14px 110px;
-}
-
-/* =========================================================
-   GENERIC RENDERER
-========================================================= */
-
-.surface-shell{
-    max-width:900px;
-    margin:0 auto;
-}
-
-.generated-header{
-    margin:5px 2px 20px;
-}
-
-.generated-header h2{
-    margin:0;
-    font-size:28px;
-    letter-spacing:-.035em;
-}
-
-.generated-header p{
-    color:#788394;
-    margin:6px 0 0;
-    font-size:13px;
-}
-
-.node{
-    position:relative;
-    transition:.18s ease;
-}
-
-.node.changed{
-    outline:1px solid rgba(104,155,255,.65);
-    box-shadow:0 0 0 5px rgba(104,155,255,.06);
-}
-
-.node.new::after{
-    content:"+ NEW";
-    position:absolute;
-    top:-8px;
-    right:8px;
-    font-size:9px;
-    letter-spacing:.1em;
-    padding:4px 7px;
-    border-radius:999px;
-    background:#18345f;
-    color:#a9c9ff;
-}
-
-.row{
-    display:flex;
-    gap:10px;
-}
-
-.stack{
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-}
-
-.grid{
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:10px;
-}
-
-.card{
-    background:#10151d;
-    border:1px solid #1c2531;
-    border-radius:18px;
-    padding:16px;
-}
-
-.stat{
-    min-height:100px;
-}
-
-.stat-label{
-    color:#7d8999;
-    font-size:12px;
-}
-
-.stat-value{
-    margin-top:10px;
-    font-size:27px;
-    font-weight:800;
-}
-
-.section-title{
-    font-size:14px;
-    font-weight:750;
-    margin:4px 2px 0;
-}
-
-.project{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    min-height:70px;
-}
-
-.project-icon{
-    width:42px;
-    height:42px;
-    border-radius:13px;
-    background:#182235;
-    display:grid;
-    place-items:center;
-    color:#94b9ff;
-    font-weight:800;
-}
-
-.project-main{
-    flex:1;
-    min-width:0;
-}
-
-.project-name{
-    font-weight:700;
-    font-size:14px;
-}
-
-.project-meta{
-    color:#7b8797;
-    font-size:11px;
-    margin-top:5px;
-}
-
-.progress{
-    height:5px;
-    border-radius:99px;
-    background:#1c2430;
-    overflow:hidden;
-    margin-top:9px;
-}
-
-.progress i{
-    display:block;
-    height:100%;
-    width:var(--progress);
-    background:#79a9ff;
-    border-radius:inherit;
-}
-
-.action{
-    min-height:48px;
-    padding:0 15px;
-    border-radius:14px;
-    background:#dfeaff;
-    color:#080b10;
-    font-weight:800;
-}
-
-.ghost{
-    background:#151b24;
-    color:#b9c3d0;
-}
-
-.nav{
-    display:flex;
-    gap:7px;
-    overflow:auto;
-    scrollbar-width:none;
-}
-
-.nav::-webkit-scrollbar{
-    display:none;
-}
-
-.nav button{
-    flex:none;
-    padding:10px 13px;
-    border-radius:12px;
-    background:#111720;
-    color:#8591a2;
-    border:1px solid #1c2531;
-}
-
-.nav button.active{
-    color:#eaf1ff;
-    background:#182337;
-    border-color:#30496e;
-}
-
-/* =========================================================
-   KANBAN
-========================================================= */
-
-.kanban{
-    display:grid;
-    grid-template-columns:repeat(3,minmax(220px,1fr));
-    gap:10px;
-    overflow-x:auto;
-}
-
-.column{
-    background:#0e131a;
-    border:1px solid #1b2430;
-    border-radius:17px;
-    padding:12px;
-    min-height:280px;
-}
-
-.column-title{
-    color:#9aa6b6;
-    font-size:12px;
-    margin-bottom:10px;
-}
-
-.task{
-    background:#151b23;
-    border:1px solid #202a37;
-    border-radius:13px;
-    padding:13px;
-    margin-bottom:8px;
-    font-size:13px;
-}
-
-/* =========================================================
-   CHAT
-========================================================= */
-
-.chat{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-}
-
-.message{
-    max-width:82%;
-    padding:12px 14px;
-    border-radius:17px;
-    background:#121821;
-    color:#cbd4df;
-    line-height:1.45;
-    font-size:14px;
-}
-
-.message.me{
-    align-self:flex-end;
-    background:#203252;
-    color:#e6efff;
-}
-
-.chat-input{
-    display:flex;
-    gap:8px;
-}
-
-.chat-input input{
-    flex:1;
-    min-width:0;
-    background:#111720;
-    color:white;
-    border:1px solid #202a36;
-    border-radius:14px;
-    padding:13px;
-    outline:none;
-}
-
-/* =========================================================
-   BANKING
-========================================================= */
-
-.balance{
-    font-size:36px;
-    font-weight:850;
-    letter-spacing:-.04em;
-    margin-top:8px;
-}
-
-.transaction{
-    display:flex;
-    justify-content:space-between;
-    gap:10px;
-    padding:15px 0;
-    border-bottom:1px solid #1c2430;
-}
-
-.transaction:last-child{
-    border-bottom:0;
-}
-
-.tx-name{
-    font-size:14px;
-    font-weight:650;
-}
-
-.tx-date{
-    color:#707b8b;
-    font-size:11px;
-    margin-top:4px;
-}
-
-.tx-value{
-    font-weight:750;
-}
-
-/* =========================================================
-   BOTTOM
-========================================================= */
-
-.bottom{
-    position:absolute;
-    left:0;
-    right:0;
-    bottom:0;
-    padding:
-        10px 12px
-        max(12px,env(safe-area-inset-bottom));
-    display:flex;
-    gap:8px;
-    background:linear-gradient(
-        transparent,
-        rgba(8,11,16,.97) 30%
+  width:100%;
+
+  border:1px solid var(--cyan);
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(0,245,255,.06),
+      rgba(255,0,170,.06)
     );
-    pointer-events:none;
+
+  color:var(--cyan);
+
+  padding:13px;
+
+  margin-top:10px;
+
+  font-family:inherit;
+
+  font-size:11px;
+
+  letter-spacing:2px;
+
+  cursor:pointer;
+
+  transition:.2s;
 }
 
-.bottom>*{
-    pointer-events:auto;
+button:hover{
+  background:rgba(0,245,255,.12);
+
+  box-shadow:
+    0 0 18px rgba(0,245,255,.22);
 }
 
-.bottom button{
-    min-height:50px;
-    flex:1;
-    border-radius:15px;
-    font-weight:750;
+button:disabled{
+  opacity:.35;
+  cursor:not-allowed;
 }
 
-.reject{
-    background:#141a22;
-    color:#aab4c2;
+button.pink{
+  border-color:var(--pink);
+  color:var(--pink);
 }
 
-.apply{
-    background:#dfeaff;
-    color:#080b10;
+button.green{
+  border-color:var(--green);
+  color:var(--green);
 }
 
-.change-count{
-    position:absolute;
-    left:50%;
-    transform:translateX(-50%);
-    top:-27px;
-    white-space:nowrap;
-    padding:5px 9px;
-    border-radius:999px;
-    background:#111822;
-    border:1px solid #222d3b;
-    color:#8996a8;
-    font-size:10px;
+/* PIPELINE */
+
+.pipeline{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
 }
 
-/* =========================================================
-   SHEET
-========================================================= */
+.stage{
+  position:relative;
 
-.sheet-backdrop{
-    position:absolute;
-    inset:0;
-    background:rgba(0,0,0,.52);
-    display:none;
-    align-items:flex-end;
-    z-index:20;
+  border:1px solid rgba(0,245,255,.12);
+
+  background:#030710;
+
+  padding:10px 12px;
+
+  font-size:11px;
+
+  color:#47626c;
+
+  transition:.4s;
 }
 
-.sheet-backdrop.open{
-    display:flex;
+.stage.active{
+  color:var(--cyan);
+
+  border-color:var(--cyan);
+
+  box-shadow:
+    0 0 14px rgba(0,245,255,.2);
+
+  text-shadow:
+    0 0 8px var(--cyan);
 }
 
-.sheet{
-    width:100%;
-    background:#0d1219;
-    border-top:1px solid #26303d;
-    border-radius:25px 25px 0 0;
-    padding:
-        10px 14px
-        max(18px,env(safe-area-inset-bottom));
-    box-shadow:0 -25px 80px rgba(0,0,0,.5);
-    animation:up .2s ease;
+.stage.done{
+  color:var(--green);
+
+  border-color:rgba(74,255,136,.4);
 }
 
-@keyframes up{
-    from{transform:translateY(30px);opacity:.5}
-    to{transform:none;opacity:1}
+.stage::before{
+  content:"";
+
+  display:inline-block;
+
+  width:6px;
+  height:6px;
+
+  margin-right:9px;
+
+  border-radius:50%;
+
+  background:#20343b;
 }
 
-.handle{
-    width:42px;
-    height:4px;
-    border-radius:99px;
-    background:#303946;
-    margin:3px auto 14px;
+.stage.active::before{
+  background:var(--cyan);
+
+  box-shadow:
+    0 0 10px var(--cyan);
 }
 
-.sheet-title{
-    font-size:15px;
-    font-weight:800;
-    margin-bottom:10px;
+.stage.done::before{
+  background:var(--green);
+
+  box-shadow:
+    0 0 10px var(--green);
 }
 
-.sheet-sub{
-    color:#788595;
-    font-size:12px;
-    margin-bottom:13px;
+/* BOOT / LOG */
+
+.log{
+  height:145px;
+
+  overflow:auto;
+
+  background:#010207;
+
+  border:1px solid rgba(0,245,255,.12);
+
+  padding:10px;
+
+  font-size:10px;
+
+  line-height:1.7;
+
+  color:#59737b;
 }
 
-.sheet button{
-    width:100%;
-    text-align:left;
-    min-height:51px;
-    margin-bottom:7px;
-    border-radius:14px;
-    background:#141a22;
-    color:#d8e0ea;
-    padding:0 15px;
+.logLine.ok{
+  color:var(--green);
 }
 
-.sheet button:last-child{
-    margin-bottom:0;
-    background:transparent;
-    color:#727e8d;
+.logLine.info{
+  color:var(--cyan);
 }
 
-/* =========================================================
-   DIALOG
-========================================================= */
-
-.dialog-backdrop{
-    position:absolute;
-    inset:0;
-    z-index:30;
-    background:rgba(0,0,0,.62);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
+.logLine.warn{
+  color:var(--yellow);
 }
 
-.dialog-backdrop.open{
-    display:flex;
+.logLine.error{
+  color:var(--red);
 }
 
-.dialog{
-    width:min(500px,100%);
-    background:#0e141c;
-    border:1px solid #252f3c;
-    border-radius:22px;
-    padding:18px;
-    box-shadow:0 25px 90px rgba(0,0,0,.6);
+/* VECTOR */
+
+.vectorBox{
+  background:#010308;
+
+  border:1px solid rgba(0,245,255,.14);
+
+  padding:12px;
+
+  max-height:250px;
+
+  overflow:auto;
+
+  font-size:10px;
+
+  line-height:1.7;
+
+  word-break:break-all;
+
+  color:#8acdd5;
 }
 
-.dialog h3{
-    margin:0 0 7px;
-    font-size:17px;
+.vectorDim{
+  color:var(--yellow);
+
+  font-size:13px;
+
+  margin-bottom:8px;
 }
 
-.dialog p{
-    color:#818d9c;
-    font-size:12px;
-    line-height:1.5;
-    margin:0 0 14px;
+/* 3D */
+
+.scene{
+  position:relative;
+
+  height:520px;
+
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(0,245,255,.07),
+      transparent 55%
+    ),
+    #010308;
+
+  overflow:hidden;
+
+  perspective:700px;
 }
 
-.dialog textarea{
-    width:100%;
-    min-height:120px;
-    resize:none;
-    background:#090d13;
-    color:#edf2f8;
-    border:1px solid #242e3b;
-    border-radius:15px;
-    padding:13px;
-    outline:none;
+.grid3d{
+  position:absolute;
+
+  left:-20%;
+  width:140%;
+
+  bottom:-40px;
+
+  height:70%;
+
+  transform:
+    perspective(400px)
+    rotateX(62deg);
+
+  background:
+    linear-gradient(
+      rgba(0,245,255,.15) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(0,245,255,.15) 1px,
+      transparent 1px
+    );
+
+  background-size:
+    45px 45px;
+
+  box-shadow:
+    0 -20px 60px rgba(0,245,255,.08);
 }
 
-.dialog-actions{
-    display:flex;
-    gap:8px;
-    margin-top:10px;
+.axis{
+  position:absolute;
+
+  left:50%;
+  top:50%;
+
+  transform-origin:left center;
+
+  height:1px;
+
+  width:230px;
+
+  background:var(--cyan);
+
+  box-shadow:0 0 10px var(--cyan);
 }
 
-.dialog-actions button{
-    flex:1;
-    min-height:48px;
-    border-radius:14px;
-    background:#161d26;
+.axis.x{
+  transform:rotate(0deg);
 }
 
-.dialog-actions .primary{
-    background:#dfeaff;
-    color:#080b10;
-    font-weight:800;
+.axis.y{
+  transform:rotate(120deg);
 }
 
-/* =========================================================
-   TOAST
-========================================================= */
-
-.toast{
-    position:absolute;
-    z-index:50;
-    left:50%;
-    top:calc(max(10px,env(safe-area-inset-top)) + 65px);
-    transform:translateX(-50%) translateY(-15px);
-    opacity:0;
-    pointer-events:none;
-    padding:9px 13px;
-    border-radius:999px;
-    background:#171e28;
-    border:1px solid #293443;
-    color:#b9c5d4;
-    font-size:11px;
-    transition:.2s;
+.axis.z{
+  transform:rotate(-120deg);
 }
 
-.toast.show{
+.axisLabel{
+  position:absolute;
+
+  font-size:10px;
+
+  color:var(--cyan);
+
+  text-shadow:
+    0 0 8px var(--cyan);
+}
+
+.axisLabel.x{
+  right:25px;
+  top:49%;
+}
+
+.axisLabel.y{
+  left:27%;
+  top:29%;
+}
+
+.axisLabel.z{
+  right:27%;
+  top:29%;
+}
+
+.point{
+  position:absolute;
+
+  width:9px;
+  height:9px;
+
+  border-radius:50%;
+
+  background:var(--pink);
+
+  box-shadow:
+    0 0 8px var(--pink),
+    0 0 25px var(--pink);
+
+  transform:
+    translate(-50%,-50%);
+
+  animation:
+    pulse 1.6s infinite ease-in-out;
+}
+
+@keyframes pulse{
+
+  0%,100%{
+    opacity:.65;
+    transform:
+      translate(-50%,-50%)
+      scale(.8);
+  }
+
+  50%{
     opacity:1;
-    transform:translateX(-50%) translateY(0);
+    transform:
+      translate(-50%,-50%)
+      scale(1.5);
+  }
+
 }
 
-@media(min-width:760px){
-    .grid{
-        grid-template-columns:repeat(3,minmax(0,1fr));
-    }
+/* HUD */
 
-    .surface{
-        padding-left:28px;
-        padding-right:28px;
-    }
+.hud{
+  position:absolute;
 
-    .start{
-        padding-left:10%;
-        padding-right:10%;
-    }
+  top:12px;
+  left:12px;
+  right:12px;
+
+  display:flex;
+  justify-content:space-between;
+
+  pointer-events:none;
+
+  font-size:9px;
+
+  color:var(--muted);
+
+  letter-spacing:1px;
+}
+
+.hudRight{
+  color:var(--pink);
+}
+
+/* MEMORY */
+
+.memoryList{
+  display:flex;
+  flex-direction:column;
+
+  gap:8px;
+
+  max-height:330px;
+
+  overflow:auto;
+}
+
+.memory{
+  padding:10px;
+
+  border:1px solid rgba(0,245,255,.12);
+
+  background:#030710;
+
+  font-size:10px;
+
+  cursor:pointer;
+
+  transition:.2s;
+}
+
+.memory:hover{
+  border-color:var(--cyan);
+
+  box-shadow:
+    0 0 12px rgba(0,245,255,.1);
+}
+
+.memoryId{
+  color:var(--pink);
+
+  font-size:9px;
+
+  margin-bottom:5px;
+}
+
+.memoryText{
+  color:#9bb8bf;
+
+  line-height:1.4;
+}
+
+/* RANKING */
+
+.rank{
+  border:1px solid rgba(0,245,255,.12);
+
+  padding:10px;
+
+  margin-bottom:8px;
+
+  background:#030710;
+}
+
+.rankTop{
+  display:flex;
+
+  justify-content:space-between;
+
+  font-size:10px;
+}
+
+.rankScore{
+  color:var(--green);
+}
+
+.bar{
+  height:3px;
+
+  background:#0b1820;
+
+  margin-top:7px;
+}
+
+.barFill{
+  height:100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--cyan),
+      var(--pink)
+    );
+
+  box-shadow:
+    0 0 8px var(--cyan);
+
+  width:0%;
+
+  transition:1s;
+}
+
+/* ERROR */
+
+.errorBox{
+  display:none;
+
+  border:1px solid var(--red);
+
+  color:#ff8a99;
+
+  background:rgba(255,0,50,.05);
+
+  padding:12px;
+
+  margin-top:12px;
+
+  font-size:10px;
+
+  line-height:1.5;
+}
+
+.errorBox.show{
+  display:block;
+}
+
+/* METRICS */
+
+.metrics{
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:8px;
+
+  margin-top:12px;
+}
+
+.metric{
+  padding:10px;
+
+  background:#030710;
+
+  border:1px solid rgba(0,245,255,.12);
+}
+
+.metricLabel{
+  font-size:8px;
+
+  color:var(--muted);
+
+  letter-spacing:1px;
+}
+
+.metricValue{
+  margin-top:5px;
+
+  font-size:14px;
+
+  color:var(--cyan);
+}
+
+/* FOOTER */
+
+footer{
+  width:min(1500px,100%);
+
+  margin:auto;
+
+  padding:0 22px 30px;
+
+  color:#304850;
+
+  font-size:9px;
+
+  letter-spacing:1px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="app">
+<header>
 
-<!-- ======================================================
-     START
-======================================================= -->
+  <div class="logo">
 
-<section class="start" id="start">
+    <div class="logoMark">Σ</div>
 
-    <div class="brand">
-        <div class="aether-dot"></div>
-        <div class="brand-name">AETHER</div>
+    <div class="logoText">
+      NEURAL <span>MEMORY</span>
     </div>
 
-    <div class="hero">
-        <h1>Was möchtest du bauen?</h1>
-        <p>
-            Beschreibe einfach die Software, die du dir vorstellst.
-            AETHER erzeugt daraus zuerst eine visuelle, veränderbare Version.
-        </p>
+  </div>
+
+  <div class="status">
+
+    <div
+      id="statusDot"
+      class="statusDot">
     </div>
 
-    <textarea
-        id="prompt"
-        class="prompt"
-        placeholder="Zum Beispiel:
+    <span id="statusText">
+      EMBEDDING CORE OFFLINE
+    </span>
 
-Baue eine Projektverwaltung mit Projekten links und Aufgaben rechts..."
-    ></textarea>
+  </div>
 
-    <div class="quick">
-        <button data-example="dashboard">Dashboard</button>
-        <button data-example="kanban">Kanban</button>
-        <button data-example="chat">Chat</button>
-        <button data-example="banking">Banking</button>
+</header>
+
+
+<main>
+
+<!-- =====================================================
+     LEFT
+===================================================== -->
+
+<section>
+
+  <div class="panel">
+
+    <div class="panelTitle">
+      01 / TEXT INPUT
     </div>
 
-    <button class="preview-btn" id="previewBtn">
-        VORSCHAU ERSTELLEN
-    </button>
+    <div class="panelBody">
+
+      <textarea
+        id="textInput"
+        placeholder="Schreibe hier einen Satz oder eine Erinnerung ...">Der Kunde hat am Freitag einen Termin in Stuttgart.</textarea>
+
+      <button
+        id="embedBtn">
+        GENERATE EMBEDDING
+      </button>
+
+      <button
+        id="storeBtn"
+        class="green"
+        disabled>
+        STORE VECTOR
+      </button>
+
+      <div
+        id="errorBox"
+        class="errorBox">
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div
+    class="panel"
+    style="margin-top:18px">
+
+    <div class="panelTitle">
+      PIPELINE
+    </div>
+
+    <div class="panelBody">
+
+      <div class="pipeline">
+
+        <div
+          id="stageText"
+          class="stage">
+          TEXT
+        </div>
+
+        <div
+          id="stageToken"
+          class="stage">
+          TOKENIZATION
+        </div>
+
+        <div
+          id="stageModel"
+          class="stage">
+          EMBEDDING MODEL
+        </div>
+
+        <div
+          id="stageVector"
+          class="stage">
+          VECTOR 384D
+        </div>
+
+        <div
+          id="stageStore"
+          class="stage">
+          VECTOR STORE
+        </div>
+
+        <div
+          id="stageSearch"
+          class="stage">
+          COSINE SEARCH
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div
+    class="panel"
+    style="margin-top:18px">
+
+    <div class="panelTitle">
+      SYSTEM LOG
+    </div>
+
+    <div class="panelBody">
+
+      <div
+        id="log"
+        class="log">
+      </div>
+
+    </div>
+
+  </div>
 
 </section>
 
 
-<!-- ======================================================
-     WORKSPACE
-======================================================= -->
+<!-- =====================================================
+     CENTER
+===================================================== -->
 
-<section class="workspace" id="workspace">
+<section>
 
-    <header class="topbar">
+  <div class="panel">
 
-        <div class="top-left">
+    <div class="panelTitle">
+      EMBEDDING SPACE / 3D VIEW
+    </div>
 
-            <button class="back" id="backBtn">‹</button>
+    <div class="panelBody"
+         style="padding:0">
 
-            <div>
-                <div class="project-title" id="projectTitle">
-                    AETHER PROJECT
-                </div>
+      <div
+        id="scene"
+        class="scene">
 
-                <div class="state">
-                    STAGED PREVIEW
-                </div>
-            </div>
+        <div class="hud">
+
+          <div>
+            VECTOR SPACE // R³ VIEW
+          </div>
+
+          <div
+            id="hudStatus"
+            class="hudRight">
+            NO VECTOR
+          </div>
 
         </div>
 
-        <button class="apply-top" id="applyTop">
-            ANWENDEN
-        </button>
+        <div class="grid3d"></div>
 
-    </header>
+        <div class="axis x"></div>
+        <div class="axis y"></div>
+        <div class="axis z"></div>
 
-
-    <main class="surface" id="surface"></main>
-
-
-    <div class="bottom">
-
-        <div class="change-count" id="changeCount">
-            0 Änderungen
+        <div class="axisLabel x">
+          v₁
         </div>
 
-        <button class="reject" id="rejectBtn">
-            VERWERFEN
-        </button>
+        <div class="axisLabel y">
+          v₂
+        </div>
 
-        <button class="apply" id="applyBtn">
-            ANWENDEN
-        </button>
+        <div class="axisLabel z">
+          v₃
+        </div>
+
+      </div>
 
     </div>
+
+  </div>
+
+
+  <div
+    class="panel"
+    style="margin-top:18px">
+
+    <div class="panelTitle">
+      EMBEDDING VECTOR
+    </div>
+
+    <div class="panelBody">
+
+      <div
+        id="vectorDim"
+        class="vectorDim">
+        d = —
+      </div>
+
+      <div
+        id="vectorBox"
+        class="vectorBox">
+        Noch kein Embedding berechnet.
+      </div>
+
+    </div>
+
+  </div>
 
 </section>
 
 
-<!-- ======================================================
-     CONTEXT SHEET
-======================================================= -->
+<!-- =====================================================
+     RIGHT
+===================================================== -->
 
-<div class="sheet-backdrop" id="sheetBackdrop">
+<section>
 
-    <div class="sheet">
+  <div class="panel">
 
-        <div class="handle"></div>
+    <div class="panelTitle">
+      MEMORY BANK
+    </div>
 
-        <div class="sheet-title" id="sheetTitle">
-            Element
+    <div class="panelBody">
+
+      <div
+        id="memoryList"
+        class="memoryList">
+
+        <div
+          style="
+          color:#405861;
+          font-size:10px">
+          VECTOR STORE EMPTY
         </div>
 
-        <div class="sheet-sub" id="sheetSub">
-            Kontext
-        </div>
-
-        <button id="talkBtn">
-            💬&nbsp;&nbsp; Darüber sprechen
-        </button>
-
-        <button id="editBtn">
-            ✏️&nbsp;&nbsp; Ändern
-        </button>
-
-        <button id="addBtn">
-            ＋&nbsp;&nbsp; Etwas hinzufügen
-        </button>
-
-        <button id="problemBtn">
-            ❗&nbsp;&nbsp; Problem markieren
-        </button>
-
-        <button id="closeSheet">
-            Schließen
-        </button>
+      </div>
 
     </div>
 
-</div>
+  </div>
 
 
-<!-- ======================================================
-     DIALOG
-======================================================= -->
+  <div
+    class="panel"
+    style="margin-top:18px">
 
-<div class="dialog-backdrop" id="dialogBackdrop">
+    <div class="panelTitle">
+      SEMANTIC QUERY
+    </div>
 
-    <div class="dialog">
+    <div class="panelBody">
 
-        <h3 id="dialogTitle">Mit ChatGPT sprechen</h3>
+      <input
+        id="queryInput"
+        placeholder="z.B. Wann ist der Stuttgart-Termin?">
 
-        <p id="dialogDescription"></p>
+      <button
+        id="searchBtn"
+        class="pink"
+        disabled>
+        RUN COSINE SEARCH
+      </button>
 
-        <textarea
-            id="dialogInput"
-            placeholder="Was möchtest du sagen?"
-        ></textarea>
+      <div class="metrics">
 
-        <div class="dialog-actions">
+        <div class="metric">
 
-            <button id="dialogCancel">
-                Abbrechen
-            </button>
+          <div class="metricLabel">
+            MEMORY COUNT
+          </div>
 
-            <button class="primary" id="dialogConfirm">
-                ÜBERNEHMEN
-            </button>
+          <div
+            id="memoryCount"
+            class="metricValue">
+            0
+          </div>
 
         </div>
 
+        <div class="metric">
+
+          <div class="metricLabel">
+            VECTOR DIM
+          </div>
+
+          <div
+            id="dimension"
+            class="metricValue">
+            —
+          </div>
+
+        </div>
+
+      </div>
+
     </div>
 
-</div>
+  </div>
 
 
-<div class="toast" id="toast"></div>
+  <div
+    class="panel"
+    style="margin-top:18px">
 
-</div>
+    <div class="panelTitle">
+      RELEVANCE SCANNER
+    </div>
 
+    <div class="panelBody">
 
-<script>
+      <div
+        id="ranking">
 
-/* =========================================================
-   AETHER CORE
-========================================================= */
+        <div
+          style="
+          color:#405861;
+          font-size:10px">
+          NO SEARCH RESULT
+        </div>
 
-/*
-    CORE INVARIANT
+      </div>
 
-    liveBlueprint
-        = aktuelle Realität
+    </div>
 
-    stagedBlueprint
-        = vorgeschlagene nächste Realität
+  </div>
 
-    LLM und User dürfen niemals liveBlueprint
-    direkt verändern.
+</section>
 
-    Beide erzeugen ChangeRequests.
+</main>
 
-    Nur commit() darf staged → live durchführen.
-*/
 
+<footer>
 
-const AETHER = (() => {
+  NEURAL MEMORY LAB //
+  TEXT → TOKENS → TRANSFORMER → EMBEDDING → VECTOR STORE → COSINE
 
-    let liveBlueprint = null;
-    let stagedBlueprint = null;
+</footer>
 
-    let selectedNode = null;
 
-    let requestCounter = 0;
+<script type="module">
 
+/* =====================================================
+   IMPORT
+===================================================== */
 
-    /* -----------------------------------------------------
-       UTIL
-    ----------------------------------------------------- */
+import {
+  pipeline
+} from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1";
 
-    const clone = obj =>
-        JSON.parse(JSON.stringify(obj));
 
-    const id = prefix =>
-        prefix + "_" + (++requestCounter);
+/* =====================================================
+   CONFIG
+===================================================== */
 
+const MODEL =
+  "Xenova/multilingual-e5-small";
 
-    /* -----------------------------------------------------
-       CHANGE REQUEST
-    ----------------------------------------------------- */
+const EMBEDDING_DIM =
+  384;
 
-    function request(source,operation,target,payload={}){
 
-        return {
-            id:id("cr"),
-            source,
-            operation,
-            target,
-            payload,
-            timestamp:Date.now()
-        };
+/* =====================================================
+   STATE
+===================================================== */
 
-    }
+let extractor = null;
 
+let modelLoading = false;
 
-    /* -----------------------------------------------------
-       BLUEPRINT FACTORY
-    ----------------------------------------------------- */
+let modelReady = false;
 
-    function createBase(){
+let currentVector = null;
 
-        return {
+let memory = [];
 
-            meta:{
-                name:"AETHER PROJECT",
-                version:1
-            },
+let memoryCounter = 0;
 
-            nodes:{},
 
-            root:[],
+/* =====================================================
+   DOM
+===================================================== */
 
-            data:{},
+const $ = id =>
+  document.getElementById(id);
 
-            behavior:{},
+const textInput =
+  $("textInput");
 
-            bindings:{},
+const queryInput =
+  $("queryInput");
 
-            files:{}
+const embedBtn =
+  $("embedBtn");
 
-        };
+const storeBtn =
+  $("storeBtn");
 
-    }
+const searchBtn =
+  $("searchBtn");
 
+const vectorBox =
+  $("vectorBox");
 
-    function addNode(bp,node){
+const vectorDim =
+  $("vectorDim");
 
-        bp.nodes[node.id] = node;
+const memoryList =
+  $("memoryList");
 
-        if(node.parent){
+const ranking =
+  $("ranking");
 
-            if(!bp.nodes[node.parent].children)
-                bp.nodes[node.parent].children=[];
+const log =
+  $("log");
 
-            bp.nodes[node.parent].children.push(node.id);
+const errorBox =
+  $("errorBox");
 
-        }else{
+const statusDot =
+  $("statusDot");
 
-            bp.root.push(node.id);
+const statusText =
+  $("statusText");
 
-        }
+const hudStatus =
+  $("hudStatus");
 
-    }
+const memoryCount =
+  $("memoryCount");
 
+const dimension =
+  $("dimension");
 
-    /* -----------------------------------------------------
-       VALIDATOR
-    ----------------------------------------------------- */
 
-    function validateBlueprint(bp){
+/* =====================================================
+   LOG
+===================================================== */
 
-        const errors=[];
-
-        if(!bp || !bp.nodes){
-
-            errors.push("Blueprint fehlt.");
-
-            return errors;
-
-        }
-
-        Object.values(bp.nodes).forEach(node=>{
-
-            if(!node.id)
-                errors.push("Node ohne ID.");
-
-            if(!node.type)
-                errors.push(node.id+" besitzt keinen Typ.");
-
-            if(node.parent &&
-               !bp.nodes[node.parent]){
-
-                errors.push(
-                    node.id+
-                    ": Parent existiert nicht."
-                );
-
-            }
-
-        });
-
-        return errors;
-
-    }
-
-
-    /* -----------------------------------------------------
-       OPERATIONS
-    ----------------------------------------------------- */
-
-    function applyOperation(bp,r){
-
-        switch(r.operation){
-
-            case "add_element":{
-
-                addNode(bp,clone(r.payload));
-
-                break;
-            }
-
-            case "rename":{
-
-                if(!bp.nodes[r.target])
-                    throw new Error("Ziel existiert nicht.");
-
-                bp.nodes[r.target].label =
-                    r.payload.label;
-
-                break;
-            }
-
-            case "set_property":{
-
-                if(!bp.nodes[r.target])
-                    throw new Error("Ziel existiert nicht.");
-
-                bp.nodes[r.target].properties =
-                    bp.nodes[r.target].properties || {};
-
-                bp.nodes[r.target]
-                    .properties[r.payload.key] =
-                    r.payload.value;
-
-                break;
-            }
-
-            case "move":{
-
-                if(!bp.nodes[r.target])
-                    throw new Error("Ziel existiert nicht.");
-
-                const node=bp.nodes[r.target];
-
-                if(node.parent){
-
-                    const oldParent=
-                        bp.nodes[node.parent];
-
-                    oldParent.children =
-                        oldParent.children.filter(
-                            x=>x!==node.id
-                        );
-
-                }else{
-
-                    bp.root=
-                        bp.root.filter(
-                            x=>x!==node.id
-                        );
-
-                }
-
-                node.parent=r.payload.parent;
-
-                if(node.parent){
-
-                    if(!bp.nodes[node.parent])
-                        throw new Error("Neuer Parent existiert nicht.");
-
-                    bp.nodes[node.parent].children =
-                        bp.nodes[node.parent].children || [];
-
-                    bp.nodes[node.parent]
-                        .children.push(node.id);
-
-                }else{
-
-                    bp.root.push(node.id);
-
-                }
-
-                break;
-            }
-
-            case "delete":{
-
-                if(!bp.nodes[r.target])
-                    throw new Error("Ziel existiert nicht.");
-
-                const node=bp.nodes[r.target];
-
-                if(node.parent){
-
-                    bp.nodes[node.parent].children =
-                        bp.nodes[node.parent].children
-                            .filter(x=>x!==node.id);
-
-                }else{
-
-                    bp.root=
-                        bp.root.filter(
-                            x=>x!==node.id
-                        );
-
-                }
-
-                delete bp.nodes[r.target];
-
-                break;
-            }
-
-            case "bind":{
-
-                bp.bindings[r.target]=
-                    r.payload.function;
-
-                break;
-            }
-
-            default:
-
-                throw new Error(
-                    "Unbekannte Operation: "+
-                    r.operation
-                );
-
-        }
-
-    }
-
-
-    /* -----------------------------------------------------
-       STAGE
-    ----------------------------------------------------- */
-
-    function stage(requests){
-
-        const draft =
-            clone(liveBlueprint);
-
-        const results=[];
-
-        for(let i=0;i<requests.length;i++){
-
-            const r=requests[i];
-
-            try{
-
-                applyOperation(draft,r);
-
-                results.push({
-                    request:r,
-                    valid:true
-                });
-
-            }catch(error){
-
-                return {
-                    valid:false,
-                    errors:[error.message],
-                    failedAt:i,
-                    results
-                };
-
-            }
-
-        }
-
-        const integrity=
-            validateBlueprint(draft);
-
-        if(integrity.length){
-
-            return {
-                valid:false,
-                errors:integrity,
-                results
-            };
-
-        }
-
-        stagedBlueprint=draft;
-
-        return {
-            valid:true,
-            blueprint:clone(draft),
-            results
-        };
-
-    }
-
-
-    /* -----------------------------------------------------
-       DIFF
-    ----------------------------------------------------- */
-
-    function diff(){
-
-        if(!liveBlueprint || !stagedBlueprint)
-            return [];
-
-        const changes=[];
-
-        const oldNodes=liveBlueprint.nodes;
-        const newNodes=stagedBlueprint.nodes;
-
-        Object.keys(newNodes).forEach(key=>{
-
-            if(!oldNodes[key]){
-
-                changes.push({
-                    type:"new",
-                    id:key
-                });
-
-            }else if(
-                JSON.stringify(oldNodes[key]) !==
-                JSON.stringify(newNodes[key])
-            ){
-
-                changes.push({
-                    type:"changed",
-                    id:key
-                });
-
-            }
-
-        });
-
-        Object.keys(oldNodes).forEach(key=>{
-
-            if(!newNodes[key]){
-
-                changes.push({
-                    type:"deleted",
-                    id:key
-                });
-
-            }
-
-        });
-
-        return changes;
-
-    }
-
-
-    /* -----------------------------------------------------
-       COMMIT
-    ----------------------------------------------------- */
-
-    function commit(){
-
-        if(!stagedBlueprint)
-            return false;
-
-        const errors=
-            validateBlueprint(stagedBlueprint);
-
-        if(errors.length)
-            return false;
-
-        liveBlueprint =
-            clone(stagedBlueprint);
-
-        stagedBlueprint=null;
-
-        return true;
-
-    }
-
-
-    function reject(){
-
-        stagedBlueprint=null;
-
-    }
-
-
-    function getCurrent(){
-
-        return stagedBlueprint || liveBlueprint;
-
-    }
-
-
-    /* -----------------------------------------------------
-       PUBLIC
-    ----------------------------------------------------- */
-
-    return {
-
-        request,
-        stage,
-        commit,
-        reject,
-        diff,
-        getCurrent,
-        getLive:()=>clone(liveBlueprint),
-        getStaged:()=>clone(stagedBlueprint),
-
-        init(bp){
-
-            liveBlueprint=clone(bp);
-            stagedBlueprint=null;
-
-        }
-
-    };
-
-})();
-
-
-window.AETHER=AETHER;
-
-
-/* =========================================================
-   DEMO BLUEPRINT GENERATOR
-========================================================= */
-
-/*
-    Das hier ist absichtlich KEIN echtes LLM.
-
-    Es simuliert lediglich die Übersetzung:
-
-    natürliche Sprache
-            ↓
-       ChangeRequests
-
-    Später kann genau diese Stelle durch
-    ChatGPT / Ollama ersetzt werden.
-*/
-
-
-function node(
-    id,
-    type,
-    label,
-    parent=null,
-    properties={}
+function addLog(
+  message,
+  type = "info"
 ){
 
-    return {
-        id,
-        type,
-        label,
-        parent,
-        properties,
-        children:[]
-    };
+  const line =
+    document.createElement("div");
 
+  line.className =
+    "logLine " + type;
+
+  const time =
+    new Date()
+      .toLocaleTimeString(
+        "de-DE",
+        {
+          hour12:false
+        }
+      );
+
+  line.textContent =
+    `[${time}] ${message}`;
+
+  log.appendChild(line);
+
+  log.scrollTop =
+    log.scrollHeight;
 }
 
 
-function makeDashboard(){
+/* =====================================================
+   ERROR
+===================================================== */
 
-    const bp={
-        meta:{
-            name:"PROJECT FLOW",
-            version:1
-        },
-        nodes:{},
-        root:[],
-        data:{},
-        behavior:{},
-        bindings:{},
-        files:{}
-    };
+function showError(error){
 
-    const nodes=[
+  errorBox.classList.add("show");
 
-        node(
-            "dashboard",
-            "page",
-            "PROJECT FLOW"
-        ),
+  errorBox.innerHTML = `
+    <strong>MODEL LOAD / EMBEDDING ERROR</strong><br><br>
+    ${escapeHtml(
+      error?.message ||
+      String(error)
+    )}
+    <br><br>
+    Prüfe, ob diese HTML-Datei über einen
+    Browser/Webserver ausgeführt wird und
+    ob eine Internetverbindung für den ersten
+    Modell-Download vorhanden ist.
+  `;
 
-        node(
-            "stats",
-            "grid",
-            "Übersicht",
-            "dashboard"
-        ),
-
-        node(
-            "active",
-            "stat",
-            "Aktive Projekte",
-            "stats",
-            {value:"12"}
-        ),
-
-        node(
-            "tasks",
-            "stat",
-            "Offene Aufgaben",
-            "stats",
-            {value:"37"}
-        ),
-
-        node(
-            "progress",
-            "stat",
-            "Fortschritt",
-            "stats",
-            {value:"74 %"}
-        ),
-
-        node(
-            "projects",
-            "panel",
-            "Projekte",
-            "dashboard"
-        ),
-
-        node(
-            "projectList",
-            "list",
-            "Projektliste",
-            "projects"
-        ),
-
-        node(
-            "project1",
-            "project",
-            "AETHER",
-            "projectList",
-            {
-                status:"In Arbeit",
-                progress:82
-            }
-        ),
-
-        node(
-            "project2",
-            "project",
-            "ROOT",
-            "projectList",
-            {
-                status:"Konzept",
-                progress:46
-            }
-        ),
-
-        node(
-            "project3",
-            "project",
-            "PROJECT FLOW",
-            "projectList",
-            {
-                status:"Planung",
-                progress:28
-            }
-        ),
-
-        node(
-            "newProject",
-            "button",
-            "+ Neues Projekt",
-            "projects"
-        ),
-
-        node(
-            "navigation",
-            "nav",
-            "Navigation",
-            "dashboard"
-        )
-
-    ];
-
-    nodes.forEach(n=>{
-
-        bp.nodes[n.id]=n;
-
-        if(n.parent){
-
-            bp.nodes[n.parent].children.push(n.id);
-
-        }else{
-
-            bp.root.push(n.id);
-
-        }
-
-    });
-
-    return bp;
-
+  addLog(
+    error?.message ||
+    String(error),
+    "error"
+  );
 }
 
 
-function makeKanban(){
+function clearError(){
 
-    const bp={
-        meta:{
-            name:"MISSION BOARD",
-            version:1
-        },
-        nodes:{},
-        root:[],
-        data:{},
-        behavior:{},
-        bindings:{},
-        files:{}
-    };
+  errorBox.classList.remove("show");
 
-    const nodes=[
-
-        node("board","page","MISSION BOARD"),
-
-        node("kanban","kanban","Board","board"),
-
-        node("todo","column","TODO","kanban"),
-
-        node("progress","column","IN ARBEIT","kanban"),
-
-        node("done","column","ERLEDIGT","kanban"),
-
-        node("t1","task","Neue Oberfläche planen","todo"),
-        node("t2","task","Blueprint Renderer","todo"),
-        node("t3","task","Touch Interaktion","progress"),
-        node("t4","task","Compiler prüfen","done")
-
-    ];
-
-    nodes.forEach(n=>{
-
-        bp.nodes[n.id]=n;
-
-        if(n.parent)
-            bp.nodes[n.parent].children.push(n.id);
-        else
-            bp.root.push(n.id);
-
-    });
-
-    return bp;
-
+  errorBox.innerHTML = "";
 }
 
 
-function makeChat(){
-
-    const bp={
-        meta:{
-            name:"CHAT",
-            version:1
-        },
-        nodes:{},
-        root:[],
-        data:{},
-        behavior:{},
-        bindings:{},
-        files:{}
-    };
-
-    const nodes=[
-
-        node("chat","page","ASSISTANT"),
-
-        node("messages","chat","Unterhaltung","chat"),
-
-        node(
-            "m1",
-            "message",
-            "Wie kann ich dir helfen?",
-            "messages"
-        ),
-
-        node(
-            "m2",
-            "message",
-            "Ich möchte eine neue Oberfläche bauen.",
-            "messages",
-            {mine:true}
-        ),
-
-        node(
-            "m3",
-            "message",
-            "Beschreibe einfach, was du möchtest.",
-            "messages"
-        ),
-
-        node("composer","input","Nachricht","chat")
-
-    ];
-
-    nodes.forEach(n=>{
-
-        bp.nodes[n.id]=n;
-
-        if(n.parent)
-            bp.nodes[n.parent].children.push(n.id);
-        else
-            bp.root.push(n.id);
-
-    });
-
-    return bp;
-
-}
-
-
-function makeBanking(){
-
-    const bp={
-        meta:{
-            name:"MY BANK",
-            version:1
-        },
-        nodes:{},
-        root:[],
-        data:{},
-        behavior:{},
-        bindings:{},
-        files:{}
-    };
-
-    const nodes=[
-
-        node("bank","page","MY BANK"),
-
-        node(
-            "balance",
-            "card",
-            "Kontostand",
-            "bank",
-            {value:"4.820,42 €"}
-        ),
-
-        node(
-            "transactions",
-            "panel",
-            "Letzte Transaktionen",
-            "bank"
-        ),
-
-        node(
-            "tx1",
-            "transaction",
-            "Supermarkt",
-            "transactions",
-            {date:"Heute",value:"− 42,80 €"}
-        ),
-
-        node(
-            "tx2",
-            "transaction",
-            "Gehalt",
-            "transactions",
-            {date:"02.09.",value:"+ 2.140,00 €"}
-        ),
-
-        node(
-            "tx3",
-            "transaction",
-            "Miete",
-            "transactions",
-            {date:"01.09.",value:"− 820,00 €"}
-        )
-
-    ];
-
-    nodes.forEach(n=>{
-
-        bp.nodes[n.id]=n;
-
-        if(n.parent)
-            bp.nodes[n.parent].children.push(n.id);
-        else
-            bp.root.push(n.id);
-
-    });
-
-    return bp;
-
-}
-
-
-/* =========================================================
-   SIMPLE NATURAL LANGUAGE INFERENCE
-========================================================= */
-
-function inferSurface(text){
-
-    const t=text.toLowerCase();
-
-    if(
-        t.includes("kanban") ||
-        t.includes("aufgaben") ||
-        t.includes("spalten")
-    )
-        return makeKanban();
-
-    if(
-        t.includes("chat") ||
-        t.includes("nachrichten") ||
-        t.includes("assistent")
-    )
-        return makeChat();
-
-    if(
-        t.includes("bank") ||
-        t.includes("konto") ||
-        t.includes("kontostand")
-    )
-        return makeBanking();
-
-    return makeDashboard();
-
-}
-
-
-/* =========================================================
-   RENDERER
-========================================================= */
-
-const surface=document.getElementById("surface");
-
-
-function children(bp,id){
-
-    const n=bp.nodes[id];
-
-    return (n.children||[])
-        .map(childId=>bp.nodes[childId])
-        .filter(Boolean);
-
-}
-
-
-function renderNode(bp,n){
-
-    const wrapper=document.createElement("div");
-
-    wrapper.className="node";
-
-    wrapper.dataset.id=n.id;
-
-
-    const changes=AETHER.diff();
-
-    const change=changes.find(c=>c.id===n.id);
-
-    if(change){
-
-        if(change.type==="new")
-            wrapper.classList.add("new");
-
-        if(change.type==="changed")
-            wrapper.classList.add("changed");
-
-    }
-
-
-    wrapper.addEventListener(
-        "click",
-        e=>{
-            e.stopPropagation();
-            openSheet(n);
-        }
-    );
-
-
-    const kids=children(bp,n.id);
-
-
-    switch(n.type){
-
-        case "page":{
-
-            wrapper.classList.add("surface-shell");
-
-            wrapper.innerHTML=`
-                <div class="generated-header">
-                    <h2>${escapeHtml(n.label)}</h2>
-                    <p>Visuelle Programmvorschau</p>
-                </div>
-            `;
-
-            kids.forEach(k=>
-                wrapper.appendChild(
-                    renderNode(bp,k)
-                )
-            );
-
-            break;
-
-        }
-
-
-        case "grid":{
-
-            wrapper.classList.add("grid");
-
-            kids.forEach(k=>
-                wrapper.appendChild(
-                    renderNode(bp,k)
-                )
-            );
-
-            break;
-
-        }
-
-
-        case "stat":{
-
-            wrapper.classList.add("card","stat");
-
-            wrapper.innerHTML=`
-                <div class="stat-label">
-                    ${escapeHtml(n.label)}
-                </div>
-
-                <div class="stat-value">
-                    ${escapeHtml(
-                        n.properties.value || "—"
-                    )}
-                </div>
-            `;
-
-            break;
-
-        }
-
-
-        case "panel":{
-
-            wrapper.classList.add("card");
-
-            wrapper.innerHTML=`
-                <div class="section-title">
-                    ${escapeHtml(n.label)}
-                </div>
-            `;
-
-            kids.forEach(k=>
-                wrapper.appendChild(
-                    renderNode(bp,k)
-                )
-            );
-
-            break;
-
-        }
-
-
-        case "list":{
-
-            wrapper.classList.add("stack");
-
-            kids.forEach(k=>
-                wrapper.appendChild(
-                    renderNode(bp,k)
-                )
-            );
-
-            break;
-
-        }
-
-
-        case "project":{
-
-            wrapper.classList.add("card","project");
-
-            const progress=
-                Number(n.properties.progress||0);
-
-            wrapper.innerHTML=`
-
-                <div class="project-icon">
-                    ${escapeHtml(
-                        n.label.charAt(0)
-                    )}
-                </div>
-
-                <div class="project-main">
-
-                    <div class="project-name">
-                        ${escapeHtml(n.label)}
-                    </div>
-
-                    <div class="project-meta">
-                        ${escapeHtml(
-                            n.properties.status || ""
-                        )}
-                    </div>
-
-                    <div class="progress">
-                        <i style="--progress:${progress}%"></i>
-                    </div>
-
-                </div>
-            `;
-
-            break;
-
-        }
-
-
-        case "button":{
-
-            wrapper.innerHTML=`
-                <button class="action">
-                    ${escapeHtml(n.label)}
-                </button>
-            `;
-
-            break;
-
-        }
-
-
-        case "nav":{
-
-            wrapper.classList.add("nav");
-
-            ["Übersicht","Projekte","Aktivität"]
-                .forEach((x,i)=>{
-
-                    const b=document.createElement("button");
-
-                    b.textContent=x;
-
-                    if(i===0)
-                        b.classList.add("active");
-
-                    wrapper.appendChild(b);
-
-                });
-
-            break;
-
-        }
-
-
-        case "kanban":{
-
-            wrapper.classList.add("kanban");
-
-            kids.forEach(k=>
-                wrapper.appendChild(
-                    renderNode(bp,k)
-                )
-            );
-
-            break;
-
-        }
-
-
-        case "column":{
-
-            wrapper.classList.add("column");
-
-            wrapper.innerHTML=`
-                <div class="column-title">
-                    ${escapeHtml(n.label)}
-                </div>
-            `;
-
-            kids.forEach(k=>
-                wrapper.appendChild(
-                    renderNode(bp,k)
-                )
-            );
-
-            break;
-
-        }
-
-
-        case "task":{
-
-            wrapper.classList.add("task");
-
-            wrapper.textContent=n.label;
-
-            break;
-
-        }
-
-
-        case "chat":{
-
-            wrapper.classList.add("chat");
-
-            kids.forEach(k=>
-                wrapper.appendChild(
-                    renderNode(bp,k)
-                )
-            );
-
-            break;
-
-        }
-
-
-        case "message":{
-
-            wrapper.classList.add("message");
-
-            if(n.properties.mine)
-                wrapper.classList.add("me");
-
-            wrapper.textContent=n.label;
-
-            break;
-
-        }
-
-
-        case "input":{
-
-            wrapper.innerHTML=`
-                <div class="chat-input">
-                    <input
-                        placeholder="${escapeHtml(n.label)}"
-                    >
-                    <button class="action">
-                        Senden
-                    </button>
-                </div>
-            `;
-
-            break;
-
-        }
-
-
-        case "card":{
-
-            wrapper.classList.add("card");
-
-            if(n.properties.value){
-
-                wrapper.innerHTML=`
-                    <div class="stat-label">
-                        ${escapeHtml(n.label)}
-                    </div>
-
-                    <div class="balance">
-                        ${escapeHtml(n.properties.value)}
-                    </div>
-                `;
-
-            }else{
-
-                wrapper.innerHTML=
-                    `<div class="section-title">
-                        ${escapeHtml(n.label)}
-                    </div>`;
-
-                kids.forEach(k=>
-                    wrapper.appendChild(
-                        renderNode(bp,k)
-                    )
-                );
-
-            }
-
-            break;
-
-        }
-
-
-        case "transaction":{
-
-            wrapper.classList.add("transaction");
-
-            wrapper.innerHTML=`
-
-                <div>
-                    <div class="tx-name">
-                        ${escapeHtml(n.label)}
-                    </div>
-
-                    <div class="tx-date">
-                        ${escapeHtml(
-                            n.properties.date || ""
-                        )}
-                    </div>
-                </div>
-
-                <div class="tx-value">
-                    ${escapeHtml(
-                        n.properties.value || ""
-                    )}
-                </div>
-
-            `;
-
-            break;
-
-        }
-
-
-        default:{
-
-            wrapper.classList.add("card");
-
-            wrapper.textContent=n.label;
-
-        }
-
-    }
-
-    return wrapper;
-
-}
-
-
-/* =========================================================
-   HTML SAFETY
-========================================================= */
+/* =====================================================
+   ESCAPE
+===================================================== */
 
 function escapeHtml(value){
 
-    return String(value)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+
+/* =====================================================
+   PIPELINE UI
+===================================================== */
+
+function activateStage(id){
+
+  const stages =
+    [
+      "stageText",
+      "stageToken",
+      "stageModel",
+      "stageVector",
+      "stageStore",
+      "stageSearch"
+    ];
+
+  const index =
+    stages.indexOf(id);
+
+  stages.forEach(
+    (stageId,i)=>{
+
+      const el =
+        $(stageId);
+
+      el.classList.remove(
+        "active",
+        "done"
+      );
+
+      if(i < index){
+        el.classList.add("done");
+      }
+
+      if(i === index){
+        el.classList.add("active");
+      }
+
+    }
+  );
 
 }
 
 
-/* =========================================================
-   RENDER
-========================================================= */
+function completeStage(id){
 
-function render(){
+  $(id)
+    .classList
+    .remove("active");
 
-    const bp=AETHER.getCurrent();
-
-    if(!bp)
-        return;
-
-    surface.innerHTML="";
-
-    bp.root.forEach(rootId=>{
-
-        const n=bp.nodes[rootId];
-
-        if(n)
-            surface.appendChild(
-                renderNode(bp,n)
-            );
-
-    });
-
-    updateChangeCount();
+  $(id)
+    .classList
+    .add("done");
 
 }
 
 
-/* =========================================================
-   SHEET
-========================================================= */
+/* =====================================================
+   STATUS
+===================================================== */
 
-const sheetBackdrop=
-    document.getElementById("sheetBackdrop");
+function setOffline(){
 
-let currentSelection=null;
+  statusDot
+    .classList
+    .remove("online");
 
-
-function openSheet(n){
-
-    currentSelection=n;
-
-    document.getElementById("sheetTitle")
-        .textContent=n.label;
-
-    document.getElementById("sheetSub")
-        .textContent=
-        `${n.type} · ${n.id}`;
-
-    sheetBackdrop.classList.add("open");
-
+  statusText.textContent =
+    "EMBEDDING CORE OFFLINE";
 }
 
 
-function closeSheet(){
+function setOnline(){
 
-    sheetBackdrop.classList.remove("open");
+  statusDot
+    .classList
+    .add("online");
 
-    currentSelection=null;
-
+  statusText.textContent =
+    "EMBEDDING CORE ONLINE";
 }
 
 
-document.getElementById("closeSheet")
-    .onclick=closeSheet;
+/* =====================================================
+   MODEL LOADING
+===================================================== */
 
+async function loadModel(){
 
-/* =========================================================
-   DIALOG
-========================================================= */
+  if(modelReady){
+    return;
+  }
 
-const dialogBackdrop=
-    document.getElementById("dialogBackdrop");
+  if(modelLoading){
+    return;
+  }
 
-const dialogTitle=
-    document.getElementById("dialogTitle");
+  modelLoading = true;
 
-const dialogDescription=
-    document.getElementById("dialogDescription");
+  clearError();
 
-const dialogInput=
-    document.getElementById("dialogInput");
+  embedBtn.disabled =
+    true;
 
-let dialogMode=null;
+  embedBtn.textContent =
+    "LOADING EMBEDDING CORE...";
 
+  activateStage(
+    "stageModel"
+  );
 
-function openDialog(mode){
+  addLog(
+    "Embedding Core wird gestartet.",
+    "info"
+  );
 
-    dialogMode=mode;
+  addLog(
+    `Modell: ${MODEL}`,
+    "info"
+  );
 
-    const n=currentSelection;
+  addLog(
+    "Erster Start kann deutlich länger dauern.",
+    "warn"
+  );
 
-    if(!n)
-        return;
+  try{
 
-    if(mode==="talk"){
+    extractor =
+      await pipeline(
+        "feature-extraction",
+        MODEL,
+        {
 
-        dialogTitle.textContent=
-            "Darüber sprechen";
+          /*
+           * Browser verwendet standardmäßig
+           * eine quantisierte Modellvariante,
+           * wenn verfügbar.
+           */
 
-        dialogDescription.textContent=
-            `Kontext: ${n.label}. Diese Aktion verändert noch nichts.`;
+          progress_callback:
+            progress => {
 
-    }
+              if(
+                progress &&
+                progress.status === "progress"
+              ){
 
-    if(mode==="edit"){
+                const percent =
+                  Math.round(
+                    progress.progress || 0
+                  );
 
-        dialogTitle.textContent=
-            "Element ändern";
+                embedBtn.textContent =
+                  `MODEL DOWNLOAD ${percent}%`;
 
-        dialogDescription.textContent=
-            `Was soll sich an „${n.label}“ ändern?`;
+              }
 
-    }
+              if(
+                progress &&
+                progress.status === "done"
+              ){
 
-    if(mode==="add"){
+                addLog(
+                  `Modelldatei geladen: ${
+                    progress.file || ""
+                  }`,
+                  "ok"
+                );
 
-        dialogTitle.textContent=
-            "Etwas hinzufügen";
+              }
 
-        dialogDescription.textContent=
-            `Was soll zu „${n.label}“ hinzugefügt werden?`;
+            }
 
-    }
+        }
+      );
 
-    if(mode==="problem"){
+    modelReady = true;
 
-        dialogTitle.textContent=
-            "Problem markieren";
-
-        dialogDescription.textContent=
-            `Das Problem wird als Kontext gespeichert und verändert die Oberfläche nicht.`;
-
-    }
-
-    dialogInput.value="";
-    dialogBackdrop.classList.add("open");
-    closeSheet();
-
-    setTimeout(
-        ()=>dialogInput.focus(),
-        100
+    completeStage(
+      "stageModel"
     );
 
+    setOnline();
+
+    addLog(
+      "Embedding Core ONLINE.",
+      "ok"
+    );
+
+    addLog(
+      "384-dimensionale Vektoren verfügbar.",
+      "ok"
+    );
+
+    dimension.textContent =
+      EMBEDDING_DIM;
+
+    embedBtn.textContent =
+      "GENERATE EMBEDDING";
+
+    embedBtn.disabled =
+      false;
+
+    searchBtn.disabled =
+      memory.length === 0;
+
+  }
+
+  catch(error){
+
+    console.error(error);
+
+    setOffline();
+
+    showError(error);
+
+    embedBtn.textContent =
+      "RETRY MODEL LOAD";
+
+    embedBtn.disabled =
+      false;
+
+  }
+
+  finally{
+
+    modelLoading =
+      false;
+
+  }
+
 }
 
 
-document.getElementById("talkBtn")
-    .onclick=()=>openDialog("talk");
+/* =====================================================
+   EMBEDDING
+===================================================== */
 
-document.getElementById("editBtn")
-    .onclick=()=>openDialog("edit");
+async function createEmbedding(
+  text,
+  mode = "passage"
+){
 
-document.getElementById("addBtn")
-    .onclick=()=>openDialog("add");
+  if(!text.trim()){
+    throw new Error(
+      "Kein Text vorhanden."
+    );
+  }
 
-document.getElementById("problemBtn")
-    .onclick=()=>openDialog("problem");
+  await loadModel();
+
+  if(!extractor){
+
+    throw new Error(
+      "Embedding-Modell ist nicht verfügbar."
+    );
+
+  }
 
 
-document.getElementById("dialogCancel")
-    .onclick=()=>{
-        dialogBackdrop.classList.remove("open");
-    };
+  /*
+   * E5 verwendet unterschiedliche Präfixe
+   * für Dokumente und Suchanfragen.
+   *
+   * passage: -> gespeicherter Text
+   * query:   -> Suchanfrage
+   */
+
+  const prepared =
+    `${mode}: ${text.trim()}`;
 
 
-/* =========================================================
-   USER → CHANGE REQUEST
-========================================================= */
+  const output =
+    await extractor(
+      prepared,
+      {
+        pooling:"mean",
+        normalize:true
+      }
+    );
 
-function userChange(text){
 
-    if(!currentSelection)
-        return;
+  /*
+   * Transformers.js liefert hier
+   * einen Tensor zurück.
+   */
 
-    const n=currentSelection;
+  const vector =
+    Array.from(
+      output.data
+    );
 
-    /*
-        Extremely small demo translator.
 
-        In production:
-            USER
-              ↓
-            CHATGPT
-              ↓
-            ChangeRequest[]
-    */
+  if(vector.length !== EMBEDDING_DIM){
 
-    const t=text.toLowerCase();
+    throw new Error(
+      `Unerwartete Vektordimension: ${
+        vector.length
+      } statt ${EMBEDDING_DIM}.`
+    );
 
-    let r=null;
+  }
+
+  return vector;
+
+}
+
+
+/* =====================================================
+   VECTOR GENERATION
+===================================================== */
+
+async function generateEmbedding(){
+
+  const text =
+    textInput.value.trim();
+
+  if(!text){
+
+    showError({
+      message:
+        "Bitte zuerst einen Satz eingeben."
+    });
+
+    return;
+  }
+
+  clearError();
+
+  embedBtn.disabled =
+    true;
+
+  storeBtn.disabled =
+    true;
+
+  activateStage(
+    "stageText"
+  );
+
+  addLog(
+    "Text empfangen.",
+    "info"
+  );
+
+  await sleep(200);
+
+  completeStage(
+    "stageText"
+  );
+
+  activateStage(
+    "stageToken"
+  );
+
+  addLog(
+    "Text → Tokenisierung → Modellinput.",
+    "info"
+  );
+
+  await sleep(250);
+
+  completeStage(
+    "stageToken"
+  );
+
+  activateStage(
+    "stageModel"
+  );
+
+  try{
+
+    currentVector =
+      await createEmbedding(
+        text,
+        "passage"
+      );
+
+    completeStage(
+      "stageModel"
+    );
+
+    activateStage(
+      "stageVector"
+    );
+
+    await sleep(250);
+
+    completeStage(
+      "stageVector"
+    );
+
+    showVector(
+      currentVector
+    );
+
+    renderPoint(
+      currentVector,
+      true
+    );
+
+    storeBtn.disabled =
+      false;
+
+    embedBtn.disabled =
+      false;
+
+    embedBtn.textContent =
+      "GENERATE EMBEDDING";
+
+    hudStatus.textContent =
+      "VECTOR READY";
+
+    addLog(
+      `Embedding erzeugt: d=${currentVector.length}`,
+      "ok"
+    );
+
+  }
+
+  catch(error){
+
+    console.error(error);
+
+    showError(error);
+
+    embedBtn.disabled =
+      false;
+
+    embedBtn.textContent =
+      modelReady
+        ? "GENERATE EMBEDDING"
+        : "RETRY MODEL LOAD";
+
+  }
+
+}
+
+
+/* =====================================================
+   VECTOR DISPLAY
+===================================================== */
+
+function showVector(vector){
+
+  vectorDim.textContent =
+    `d = ${vector.length}`;
+
+  dimension.textContent =
+    vector.length;
+
+  /*
+   * Nicht alle 384 Werte direkt in eine
+   * riesige Textwand schreiben.
+   *
+   * Wir zeigen die ersten Werte und
+   * die Dimension vollständig an.
+   */
+
+  const preview =
+    vector
+      .slice(0,60)
+      .map(
+        (v,i)=>
+          `v${i+1}=${v.toFixed(6)}`
+      )
+      .join("\n");
+
+  vectorBox.textContent =
+`${preview}
+
+...
+
+[ ${vector.length} DIMENSIONS ]
+
+L2-NORM:
+${vectorNorm(vector).toFixed(8)}`;
+
+}
+
+
+/* =====================================================
+   STORE
+===================================================== */
+
+function storeCurrentVector(){
+
+  if(!currentVector){
+    return;
+  }
+
+  const text =
+    textInput.value.trim();
+
+  if(!text){
+    return;
+  }
+
+  memoryCounter++;
+
+  const record = {
+
+    id:
+      `MEM-${String(
+        memoryCounter
+      ).padStart(4,"0")}`,
+
+    text,
+
+    vector:
+      [...currentVector],
+
+    created:
+      new Date().toISOString()
+
+  };
+
+  memory.push(record);
+
+  activateStage(
+    "stageStore"
+  );
+
+  completeStage(
+    "stageStore"
+  );
+
+  renderMemory();
+
+  searchBtn.disabled =
+    false;
+
+  memoryCount.textContent =
+    memory.length;
+
+  addLog(
+    `${record.id} im Vector Store gespeichert.`,
+    "ok"
+  );
+
+  storeBtn.disabled =
+    true;
+
+}
+
+
+/* =====================================================
+   MEMORY UI
+===================================================== */
+
+function renderMemory(){
+
+  memoryList.innerHTML = "";
+
+  if(memory.length === 0){
+
+    memoryList.innerHTML =
+      `<div style="color:#405861;font-size:10px">
+        VECTOR STORE EMPTY
+       </div>`;
+
+    return;
+  }
+
+  memory.forEach(
+    record => {
+
+      const el =
+        document.createElement("div");
+
+      el.className =
+        "memory";
+
+      el.innerHTML = `
+
+        <div class="memoryId">
+          ${record.id}
+        </div>
+
+        <div class="memoryText">
+          ${escapeHtml(record.text)}
+        </div>
+
+      `;
+
+      el.onclick = () => {
+
+        textInput.value =
+          record.text;
+
+        currentVector =
+          [...record.vector];
+
+        showVector(
+          currentVector
+        );
+
+        renderPoint(
+          currentVector,
+          true
+        );
+
+        hudStatus.textContent =
+          record.id;
+
+      };
+
+      memoryList.appendChild(
+        el
+      );
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   COSINE SIMILARITY
+===================================================== */
+
+function dot(a,b){
+
+  let sum = 0;
+
+  for(
+    let i=0;
+    i<a.length;
+    i++
+  ){
+
+    sum +=
+      a[i] * b[i];
+
+  }
+
+  return sum;
+
+}
+
+
+function vectorNorm(v){
+
+  let sum = 0;
+
+  for(
+    let i=0;
+    i<v.length;
+    i++
+  ){
+
+    sum +=
+      v[i] * v[i];
+
+  }
+
+  return Math.sqrt(sum);
+
+}
+
+
+function cosineSimilarity(a,b){
+
+  const numerator =
+    dot(a,b);
+
+  const denominator =
+    vectorNorm(a) *
+    vectorNorm(b);
+
+  if(
+    denominator === 0
+  ){
+
+    return 0;
+
+  }
+
+  return (
+    numerator /
+    denominator
+  );
+
+}
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+async function runSearch(){
+
+  const query =
+    queryInput.value.trim();
+
+  if(!query){
+
+    showError({
+      message:
+        "Bitte eine Suchanfrage eingeben."
+    });
+
+    return;
+  }
+
+  if(memory.length === 0){
+
+    showError({
+      message:
+        "Der Vector Store ist leer."
+    });
+
+    return;
+  }
+
+  clearError();
+
+  searchBtn.disabled =
+    true;
+
+  activateStage(
+    "stageSearch"
+  );
+
+  addLog(
+    `Query: "${query}"`,
+    "info"
+  );
+
+  try{
+
+    const queryVector =
+      await createEmbedding(
+        query,
+        "query"
+      );
+
+    const results =
+      memory
+        .map(
+          record => ({
+
+            ...record,
+
+            score:
+              cosineSimilarity(
+                queryVector,
+                record.vector
+              )
+
+          })
+        )
+        .sort(
+          (a,b)=>
+            b.score - a.score
+        );
+
+    renderRanking(
+      results
+    );
+
+    completeStage(
+      "stageSearch"
+    );
+
+    addLog(
+      `${results.length} Vektoren verglichen.`,
+      "ok"
+    );
+
+    addLog(
+      `Top-1 Cosine: ${results[0].score.toFixed(6)}`,
+      "ok"
+    );
+
+    hudStatus.textContent =
+      "SEARCH COMPLETE";
+
+  }
+
+  catch(error){
+
+    console.error(error);
+
+    showError(error);
+
+  }
+
+  finally{
+
+    searchBtn.disabled =
+      false;
+
+  }
+
+}
+
+
+/* =====================================================
+   RANKING
+===================================================== */
+
+function renderRanking(results){
+
+  ranking.innerHTML = "";
+
+  if(!results.length){
+
+    ranking.innerHTML =
+      `<div style="color:#405861;font-size:10px">
+        NO RESULT
+       </div>`;
+
+    return;
+  }
+
+
+  const maxScore =
+    Math.max(
+      ...results.map(
+        r => r.score
+      )
+    );
+
+
+  results.forEach(
+    (record,index)=>{
+
+      const item =
+        document.createElement("div");
+
+      item.className =
+        "rank";
+
+
+      /*
+       * Balken ist reine Visualisierung.
+       *
+       * Der eigentliche Wert bleibt
+       * der Cosinuswert.
+       */
+
+      const visualWidth =
+        maxScore > 0
+          ? (
+              record.score /
+              maxScore
+            ) * 100
+          : 0;
+
+
+      item.innerHTML = `
+
+        <div class="rankTop">
+
+          <span>
+            #${index+1}
+            ${record.id}
+          </span>
+
+          <span class="rankScore">
+            COSINE
+            ${record.score.toFixed(6)}
+          </span>
+
+        </div>
+
+        <div class="bar">
+
+          <div
+            class="barFill"
+            style="width:${visualWidth}%">
+          </div>
+
+        </div>
+
+        <div
+          style="
+          margin-top:7px;
+          color:#718b92;
+          font-size:9px;
+          line-height:1.4">
+
+          ${escapeHtml(
+            record.text
+          )}
+
+        </div>
+
+      `;
+
+      ranking.appendChild(
+        item
+      );
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   3D VECTOR VISUALIZATION
+===================================================== */
+
+function renderPoint(
+  vector,
+  current = false
+){
+
+  if(!vector ||
+     vector.length < 3){
+    return;
+  }
+
+
+  /*
+   * WICHTIG:
+   *
+   * Das ist keine PCA/t-SNE/UMAP-
+   * Projektion.
+   *
+   * Wir zeigen hier absichtlich
+   * direkt v1, v2, v3.
+   *
+   * Das dient dem mathematischen
+   * Verständnis des Vektors.
+   */
+
+
+  const x =
+    vector[0];
+
+  const y =
+    vector[1];
+
+  const z =
+    vector[2];
+
+
+  /*
+   * Nur visuelle Skalierung.
+   */
+
+  const sx =
+    50 + x * 35;
+
+  const sy =
+    50 - y * 35;
+
+
+  const depth =
+    Math.max(
+      .5,
+      Math.min(
+        1.5,
+        1 + z
+      )
+    );
+
+
+  const point =
+    document.createElement("div");
+
+  point.className =
+    "point";
+
+  point.style.left =
+    `${sx}%`;
+
+  point.style.top =
+    `${sy}%`;
+
+  point.style.transform =
+    `translate(-50%,-50%)
+     scale(${depth})`;
+
+  point.title =
+    `v1=${x.toFixed(5)}
+v2=${y.toFixed(5)}
+v3=${z.toFixed(5)}`;
+
+
+  $("scene")
+    .appendChild(
+      point
+    );
+
+
+  /*
+   * Nach einigen Punkten nicht
+   * unendlich viele DOM-Punkte sammeln.
+   */
+
+  const points =
+    $("scene")
+      .querySelectorAll(
+        ".point"
+      );
+
+  if(points.length > 25){
+
+    points[0].remove();
+
+  }
+
+}
+
+
+/* =====================================================
+   UTIL
+===================================================== */
+
+function sleep(ms){
+
+  return new Promise(
+    resolve =>
+      setTimeout(
+        resolve,
+        ms
+      )
+  );
+
+}
+
+
+/* =====================================================
+   INITIAL BOOT
+===================================================== */
+
+addLog(
+  "NEURAL MEMORY Interface gestartet.",
+  "ok"
+);
+
+addLog(
+  "UI bereit.",
+  "ok"
+);
+
+addLog(
+  "Embedding Core wartet auf Benutzeraktion.",
+  "info"
+);
+
+addLog(
+  `Target Model: ${MODEL}`,
+  "info"
+);
+
+addLog(
+  "Dimension: 384",
+  "info"
+);
+
+addLog(
+  "Vector Store: IN-MEMORY",
+  "info"
+);
+
+addLog(
+  "Cosine Similarity: ACTIVE",
+  "info"
+);
+
+
+/* =====================================================
+   EVENTS
+===================================================== */
+
+embedBtn.addEventListener(
+  "click",
+  generateEmbedding
+);
+
+storeBtn.addEventListener(
+  "click",
+  storeCurrentVector
+);
+
+searchBtn.addEventListener(
+  "click",
+  runSearch
+);
+
+
+queryInput.addEventListener(
+  "keydown",
+  event => {
 
     if(
-        t.includes("name") ||
-        t.includes("heiß") ||
-        t.includes("umbenennen")
+      event.key === "Enter"
     ){
 
-        const newName=
-            text.split(/name|heiß|umbenennen/i)
-                .pop()
-                .replace(/[:=]/g,"")
-                .trim();
-
-        if(newName){
-
-            r=AETHER.request(
-                "user",
-                "rename",
-                n.id,
-                {
-                    label:newName
-                }
-            );
-
-        }
+      runSearch();
 
     }
 
-
-    if(!r){
-
-        /*
-            Für die Demo wird eine Änderung
-            nur dann erzeugt, wenn sie eindeutig
-            als Änderung verstanden werden kann.
-
-            Diskussionen bleiben Diskussionen.
-        */
-
-        showToast(
-            "Als Kontext vorgemerkt — keine Änderung."
-        );
-
-        return;
-
-    }
-
-
-    const result=
-        AETHER.stage([r]);
-
-    if(!result.valid){
-
-        showToast(
-            "Änderung abgelehnt: "+
-            result.errors[0]
-        );
-
-        return;
-
-    }
-
-    render();
-
-    showToast(
-        "Änderung ist jetzt als Vorschlag vorgemerkt."
-    );
-
-}
-
-
-/* =========================================================
-   DIALOG CONFIRM
-========================================================= */
-
-document.getElementById("dialogConfirm")
-    .onclick=()=>{
-
-        const text=
-            dialogInput.value.trim();
-
-        if(!text)
-            return;
-
-        if(dialogMode==="talk"){
-
-            /*
-                DISCUSSION ONLY
-
-                Kein Blueprint-Mutation.
-            */
-
-            showToast(
-                "Kontext für ChatGPT erstellt."
-            );
-
-            console.log(
-                "AETHER DISCUSSION CONTEXT",
-                {
-                    type:"discussion",
-                    target:currentSelection?.id,
-                    user:text,
-                    blueprint:AETHER.getCurrent()
-                }
-            );
-
-        }
-
-        else if(dialogMode==="problem"){
-
-            console.log(
-                "AETHER PROBLEM",
-                {
-                    type:"problem",
-                    target:currentSelection?.id,
-                    user:text
-                }
-            );
-
-            showToast(
-                "Problem markiert."
-            );
-
-        }
-
-        else{
-
-            userChange(text);
-
-        }
-
-        dialogBackdrop.classList.remove("open");
-
-    };
-
-
-/* =========================================================
-   PREVIEW
-========================================================= */
-
-function createPreview(text){
-
-    const base=
-        inferSurface(text);
-
-    /*
-        Demo:
-        base becomes the current live state.
-        Then a tiny staged metadata change is created,
-        so the preview visibly demonstrates staging.
-    */
-
-    AETHER.init(base);
-
-    const r=AETHER.request(
-        "llm",
-        "set_property",
-        base.root[0],
-        {
-            key:"preview",
-            value:true
-        }
-    );
-
-    const result=AETHER.stage([r]);
-
-    if(!result.valid){
-
-        showToast("Preview konnte nicht erstellt werden.");
-
-        return;
-
-    }
-
-    document.getElementById("projectTitle")
-        .textContent=
-        base.meta.name;
-
-    document.getElementById("start")
-        .style.display="none";
-
-    document.getElementById("workspace")
-        .classList.add("active");
-
-    render();
-
-}
-
-
-/* =========================================================
-   BUTTONS
-========================================================= */
-
-document.getElementById("previewBtn")
-    .onclick=()=>{
-
-        const text=
-            document.getElementById("prompt")
-                .value
-                .trim();
-
-        if(!text){
-
-            showToast(
-                "Beschreibe zuerst, was du bauen möchtest."
-            );
-
-            return;
-
-        }
-
-        createPreview(text);
-
-    };
-
-
-document.querySelectorAll(".quick button")
-    .forEach(button=>{
-
-        button.onclick=()=>{
-
-            const type=
-                button.dataset.example;
-
-            const prompts={
-
-                dashboard:
-`Baue eine mobile Projektverwaltung mit Kennzahlen, Projektliste und Navigation.`,
-
-                kanban:
-`Baue ein Kanban Board mit TODO, IN ARBEIT und ERLEDIGT.`,
-
-                chat:
-`Baue eine moderne Chat Oberfläche für einen Assistenten.`,
-
-                banking:
-`Baue eine Banking Oberfläche mit Kontostand und Transaktionen.`
-
-            };
-
-            document.getElementById("prompt")
-                .value=prompts[type];
-
-        };
-
-    });
-
-
-/* =========================================================
-   APPLY / REJECT
-========================================================= */
-
-function apply(){
-
-    if(!AETHER.getStaged()){
-
-        showToast("Keine Änderungen vorhanden.");
-
-        return;
-
-    }
-
-    if(AETHER.commit()){
-
-        showToast(
-            "Änderungen übernommen."
-        );
-
-        render();
-
-        updateChangeCount();
-
-    }
-
-}
-
-
-function reject(){
-
-    AETHER.reject();
-
-    document.getElementById("workspace")
-        .classList.remove("active");
-
-    document.getElementById("start")
-        .style.display="flex";
-
-    updateChangeCount();
-
-}
-
-
-document.getElementById("applyBtn")
-    .onclick=apply;
-
-document.getElementById("applyTop")
-    .onclick=apply;
-
-document.getElementById("rejectBtn")
-    .onclick=reject;
-
-
-document.getElementById("backBtn")
-    .onclick=()=>{
-
-        if(
-            AETHER.getStaged() &&
-            AETHER.diff().length
-        ){
-
-            if(
-                confirm(
-                    "Vorschlag verwerfen?"
-                )
-            )
-                reject();
-
-        }else{
-
-            reject();
-
-        }
-
-    };
-
-
-/* =========================================================
-   CHANGE COUNT
-========================================================= */
-
-function updateChangeCount(){
-
-    const count=
-        AETHER.diff().length;
-
-    document.getElementById("changeCount")
-        .textContent=
-        `${count} Änderung${count===1?"":"en"}`;
-
-}
-
-
-/* =========================================================
-   TOAST
-========================================================= */
-
-let toastTimer=null;
-
-function showToast(text){
-
-    const toast=
-        document.getElementById("toast");
-
-    toast.textContent=text;
-
-    toast.classList.add("show");
-
-    clearTimeout(toastTimer);
-
-    toastTimer=setTimeout(
-        ()=>toast.classList.remove("show"),
-        2300
-    );
-
-}
-
-
-/* =========================================================
-   CLOSE SHEET
-========================================================= */
-
-sheetBackdrop.addEventListener(
-    "click",
-    e=>{
-
-        if(e.target===sheetBackdrop)
-            closeSheet();
-
-    }
-);
-
-
-/* =========================================================
-   INITIAL STATE
-========================================================= */
-
-console.log(
-    "%cAETHER V2.0",
-    "font-weight:bold;font-size:18px"
-);
-
-console.log(
-    "LLM → ChangeRequest → STAGED → VALIDATE → DIFF → COMMIT → LIVE"
-);
-
-console.log(
-    "Public API:",
-    window.AETHER
+  }
 );
 
 </script>
 
 </body>
-</html>
+</html>wie kann man das jetzt nutzen?
