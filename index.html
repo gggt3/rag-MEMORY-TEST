@@ -3,3567 +3,2832 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
-      content="width=device-width,
-               initial-scale=1,
-               maximum-scale=1,
-               user-scalable=no">
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 
-<title>NEURAL MEMORY — v2.1</title>
-
-<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<title>AETHER V2.0</title>
 
 <style>
-:root{
-  --bg:#020308;
-  --panel:#070b14;
-  --panel2:#0b1220;
-  --border:#17263c;
-  --cyan:#00f5ff;
-  --cyan2:#00b7ff;
-  --green:#4ade80;
-  --pink:#ff2d9b;
-  --text:#e6f4ff;
-  --muted:#71829a;
-  --yellow:#ffd166;
-}
-
 *{
-  box-sizing:border-box;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
 }
 
 html,body{
-  margin:0;
-  padding:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:Arial,Helvetica,sans-serif;
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#07090d;
+    color:#edf2f7;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",
+                 "Segoe UI",sans-serif;
 }
 
-body{
-  min-height:100vh;
+button,input,textarea{
+    font:inherit;
 }
 
-header{
-  border-bottom:1px solid var(--border);
-  background:#03050b;
-  padding:18px;
+button{
+    border:0;
+    color:inherit;
+    cursor:pointer;
 }
 
-.logo{
-  color:var(--cyan);
-  font-size:21px;
-  font-weight:bold;
-  letter-spacing:3px;
+.app{
+    width:100%;
+    height:100%;
+    position:relative;
 }
 
-.version{
-  color:var(--muted);
-  font-size:11px;
-  margin-top:5px;
-  letter-spacing:1px;
+/* =========================================================
+   START
+========================================================= */
+
+.start{
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    padding:
+        max(28px,env(safe-area-inset-top))
+        22px
+        max(24px,env(safe-area-inset-bottom));
+    background:
+        radial-gradient(circle at 50% 10%,rgba(77,135,255,.12),transparent 34%),
+        #07090d;
 }
 
-main{
-  width:100%;
-  max-width:1200px;
-  margin:auto;
-  padding:16px;
+.brand{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    margin-top:12px;
 }
 
-.panel{
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:16px;
-  margin-bottom:16px;
+.aether-dot{
+    width:13px;
+    height:13px;
+    border-radius:50%;
+    background:#78a9ff;
+    box-shadow:
+        0 0 14px #78a9ff,
+        0 0 35px rgba(120,169,255,.35);
 }
 
-.panel-title{
-  color:var(--cyan);
-  font-size:13px;
-  letter-spacing:1.5px;
-  font-weight:bold;
-  margin-bottom:14px;
+.brand-name{
+    font-weight:700;
+    letter-spacing:.18em;
+    font-size:13px;
+}
+
+.hero{
+    margin:auto 0;
+}
+
+.hero h1{
+    font-size:38px;
+    line-height:1.04;
+    letter-spacing:-.04em;
+    margin:0 0 14px;
+    max-width:430px;
+}
+
+.hero p{
+    color:#8d98a8;
+    font-size:16px;
+    line-height:1.55;
+    max-width:470px;
+    margin:0;
+}
+
+.prompt{
+    width:100%;
+    min-height:170px;
+    resize:none;
+    border:1px solid #202733;
+    border-radius:22px;
+    background:#0d1118;
+    color:#eef3f9;
+    padding:18px;
+    outline:none;
+    line-height:1.5;
+    font-size:16px;
+    box-shadow:0 12px 50px rgba(0,0,0,.2);
+}
+
+.prompt:focus{
+    border-color:#4c72aa;
+}
+
+.quick{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    margin:10px 0 12px;
+    scrollbar-width:none;
+}
+
+.quick::-webkit-scrollbar{
+    display:none;
+}
+
+.quick button{
+    flex:none;
+    padding:10px 13px;
+    border-radius:999px;
+    background:#111722;
+    color:#aeb9c9;
+    border:1px solid #202938;
+    font-size:13px;
+}
+
+.preview-btn{
+    width:100%;
+    min-height:56px;
+    border-radius:18px;
+    background:#edf3ff;
+    color:#080b10;
+    font-weight:800;
+    letter-spacing:.03em;
+}
+
+/* =========================================================
+   WORKSPACE
+========================================================= */
+
+.workspace{
+    position:absolute;
+    inset:0;
+    display:none;
+    flex-direction:column;
+    background:#080b10;
+}
+
+.workspace.active{
+    display:flex;
+}
+
+.topbar{
+    flex:none;
+    min-height:58px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:
+        max(8px,env(safe-area-inset-top))
+        14px 8px;
+    border-bottom:1px solid #171d27;
+    background:rgba(8,11,16,.92);
+    backdrop-filter:blur(18px);
+}
+
+.top-left{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:0;
+}
+
+.back{
+    width:38px;
+    height:38px;
+    border-radius:12px;
+    background:#121720;
+    color:#aeb9c8;
+    font-size:20px;
+}
+
+.project-title{
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    font-size:14px;
+    font-weight:700;
+}
+
+.state{
+    font-size:10px;
+    letter-spacing:.12em;
+    color:#8da7ce;
+    margin-top:2px;
+}
+
+.apply-top{
+    padding:10px 14px;
+    border-radius:12px;
+    background:#dfeaff;
+    color:#080b10;
+    font-size:12px;
+    font-weight:800;
+}
+
+.surface{
+    flex:1;
+    overflow:auto;
+    padding:18px 14px 110px;
+}
+
+/* =========================================================
+   GENERIC RENDERER
+========================================================= */
+
+.surface-shell{
+    max-width:900px;
+    margin:0 auto;
+}
+
+.generated-header{
+    margin:5px 2px 20px;
+}
+
+.generated-header h2{
+    margin:0;
+    font-size:28px;
+    letter-spacing:-.035em;
+}
+
+.generated-header p{
+    color:#788394;
+    margin:6px 0 0;
+    font-size:13px;
+}
+
+.node{
+    position:relative;
+    transition:.18s ease;
+}
+
+.node.changed{
+    outline:1px solid rgba(104,155,255,.65);
+    box-shadow:0 0 0 5px rgba(104,155,255,.06);
+}
+
+.node.new::after{
+    content:"+ NEW";
+    position:absolute;
+    top:-8px;
+    right:8px;
+    font-size:9px;
+    letter-spacing:.1em;
+    padding:4px 7px;
+    border-radius:999px;
+    background:#18345f;
+    color:#a9c9ff;
+}
+
+.row{
+    display:flex;
+    gap:10px;
+}
+
+.stack{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
 }
 
 .grid{
-  display:grid;
-  grid-template-columns:
-    repeat(auto-fit,minmax(160px,1fr));
-  gap:10px;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+}
+
+.card{
+    background:#10151d;
+    border:1px solid #1c2531;
+    border-radius:18px;
+    padding:16px;
 }
 
 .stat{
-  background:#040810;
-  border:1px solid var(--border);
-  border-radius:8px;
-  padding:12px;
-}
-
-.stat-value{
-  color:var(--cyan);
-  font-size:20px;
-  font-weight:bold;
+    min-height:100px;
 }
 
 .stat-label{
-  color:var(--muted);
-  font-size:10px;
-  margin-top:5px;
-  letter-spacing:.7px;
+    color:#7d8999;
+    font-size:12px;
 }
 
-input,
-select,
-button{
-  width:100%;
-  min-height:42px;
-  background:var(--panel2);
-  color:var(--text);
-  border:1px solid var(--border);
-  border-radius:7px;
-  padding:10px;
-  font-size:14px;
+.stat-value{
+    margin-top:10px;
+    font-size:27px;
+    font-weight:800;
 }
 
-button{
-  cursor:pointer;
+.section-title{
+    font-size:14px;
+    font-weight:750;
+    margin:4px 2px 0;
 }
 
-button:hover{
-  border-color:var(--cyan2);
+.project{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    min-height:70px;
 }
 
-button:disabled{
-  opacity:.45;
-  cursor:not-allowed;
+.project-icon{
+    width:42px;
+    height:42px;
+    border-radius:13px;
+    background:#182235;
+    display:grid;
+    place-items:center;
+    color:#94b9ff;
+    font-weight:800;
 }
 
-button.primary{
-  color:var(--cyan);
-  border-color:var(--cyan);
-  background:#042027;
+.project-main{
+    flex:1;
+    min-width:0;
 }
 
-button.green{
-  color:var(--green);
-  border-color:var(--green);
+.project-name{
+    font-weight:700;
+    font-size:14px;
 }
 
-button.danger{
-  color:var(--pink);
-  border-color:var(--pink);
+.project-meta{
+    color:#7b8797;
+    font-size:11px;
+    margin-top:5px;
 }
 
-.controls{
-  display:grid;
-  grid-template-columns:
-    repeat(auto-fit,minmax(180px,1fr));
-  gap:10px;
+.progress{
+    height:5px;
+    border-radius:99px;
+    background:#1c2430;
+    overflow:hidden;
+    margin-top:9px;
 }
 
-.file-box{
-  border:1px dashed var(--border);
-  border-radius:8px;
-  padding:14px;
+.progress i{
+    display:block;
+    height:100%;
+    width:var(--progress);
+    background:#79a9ff;
+    border-radius:inherit;
 }
 
-.status{
-  color:var(--green);
+.action{
+    min-height:48px;
+    padding:0 15px;
+    border-radius:14px;
+    background:#dfeaff;
+    color:#080b10;
+    font-weight:800;
 }
 
-.status.busy{
-  color:var(--yellow);
+.ghost{
+    background:#151b24;
+    color:#b9c3d0;
 }
 
-.status.error{
-  color:var(--pink);
+.nav{
+    display:flex;
+    gap:7px;
+    overflow:auto;
+    scrollbar-width:none;
 }
 
-.progress-wrap{
-  margin-top:12px;
-  display:none;
+.nav::-webkit-scrollbar{
+    display:none;
 }
 
-.progress-wrap.visible{
-  display:block;
+.nav button{
+    flex:none;
+    padding:10px 13px;
+    border-radius:12px;
+    background:#111720;
+    color:#8591a2;
+    border:1px solid #1c2531;
 }
 
-.progress-info{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  color:var(--muted);
-  font-size:11px;
-  margin-bottom:6px;
+.nav button.active{
+    color:#eaf1ff;
+    background:#182337;
+    border-color:#30496e;
 }
 
-.progress-track{
-  width:100%;
-  height:8px;
-  background:#02050a;
-  border:1px solid var(--border);
-  border-radius:20px;
-  overflow:hidden;
+/* =========================================================
+   KANBAN
+========================================================= */
+
+.kanban{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(220px,1fr));
+    gap:10px;
+    overflow-x:auto;
 }
 
-.progress-bar{
-  width:0%;
-  height:100%;
-  background:var(--cyan);
-  transition:width .15s ease;
+.column{
+    background:#0e131a;
+    border:1px solid #1b2430;
+    border-radius:17px;
+    padding:12px;
+    min-height:280px;
 }
 
-.result{
-  margin-top:10px;
-  background:#040914;
-  border:1px solid var(--border);
-  border-radius:9px;
-  padding:14px;
+.column-title{
+    color:#9aa6b6;
+    font-size:12px;
+    margin-bottom:10px;
 }
 
-.result-top{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  flex-wrap:wrap;
+.task{
+    background:#151b23;
+    border:1px solid #202a37;
+    border-radius:13px;
+    padding:13px;
+    margin-bottom:8px;
+    font-size:13px;
 }
 
-.rank{
-  color:var(--cyan);
-  font-weight:bold;
+/* =========================================================
+   CHAT
+========================================================= */
+
+.chat{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
 }
 
-.score{
-  color:var(--green);
-  font-family:monospace;
+.message{
+    max-width:82%;
+    padding:12px 14px;
+    border-radius:17px;
+    background:#121821;
+    color:#cbd4df;
+    line-height:1.45;
+    font-size:14px;
 }
 
-.meta{
-  color:var(--muted);
-  font-size:11px;
-  line-height:1.5;
+.message.me{
+    align-self:flex-end;
+    background:#203252;
+    color:#e6efff;
 }
 
-.memory-view{
-  margin-top:12px;
-  border-left:2px solid var(--cyan);
-  padding-left:12px;
-  font-family:monospace;
-  font-size:12px;
-  line-height:1.55;
-  white-space:pre-wrap;
-  color:#d8efff;
+.chat-input{
+    display:flex;
+    gap:8px;
 }
 
-.raw{
-  margin-top:12px;
+.chat-input input{
+    flex:1;
+    min-width:0;
+    background:#111720;
+    color:white;
+    border:1px solid #202a36;
+    border-radius:14px;
+    padding:13px;
+    outline:none;
 }
 
-.raw summary{
-  cursor:pointer;
-  color:var(--muted);
-  font-size:12px;
+/* =========================================================
+   BANKING
+========================================================= */
+
+.balance{
+    font-size:36px;
+    font-weight:850;
+    letter-spacing:-.04em;
+    margin-top:8px;
 }
 
-pre{
-  white-space:pre-wrap;
-  word-break:break-word;
-  font-size:11px;
-  color:#bcd1e5;
+.transaction{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    padding:15px 0;
+    border-bottom:1px solid #1c2430;
 }
 
-.flow{
-  display:grid;
-  grid-template-columns:
-    repeat(5,1fr);
-  gap:5px;
-  margin-top:10px;
+.transaction:last-child{
+    border-bottom:0;
 }
 
-.flow-item{
-  text-align:center;
-  padding:12px 5px;
-  border:1px solid var(--border);
-  background:#040810;
-  border-radius:6px;
-  font-size:10px;
-  color:var(--muted);
+.tx-name{
+    font-size:14px;
+    font-weight:650;
 }
 
-.flow-item strong{
-  display:block;
-  color:var(--cyan);
-  margin-bottom:4px;
+.tx-date{
+    color:#707b8b;
+    font-size:11px;
+    margin-top:4px;
 }
 
-.note{
-  color:var(--muted);
-  font-size:11px;
-  line-height:1.5;
-  margin-top:10px;
+.tx-value{
+    font-weight:750;
 }
 
-.search-status{
-  margin-top:10px;
-  color:var(--muted);
-  font-size:11px;
-  min-height:16px;
+/* =========================================================
+   BOTTOM
+========================================================= */
+
+.bottom{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    padding:
+        10px 12px
+        max(12px,env(safe-area-inset-bottom));
+    display:flex;
+    gap:8px;
+    background:linear-gradient(
+        transparent,
+        rgba(8,11,16,.97) 30%
+    );
+    pointer-events:none;
 }
 
-@media(max-width:700px){
-  .flow{
-    grid-template-columns:1fr;
-  }
+.bottom>*{
+    pointer-events:auto;
+}
+
+.bottom button{
+    min-height:50px;
+    flex:1;
+    border-radius:15px;
+    font-weight:750;
+}
+
+.reject{
+    background:#141a22;
+    color:#aab4c2;
+}
+
+.apply{
+    background:#dfeaff;
+    color:#080b10;
+}
+
+.change-count{
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+    top:-27px;
+    white-space:nowrap;
+    padding:5px 9px;
+    border-radius:999px;
+    background:#111822;
+    border:1px solid #222d3b;
+    color:#8996a8;
+    font-size:10px;
+}
+
+/* =========================================================
+   SHEET
+========================================================= */
+
+.sheet-backdrop{
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,.52);
+    display:none;
+    align-items:flex-end;
+    z-index:20;
+}
+
+.sheet-backdrop.open{
+    display:flex;
+}
+
+.sheet{
+    width:100%;
+    background:#0d1219;
+    border-top:1px solid #26303d;
+    border-radius:25px 25px 0 0;
+    padding:
+        10px 14px
+        max(18px,env(safe-area-inset-bottom));
+    box-shadow:0 -25px 80px rgba(0,0,0,.5);
+    animation:up .2s ease;
+}
+
+@keyframes up{
+    from{transform:translateY(30px);opacity:.5}
+    to{transform:none;opacity:1}
+}
+
+.handle{
+    width:42px;
+    height:4px;
+    border-radius:99px;
+    background:#303946;
+    margin:3px auto 14px;
+}
+
+.sheet-title{
+    font-size:15px;
+    font-weight:800;
+    margin-bottom:10px;
+}
+
+.sheet-sub{
+    color:#788595;
+    font-size:12px;
+    margin-bottom:13px;
+}
+
+.sheet button{
+    width:100%;
+    text-align:left;
+    min-height:51px;
+    margin-bottom:7px;
+    border-radius:14px;
+    background:#141a22;
+    color:#d8e0ea;
+    padding:0 15px;
+}
+
+.sheet button:last-child{
+    margin-bottom:0;
+    background:transparent;
+    color:#727e8d;
+}
+
+/* =========================================================
+   DIALOG
+========================================================= */
+
+.dialog-backdrop{
+    position:absolute;
+    inset:0;
+    z-index:30;
+    background:rgba(0,0,0,.62);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.dialog-backdrop.open{
+    display:flex;
+}
+
+.dialog{
+    width:min(500px,100%);
+    background:#0e141c;
+    border:1px solid #252f3c;
+    border-radius:22px;
+    padding:18px;
+    box-shadow:0 25px 90px rgba(0,0,0,.6);
+}
+
+.dialog h3{
+    margin:0 0 7px;
+    font-size:17px;
+}
+
+.dialog p{
+    color:#818d9c;
+    font-size:12px;
+    line-height:1.5;
+    margin:0 0 14px;
+}
+
+.dialog textarea{
+    width:100%;
+    min-height:120px;
+    resize:none;
+    background:#090d13;
+    color:#edf2f8;
+    border:1px solid #242e3b;
+    border-radius:15px;
+    padding:13px;
+    outline:none;
+}
+
+.dialog-actions{
+    display:flex;
+    gap:8px;
+    margin-top:10px;
+}
+
+.dialog-actions button{
+    flex:1;
+    min-height:48px;
+    border-radius:14px;
+    background:#161d26;
+}
+
+.dialog-actions .primary{
+    background:#dfeaff;
+    color:#080b10;
+    font-weight:800;
+}
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+.toast{
+    position:absolute;
+    z-index:50;
+    left:50%;
+    top:calc(max(10px,env(safe-area-inset-top)) + 65px);
+    transform:translateX(-50%) translateY(-15px);
+    opacity:0;
+    pointer-events:none;
+    padding:9px 13px;
+    border-radius:999px;
+    background:#171e28;
+    border:1px solid #293443;
+    color:#b9c5d4;
+    font-size:11px;
+    transition:.2s;
+}
+
+.toast.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+}
+
+@media(min-width:760px){
+    .grid{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+    }
+
+    .surface{
+        padding-left:28px;
+        padding-right:28px;
+    }
+
+    .start{
+        padding-left:10%;
+        padding-right:10%;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  <div class="logo">
-    NEURAL MEMORY
-  </div>
+<div class="app">
 
-  <div class="version">
-    DATA INGESTION · RETRIEVAL · v2.1
-  </div>
-</header>
+<!-- ======================================================
+     START
+======================================================= -->
 
-<main>
+<section class="start" id="start">
 
-<!-- =====================================================
-     ARCHITECTURE
-====================================================== -->
-
-<section class="panel">
-
-  <div class="panel-title">
-    ARCHITEKTUR
-  </div>
-
-  <div class="flow">
-
-    <div class="flow-item">
-      <strong>01</strong>
-      RAW DATA
+    <div class="brand">
+        <div class="aether-dot"></div>
+        <div class="brand-name">AETHER</div>
     </div>
 
-    <div class="flow-item">
-      <strong>02</strong>
-      MEMORY TEXT
+    <div class="hero">
+        <h1>Was möchtest du bauen?</h1>
+        <p>
+            Beschreibe einfach die Software, die du dir vorstellst.
+            AETHER erzeugt daraus zuerst eine visuelle, veränderbare Version.
+        </p>
     </div>
 
-    <div class="flow-item">
-      <strong>03</strong>
-      EMBEDDING
+    <textarea
+        id="prompt"
+        class="prompt"
+        placeholder="Zum Beispiel:
+
+Baue eine Projektverwaltung mit Projekten links und Aufgaben rechts..."
+    ></textarea>
+
+    <div class="quick">
+        <button data-example="dashboard">Dashboard</button>
+        <button data-example="kanban">Kanban</button>
+        <button data-example="chat">Chat</button>
+        <button data-example="banking">Banking</button>
     </div>
 
-    <div class="flow-item">
-      <strong>04</strong>
-      INDEXED DB
-    </div>
-
-    <div class="flow-item">
-      <strong>05</strong>
-      RETRIEVAL
-    </div>
-
-  </div>
-
-  <div class="note">
-    <b>Prinzip:</b>
-    Die Originaldaten bleiben erhalten.
-    Das Embedding ist nur eine zusätzliche Suchrepräsentation.
-    Bei einer Frage werden die gespeicherten Records durchsucht
-    und anschließend die Originaldaten angezeigt.
-  </div>
+    <button class="preview-btn" id="previewBtn">
+        VORSCHAU ERSTELLEN
+    </button>
 
 </section>
 
 
-<!-- =====================================================
-     IMPORT
-====================================================== -->
+<!-- ======================================================
+     WORKSPACE
+======================================================= -->
 
-<section class="panel">
+<section class="workspace" id="workspace">
 
-  <div class="panel-title">
-    01 · DATEN IMPORT
-  </div>
+    <header class="topbar">
 
-  <div class="file-box">
+        <div class="top-left">
 
-    <input
-      id="fileInput"
-      type="file"
-      multiple
-      accept=".xlsx,.xls,.csv"
-    >
+            <button class="back" id="backBtn">‹</button>
 
-  </div>
+            <div>
+                <div class="project-title" id="projectTitle">
+                    AETHER PROJECT
+                </div>
 
-  <div
-    class="controls"
-    style="margin-top:10px"
-  >
+                <div class="state">
+                    STAGED PREVIEW
+                </div>
+            </div>
 
-    <button
-      id="importButton"
-      class="primary"
-    >
-      IMPORTIEREN + EMBEDDEN
-    </button>
+        </div>
 
-    <button
-      id="modelButton"
-    >
-      EMBEDDING-MODELL LADEN
-    </button>
+        <button class="apply-top" id="applyTop">
+            ANWENDEN
+        </button>
 
-    <button
-      id="stopButton"
-      class="danger"
-      disabled
-    >
-      BUILD STOPPEN
-    </button>
-
-    <button
-      id="clearButton"
-      class="danger"
-    >
-      DATENBANK LÖSCHEN
-    </button>
-
-  </div>
+    </header>
 
 
-  <div
-    id="progressWrap"
-    class="progress-wrap"
-  >
+    <main class="surface" id="surface"></main>
 
-    <div class="progress-info">
 
-      <span id="progressText">
-        0 / 0
-      </span>
+    <div class="bottom">
 
-      <span id="progressDetails">
-        -
-      </span>
+        <div class="change-count" id="changeCount">
+            0 Änderungen
+        </div>
+
+        <button class="reject" id="rejectBtn">
+            VERWERFEN
+        </button>
+
+        <button class="apply" id="applyBtn">
+            ANWENDEN
+        </button>
 
     </div>
-
-    <div class="progress-track">
-
-      <div
-        id="progressBar"
-        class="progress-bar"
-      ></div>
-
-    </div>
-
-  </div>
 
 </section>
 
 
-<!-- =====================================================
-     STATUS
-====================================================== -->
+<!-- ======================================================
+     CONTEXT SHEET
+======================================================= -->
 
-<section class="panel">
+<div class="sheet-backdrop" id="sheetBackdrop">
 
-  <div class="panel-title">
-    02 · SYSTEM STATUS
-  </div>
+    <div class="sheet">
 
-  <div class="grid">
+        <div class="handle"></div>
 
-    <div class="stat">
+        <div class="sheet-title" id="sheetTitle">
+            Element
+        </div>
 
-      <div
-        id="recordCount"
-        class="stat-value"
-      >
-        0
-      </div>
+        <div class="sheet-sub" id="sheetSub">
+            Kontext
+        </div>
 
-      <div class="stat-label">
-        GESPEICHERTE RECORDS
-      </div>
+        <button id="talkBtn">
+            💬&nbsp;&nbsp; Darüber sprechen
+        </button>
 
-    </div>
+        <button id="editBtn">
+            ✏️&nbsp;&nbsp; Ändern
+        </button>
 
+        <button id="addBtn">
+            ＋&nbsp;&nbsp; Etwas hinzufügen
+        </button>
 
-    <div class="stat">
+        <button id="problemBtn">
+            ❗&nbsp;&nbsp; Problem markieren
+        </button>
 
-      <div
-        id="datasetCount"
-        class="stat-value"
-      >
-        0
-      </div>
-
-      <div class="stat-label">
-        DATASETS
-      </div>
+        <button id="closeSheet">
+            Schließen
+        </button>
 
     </div>
 
-
-    <div class="stat">
-
-      <div
-        id="dimension"
-        class="stat-value"
-      >
-        384
-      </div>
-
-      <div class="stat-label">
-        EMBEDDING DIMENSION
-      </div>
-
-    </div>
+</div>
 
 
-    <div class="stat">
+<!-- ======================================================
+     DIALOG
+======================================================= -->
 
-      <div
-        id="modelStatus"
-        class="stat-value"
-      >
-        OFF
-      </div>
+<div class="dialog-backdrop" id="dialogBackdrop">
 
-      <div class="stat-label">
-        EMBEDDING MODEL
-      </div>
+    <div class="dialog">
 
-    </div>
+        <h3 id="dialogTitle">Mit ChatGPT sprechen</h3>
 
+        <p id="dialogDescription"></p>
 
-    <div class="stat">
+        <textarea
+            id="dialogInput"
+            placeholder="Was möchtest du sagen?"
+        ></textarea>
 
-      <div
-        id="systemStatus"
-        class="stat-value status"
-      >
-        READY
-      </div>
+        <div class="dialog-actions">
 
-      <div class="stat-label">
-        SYSTEM
-      </div>
+            <button id="dialogCancel">
+                Abbrechen
+            </button>
+
+            <button class="primary" id="dialogConfirm">
+                ÜBERNEHMEN
+            </button>
+
+        </div>
 
     </div>
 
-  </div>
+</div>
 
-</section>
 
+<div class="toast" id="toast"></div>
 
-<!-- =====================================================
-     RETRIEVAL
-====================================================== -->
+</div>
 
-<section class="panel">
 
-  <div class="panel-title">
-    03 · MEMORY RETRIEVAL
-  </div>
+<script>
 
-
-  <input
-    id="query"
-    placeholder="z.B. VVL mit iPhone in Bad Urach"
-  >
-
-
-  <div
-    class="controls"
-    style="margin-top:10px"
-  >
-
-    <select id="datasetSelect">
-
-      <option value="">
-        ALLE DATASETS
-      </option>
-
-    </select>
-
-
-    <select id="topK">
-
-      <option value="5">
-        TOP 5
-      </option>
-
-      <option value="10">
-        TOP 10
-      </option>
-
-      <option value="20">
-        TOP 20
-      </option>
-
-    </select>
-
-
-    <button
-      id="retrieveButton"
-      class="primary"
-    >
-      RETRIEVE
-    </button>
-
-  </div>
-
-
-  <div
-    id="searchStatus"
-    class="search-status"
-  ></div>
-
-
-  <div
-    id="results"
-    style="margin-top:12px"
-  ></div>
-
-</section>
-
-
-<!-- =====================================================
-     LOG
-====================================================== -->
-
-<section class="panel">
-
-  <div class="panel-title">
-    04 · SYSTEM LOG
-  </div>
-
-  <div
-    id="log"
-    class="log"
-  ></div>
-
-</section>
-
-</main>
-
-
-<script type="module">
-
-/* =====================================================
-   CONFIGURATION
-====================================================== */
-
-const CONFIG = {
-
-  DB_NAME:
-    "NEURAL_MEMORY_V2",
-
-  DB_VERSION:
-    1,
-
-  STORE:
-    "records",
-
-  MODEL:
-    "Xenova/multilingual-e5-small",
-
-  DIMENSION:
-    384,
-
-  SCHEMA:
-    "2.1",
-
-  /*
-     Kleine Batches sind absichtlich gewählt.
-     Dadurch bleibt der Browser auf iPhone/Safari
-     während vieler Embeddings responsiv.
-  */
-
-  BATCH_SIZE:
-    2,
-
-  RECORD_YIELD_MS:
-    100,
-
-  BATCH_YIELD_MS:
-    300
-
-};
-
-
-/* =====================================================
-   STATE
-====================================================== */
-
-const state = {
-
-  extractor:
-    null,
-
-  modelLoaded:
-    false,
-
-  processing:
-    false,
-
-  stopRequested:
-    false
-
-};
-
-
-/* =====================================================
-   DOM
-====================================================== */
-
-const $ = id =>
-  document.getElementById(id);
-
-
-/* =====================================================
-   LOGGING
-====================================================== */
-
-function log(message){
-
-  const time =
-    new Date()
-      .toLocaleTimeString("de-DE");
-
-  $("log").textContent +=
-    `[${time}] ${message}\n`;
-
-  $("log").scrollTop =
-    $("log").scrollHeight;
-
-}
-
-
-/* =====================================================
-   STATUS
-====================================================== */
-
-function setStatus(
-  text,
-  type=""
-){
-
-  $("systemStatus").textContent =
-    text;
-
-  $("systemStatus").className =
-    "stat-value status " + type;
-
-}
-
-
-/* =====================================================
-   BROWSER YIELD
-====================================================== */
-
-function sleep(ms){
-
-  return new Promise(
-    resolve =>
-      setTimeout(
-        resolve,
-        ms
-      )
-  );
-
-}
-
+/* =========================================================
+   AETHER CORE
+========================================================= */
 
 /*
-   Gibt dem Browser bewusst Zeit,
-   Speicher aufzuräumen und die Oberfläche
-   weiter reagieren zu lassen.
+    CORE INVARIANT
+
+    liveBlueprint
+        = aktuelle Realität
+
+    stagedBlueprint
+        = vorgeschlagene nächste Realität
+
+    LLM und User dürfen niemals liveBlueprint
+    direkt verändern.
+
+    Beide erzeugen ChangeRequests.
+
+    Nur commit() darf staged → live durchführen.
 */
 
-async function yieldBrowser(
-  ms = CONFIG.RECORD_YIELD_MS
-){
 
-  await sleep(ms);
+const AETHER = (() => {
 
-}
+    let liveBlueprint = null;
+    let stagedBlueprint = null;
 
+    let selectedNode = null;
 
-/* =====================================================
-   INDEXED DB
-====================================================== */
-
-function openDB(){
-
-  return new Promise(
-    (resolve,reject)=>{
-
-      const request =
-        indexedDB.open(
-          CONFIG.DB_NAME,
-          CONFIG.DB_VERSION
-        );
+    let requestCounter = 0;
 
 
-      request.onupgradeneeded =
-        event => {
+    /* -----------------------------------------------------
+       UTIL
+    ----------------------------------------------------- */
 
-          const db =
-            event.target.result;
+    const clone = obj =>
+        JSON.parse(JSON.stringify(obj));
 
-          if(
-            !db.objectStoreNames.contains(
-              CONFIG.STORE
-            )
-          ){
-
-            const store =
-              db.createObjectStore(
-                CONFIG.STORE,
-                {
-                  keyPath:"id"
-                }
-              );
+    const id = prefix =>
+        prefix + "_" + (++requestCounter);
 
 
-            store.createIndex(
-              "dataset_id",
-              "dataset_id",
-              {
-                unique:false
-              }
-            );
+    /* -----------------------------------------------------
+       CHANGE REQUEST
+    ----------------------------------------------------- */
+
+    function request(source,operation,target,payload={}){
+
+        return {
+            id:id("cr"),
+            source,
+            operation,
+            target,
+            payload,
+            timestamp:Date.now()
+        };
+
+    }
 
 
-            store.createIndex(
-              "memory_id",
-              "memory_id",
-              {
-                unique:false
-              }
-            );
+    /* -----------------------------------------------------
+       BLUEPRINT FACTORY
+    ----------------------------------------------------- */
 
-          }
+    function createBase(){
+
+        return {
+
+            meta:{
+                name:"AETHER PROJECT",
+                version:1
+            },
+
+            nodes:{},
+
+            root:[],
+
+            data:{},
+
+            behavior:{},
+
+            bindings:{},
+
+            files:{}
 
         };
 
+    }
 
-      request.onsuccess =
-        () => {
 
-          const db =
-            request.result;
+    function addNode(bp,node){
 
-          /*
-             Sicherheitsprüfung:
-             Unser Store muss über "id"
-             adressierbar sein.
-          */
+        bp.nodes[node.id] = node;
 
-          try{
+        if(node.parent){
 
-            const tx =
-              db.transaction(
-                CONFIG.STORE,
-                "readonly"
-              );
+            if(!bp.nodes[node.parent].children)
+                bp.nodes[node.parent].children=[];
 
-            const store =
-              tx.objectStore(
-                CONFIG.STORE
-              );
+            bp.nodes[node.parent].children.push(node.id);
 
-            if(
-              store.keyPath !== "id"
-            ){
+        }else{
 
-              db.close();
+            bp.root.push(node.id);
 
-              reject(
-                new Error(
-                  `IndexedDB Store besitzt falschen keyPath "${store.keyPath}". Bitte DATENBANK LÖSCHEN und erneut importieren.`
-                )
-              );
+        }
 
-              return;
+    }
+
+
+    /* -----------------------------------------------------
+       VALIDATOR
+    ----------------------------------------------------- */
+
+    function validateBlueprint(bp){
+
+        const errors=[];
+
+        if(!bp || !bp.nodes){
+
+            errors.push("Blueprint fehlt.");
+
+            return errors;
+
+        }
+
+        Object.values(bp.nodes).forEach(node=>{
+
+            if(!node.id)
+                errors.push("Node ohne ID.");
+
+            if(!node.type)
+                errors.push(node.id+" besitzt keinen Typ.");
+
+            if(node.parent &&
+               !bp.nodes[node.parent]){
+
+                errors.push(
+                    node.id+
+                    ": Parent existiert nicht."
+                );
 
             }
 
-          }catch(error){
+        });
 
-            db.close();
+        return errors;
 
-            reject(error);
+    }
+
+
+    /* -----------------------------------------------------
+       OPERATIONS
+    ----------------------------------------------------- */
+
+    function applyOperation(bp,r){
+
+        switch(r.operation){
+
+            case "add_element":{
+
+                addNode(bp,clone(r.payload));
+
+                break;
+            }
+
+            case "rename":{
+
+                if(!bp.nodes[r.target])
+                    throw new Error("Ziel existiert nicht.");
+
+                bp.nodes[r.target].label =
+                    r.payload.label;
+
+                break;
+            }
+
+            case "set_property":{
+
+                if(!bp.nodes[r.target])
+                    throw new Error("Ziel existiert nicht.");
+
+                bp.nodes[r.target].properties =
+                    bp.nodes[r.target].properties || {};
+
+                bp.nodes[r.target]
+                    .properties[r.payload.key] =
+                    r.payload.value;
+
+                break;
+            }
+
+            case "move":{
+
+                if(!bp.nodes[r.target])
+                    throw new Error("Ziel existiert nicht.");
+
+                const node=bp.nodes[r.target];
+
+                if(node.parent){
+
+                    const oldParent=
+                        bp.nodes[node.parent];
+
+                    oldParent.children =
+                        oldParent.children.filter(
+                            x=>x!==node.id
+                        );
+
+                }else{
+
+                    bp.root=
+                        bp.root.filter(
+                            x=>x!==node.id
+                        );
+
+                }
+
+                node.parent=r.payload.parent;
+
+                if(node.parent){
+
+                    if(!bp.nodes[node.parent])
+                        throw new Error("Neuer Parent existiert nicht.");
+
+                    bp.nodes[node.parent].children =
+                        bp.nodes[node.parent].children || [];
+
+                    bp.nodes[node.parent]
+                        .children.push(node.id);
+
+                }else{
+
+                    bp.root.push(node.id);
+
+                }
+
+                break;
+            }
+
+            case "delete":{
+
+                if(!bp.nodes[r.target])
+                    throw new Error("Ziel existiert nicht.");
+
+                const node=bp.nodes[r.target];
+
+                if(node.parent){
+
+                    bp.nodes[node.parent].children =
+                        bp.nodes[node.parent].children
+                            .filter(x=>x!==node.id);
+
+                }else{
+
+                    bp.root=
+                        bp.root.filter(
+                            x=>x!==node.id
+                        );
+
+                }
+
+                delete bp.nodes[r.target];
+
+                break;
+            }
+
+            case "bind":{
+
+                bp.bindings[r.target]=
+                    r.payload.function;
+
+                break;
+            }
+
+            default:
+
+                throw new Error(
+                    "Unbekannte Operation: "+
+                    r.operation
+                );
+
+        }
+
+    }
+
+
+    /* -----------------------------------------------------
+       STAGE
+    ----------------------------------------------------- */
+
+    function stage(requests){
+
+        const draft =
+            clone(liveBlueprint);
+
+        const results=[];
+
+        for(let i=0;i<requests.length;i++){
+
+            const r=requests[i];
+
+            try{
+
+                applyOperation(draft,r);
+
+                results.push({
+                    request:r,
+                    valid:true
+                });
+
+            }catch(error){
+
+                return {
+                    valid:false,
+                    errors:[error.message],
+                    failedAt:i,
+                    results
+                };
+
+            }
+
+        }
+
+        const integrity=
+            validateBlueprint(draft);
+
+        if(integrity.length){
+
+            return {
+                valid:false,
+                errors:integrity,
+                results
+            };
+
+        }
+
+        stagedBlueprint=draft;
+
+        return {
+            valid:true,
+            blueprint:clone(draft),
+            results
+        };
+
+    }
+
+
+    /* -----------------------------------------------------
+       DIFF
+    ----------------------------------------------------- */
+
+    function diff(){
+
+        if(!liveBlueprint || !stagedBlueprint)
+            return [];
+
+        const changes=[];
+
+        const oldNodes=liveBlueprint.nodes;
+        const newNodes=stagedBlueprint.nodes;
+
+        Object.keys(newNodes).forEach(key=>{
+
+            if(!oldNodes[key]){
+
+                changes.push({
+                    type:"new",
+                    id:key
+                });
+
+            }else if(
+                JSON.stringify(oldNodes[key]) !==
+                JSON.stringify(newNodes[key])
+            ){
+
+                changes.push({
+                    type:"changed",
+                    id:key
+                });
+
+            }
+
+        });
+
+        Object.keys(oldNodes).forEach(key=>{
+
+            if(!newNodes[key]){
+
+                changes.push({
+                    type:"deleted",
+                    id:key
+                });
+
+            }
+
+        });
+
+        return changes;
+
+    }
+
+
+    /* -----------------------------------------------------
+       COMMIT
+    ----------------------------------------------------- */
+
+    function commit(){
+
+        if(!stagedBlueprint)
+            return false;
+
+        const errors=
+            validateBlueprint(stagedBlueprint);
+
+        if(errors.length)
+            return false;
+
+        liveBlueprint =
+            clone(stagedBlueprint);
+
+        stagedBlueprint=null;
+
+        return true;
+
+    }
+
+
+    function reject(){
+
+        stagedBlueprint=null;
+
+    }
+
+
+    function getCurrent(){
+
+        return stagedBlueprint || liveBlueprint;
+
+    }
+
+
+    /* -----------------------------------------------------
+       PUBLIC
+    ----------------------------------------------------- */
+
+    return {
+
+        request,
+        stage,
+        commit,
+        reject,
+        diff,
+        getCurrent,
+        getLive:()=>clone(liveBlueprint),
+        getStaged:()=>clone(stagedBlueprint),
+
+        init(bp){
+
+            liveBlueprint=clone(bp);
+            stagedBlueprint=null;
+
+        }
+
+    };
+
+})();
+
+
+window.AETHER=AETHER;
+
+
+/* =========================================================
+   DEMO BLUEPRINT GENERATOR
+========================================================= */
+
+/*
+    Das hier ist absichtlich KEIN echtes LLM.
+
+    Es simuliert lediglich die Übersetzung:
+
+    natürliche Sprache
+            ↓
+       ChangeRequests
+
+    Später kann genau diese Stelle durch
+    ChatGPT / Ollama ersetzt werden.
+*/
+
+
+function node(
+    id,
+    type,
+    label,
+    parent=null,
+    properties={}
+){
+
+    return {
+        id,
+        type,
+        label,
+        parent,
+        properties,
+        children:[]
+    };
+
+}
+
+
+function makeDashboard(){
+
+    const bp={
+        meta:{
+            name:"PROJECT FLOW",
+            version:1
+        },
+        nodes:{},
+        root:[],
+        data:{},
+        behavior:{},
+        bindings:{},
+        files:{}
+    };
+
+    const nodes=[
+
+        node(
+            "dashboard",
+            "page",
+            "PROJECT FLOW"
+        ),
+
+        node(
+            "stats",
+            "grid",
+            "Übersicht",
+            "dashboard"
+        ),
+
+        node(
+            "active",
+            "stat",
+            "Aktive Projekte",
+            "stats",
+            {value:"12"}
+        ),
+
+        node(
+            "tasks",
+            "stat",
+            "Offene Aufgaben",
+            "stats",
+            {value:"37"}
+        ),
+
+        node(
+            "progress",
+            "stat",
+            "Fortschritt",
+            "stats",
+            {value:"74 %"}
+        ),
+
+        node(
+            "projects",
+            "panel",
+            "Projekte",
+            "dashboard"
+        ),
+
+        node(
+            "projectList",
+            "list",
+            "Projektliste",
+            "projects"
+        ),
+
+        node(
+            "project1",
+            "project",
+            "AETHER",
+            "projectList",
+            {
+                status:"In Arbeit",
+                progress:82
+            }
+        ),
+
+        node(
+            "project2",
+            "project",
+            "ROOT",
+            "projectList",
+            {
+                status:"Konzept",
+                progress:46
+            }
+        ),
+
+        node(
+            "project3",
+            "project",
+            "PROJECT FLOW",
+            "projectList",
+            {
+                status:"Planung",
+                progress:28
+            }
+        ),
+
+        node(
+            "newProject",
+            "button",
+            "+ Neues Projekt",
+            "projects"
+        ),
+
+        node(
+            "navigation",
+            "nav",
+            "Navigation",
+            "dashboard"
+        )
+
+    ];
+
+    nodes.forEach(n=>{
+
+        bp.nodes[n.id]=n;
+
+        if(n.parent){
+
+            bp.nodes[n.parent].children.push(n.id);
+
+        }else{
+
+            bp.root.push(n.id);
+
+        }
+
+    });
+
+    return bp;
+
+}
+
+
+function makeKanban(){
+
+    const bp={
+        meta:{
+            name:"MISSION BOARD",
+            version:1
+        },
+        nodes:{},
+        root:[],
+        data:{},
+        behavior:{},
+        bindings:{},
+        files:{}
+    };
+
+    const nodes=[
+
+        node("board","page","MISSION BOARD"),
+
+        node("kanban","kanban","Board","board"),
+
+        node("todo","column","TODO","kanban"),
+
+        node("progress","column","IN ARBEIT","kanban"),
+
+        node("done","column","ERLEDIGT","kanban"),
+
+        node("t1","task","Neue Oberfläche planen","todo"),
+        node("t2","task","Blueprint Renderer","todo"),
+        node("t3","task","Touch Interaktion","progress"),
+        node("t4","task","Compiler prüfen","done")
+
+    ];
+
+    nodes.forEach(n=>{
+
+        bp.nodes[n.id]=n;
+
+        if(n.parent)
+            bp.nodes[n.parent].children.push(n.id);
+        else
+            bp.root.push(n.id);
+
+    });
+
+    return bp;
+
+}
+
+
+function makeChat(){
+
+    const bp={
+        meta:{
+            name:"CHAT",
+            version:1
+        },
+        nodes:{},
+        root:[],
+        data:{},
+        behavior:{},
+        bindings:{},
+        files:{}
+    };
+
+    const nodes=[
+
+        node("chat","page","ASSISTANT"),
+
+        node("messages","chat","Unterhaltung","chat"),
+
+        node(
+            "m1",
+            "message",
+            "Wie kann ich dir helfen?",
+            "messages"
+        ),
+
+        node(
+            "m2",
+            "message",
+            "Ich möchte eine neue Oberfläche bauen.",
+            "messages",
+            {mine:true}
+        ),
+
+        node(
+            "m3",
+            "message",
+            "Beschreibe einfach, was du möchtest.",
+            "messages"
+        ),
+
+        node("composer","input","Nachricht","chat")
+
+    ];
+
+    nodes.forEach(n=>{
+
+        bp.nodes[n.id]=n;
+
+        if(n.parent)
+            bp.nodes[n.parent].children.push(n.id);
+        else
+            bp.root.push(n.id);
+
+    });
+
+    return bp;
+
+}
+
+
+function makeBanking(){
+
+    const bp={
+        meta:{
+            name:"MY BANK",
+            version:1
+        },
+        nodes:{},
+        root:[],
+        data:{},
+        behavior:{},
+        bindings:{},
+        files:{}
+    };
+
+    const nodes=[
+
+        node("bank","page","MY BANK"),
+
+        node(
+            "balance",
+            "card",
+            "Kontostand",
+            "bank",
+            {value:"4.820,42 €"}
+        ),
+
+        node(
+            "transactions",
+            "panel",
+            "Letzte Transaktionen",
+            "bank"
+        ),
+
+        node(
+            "tx1",
+            "transaction",
+            "Supermarkt",
+            "transactions",
+            {date:"Heute",value:"− 42,80 €"}
+        ),
+
+        node(
+            "tx2",
+            "transaction",
+            "Gehalt",
+            "transactions",
+            {date:"02.09.",value:"+ 2.140,00 €"}
+        ),
+
+        node(
+            "tx3",
+            "transaction",
+            "Miete",
+            "transactions",
+            {date:"01.09.",value:"− 820,00 €"}
+        )
+
+    ];
+
+    nodes.forEach(n=>{
+
+        bp.nodes[n.id]=n;
+
+        if(n.parent)
+            bp.nodes[n.parent].children.push(n.id);
+        else
+            bp.root.push(n.id);
+
+    });
+
+    return bp;
+
+}
+
+
+/* =========================================================
+   SIMPLE NATURAL LANGUAGE INFERENCE
+========================================================= */
+
+function inferSurface(text){
+
+    const t=text.toLowerCase();
+
+    if(
+        t.includes("kanban") ||
+        t.includes("aufgaben") ||
+        t.includes("spalten")
+    )
+        return makeKanban();
+
+    if(
+        t.includes("chat") ||
+        t.includes("nachrichten") ||
+        t.includes("assistent")
+    )
+        return makeChat();
+
+    if(
+        t.includes("bank") ||
+        t.includes("konto") ||
+        t.includes("kontostand")
+    )
+        return makeBanking();
+
+    return makeDashboard();
+
+}
+
+
+/* =========================================================
+   RENDERER
+========================================================= */
+
+const surface=document.getElementById("surface");
+
+
+function children(bp,id){
+
+    const n=bp.nodes[id];
+
+    return (n.children||[])
+        .map(childId=>bp.nodes[childId])
+        .filter(Boolean);
+
+}
+
+
+function renderNode(bp,n){
+
+    const wrapper=document.createElement("div");
+
+    wrapper.className="node";
+
+    wrapper.dataset.id=n.id;
+
+
+    const changes=AETHER.diff();
+
+    const change=changes.find(c=>c.id===n.id);
+
+    if(change){
+
+        if(change.type==="new")
+            wrapper.classList.add("new");
+
+        if(change.type==="changed")
+            wrapper.classList.add("changed");
+
+    }
+
+
+    wrapper.addEventListener(
+        "click",
+        e=>{
+            e.stopPropagation();
+            openSheet(n);
+        }
+    );
+
+
+    const kids=children(bp,n.id);
+
+
+    switch(n.type){
+
+        case "page":{
+
+            wrapper.classList.add("surface-shell");
+
+            wrapper.innerHTML=`
+                <div class="generated-header">
+                    <h2>${escapeHtml(n.label)}</h2>
+                    <p>Visuelle Programmvorschau</p>
+                </div>
+            `;
+
+            kids.forEach(k=>
+                wrapper.appendChild(
+                    renderNode(bp,k)
+                )
+            );
+
+            break;
+
+        }
+
+
+        case "grid":{
+
+            wrapper.classList.add("grid");
+
+            kids.forEach(k=>
+                wrapper.appendChild(
+                    renderNode(bp,k)
+                )
+            );
+
+            break;
+
+        }
+
+
+        case "stat":{
+
+            wrapper.classList.add("card","stat");
+
+            wrapper.innerHTML=`
+                <div class="stat-label">
+                    ${escapeHtml(n.label)}
+                </div>
+
+                <div class="stat-value">
+                    ${escapeHtml(
+                        n.properties.value || "—"
+                    )}
+                </div>
+            `;
+
+            break;
+
+        }
+
+
+        case "panel":{
+
+            wrapper.classList.add("card");
+
+            wrapper.innerHTML=`
+                <div class="section-title">
+                    ${escapeHtml(n.label)}
+                </div>
+            `;
+
+            kids.forEach(k=>
+                wrapper.appendChild(
+                    renderNode(bp,k)
+                )
+            );
+
+            break;
+
+        }
+
+
+        case "list":{
+
+            wrapper.classList.add("stack");
+
+            kids.forEach(k=>
+                wrapper.appendChild(
+                    renderNode(bp,k)
+                )
+            );
+
+            break;
+
+        }
+
+
+        case "project":{
+
+            wrapper.classList.add("card","project");
+
+            const progress=
+                Number(n.properties.progress||0);
+
+            wrapper.innerHTML=`
+
+                <div class="project-icon">
+                    ${escapeHtml(
+                        n.label.charAt(0)
+                    )}
+                </div>
+
+                <div class="project-main">
+
+                    <div class="project-name">
+                        ${escapeHtml(n.label)}
+                    </div>
+
+                    <div class="project-meta">
+                        ${escapeHtml(
+                            n.properties.status || ""
+                        )}
+                    </div>
+
+                    <div class="progress">
+                        <i style="--progress:${progress}%"></i>
+                    </div>
+
+                </div>
+            `;
+
+            break;
+
+        }
+
+
+        case "button":{
+
+            wrapper.innerHTML=`
+                <button class="action">
+                    ${escapeHtml(n.label)}
+                </button>
+            `;
+
+            break;
+
+        }
+
+
+        case "nav":{
+
+            wrapper.classList.add("nav");
+
+            ["Übersicht","Projekte","Aktivität"]
+                .forEach((x,i)=>{
+
+                    const b=document.createElement("button");
+
+                    b.textContent=x;
+
+                    if(i===0)
+                        b.classList.add("active");
+
+                    wrapper.appendChild(b);
+
+                });
+
+            break;
+
+        }
+
+
+        case "kanban":{
+
+            wrapper.classList.add("kanban");
+
+            kids.forEach(k=>
+                wrapper.appendChild(
+                    renderNode(bp,k)
+                )
+            );
+
+            break;
+
+        }
+
+
+        case "column":{
+
+            wrapper.classList.add("column");
+
+            wrapper.innerHTML=`
+                <div class="column-title">
+                    ${escapeHtml(n.label)}
+                </div>
+            `;
+
+            kids.forEach(k=>
+                wrapper.appendChild(
+                    renderNode(bp,k)
+                )
+            );
+
+            break;
+
+        }
+
+
+        case "task":{
+
+            wrapper.classList.add("task");
+
+            wrapper.textContent=n.label;
+
+            break;
+
+        }
+
+
+        case "chat":{
+
+            wrapper.classList.add("chat");
+
+            kids.forEach(k=>
+                wrapper.appendChild(
+                    renderNode(bp,k)
+                )
+            );
+
+            break;
+
+        }
+
+
+        case "message":{
+
+            wrapper.classList.add("message");
+
+            if(n.properties.mine)
+                wrapper.classList.add("me");
+
+            wrapper.textContent=n.label;
+
+            break;
+
+        }
+
+
+        case "input":{
+
+            wrapper.innerHTML=`
+                <div class="chat-input">
+                    <input
+                        placeholder="${escapeHtml(n.label)}"
+                    >
+                    <button class="action">
+                        Senden
+                    </button>
+                </div>
+            `;
+
+            break;
+
+        }
+
+
+        case "card":{
+
+            wrapper.classList.add("card");
+
+            if(n.properties.value){
+
+                wrapper.innerHTML=`
+                    <div class="stat-label">
+                        ${escapeHtml(n.label)}
+                    </div>
+
+                    <div class="balance">
+                        ${escapeHtml(n.properties.value)}
+                    </div>
+                `;
+
+            }else{
+
+                wrapper.innerHTML=
+                    `<div class="section-title">
+                        ${escapeHtml(n.label)}
+                    </div>`;
+
+                kids.forEach(k=>
+                    wrapper.appendChild(
+                        renderNode(bp,k)
+                    )
+                );
+
+            }
+
+            break;
+
+        }
+
+
+        case "transaction":{
+
+            wrapper.classList.add("transaction");
+
+            wrapper.innerHTML=`
+
+                <div>
+                    <div class="tx-name">
+                        ${escapeHtml(n.label)}
+                    </div>
+
+                    <div class="tx-date">
+                        ${escapeHtml(
+                            n.properties.date || ""
+                        )}
+                    </div>
+                </div>
+
+                <div class="tx-value">
+                    ${escapeHtml(
+                        n.properties.value || ""
+                    )}
+                </div>
+
+            `;
+
+            break;
+
+        }
+
+
+        default:{
+
+            wrapper.classList.add("card");
+
+            wrapper.textContent=n.label;
+
+        }
+
+    }
+
+    return wrapper;
+
+}
+
+
+/* =========================================================
+   HTML SAFETY
+========================================================= */
+
+function escapeHtml(value){
+
+    return String(value)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+
+/* =========================================================
+   RENDER
+========================================================= */
+
+function render(){
+
+    const bp=AETHER.getCurrent();
+
+    if(!bp)
+        return;
+
+    surface.innerHTML="";
+
+    bp.root.forEach(rootId=>{
+
+        const n=bp.nodes[rootId];
+
+        if(n)
+            surface.appendChild(
+                renderNode(bp,n)
+            );
+
+    });
+
+    updateChangeCount();
+
+}
+
+
+/* =========================================================
+   SHEET
+========================================================= */
+
+const sheetBackdrop=
+    document.getElementById("sheetBackdrop");
+
+let currentSelection=null;
+
+
+function openSheet(n){
+
+    currentSelection=n;
+
+    document.getElementById("sheetTitle")
+        .textContent=n.label;
+
+    document.getElementById("sheetSub")
+        .textContent=
+        `${n.type} · ${n.id}`;
+
+    sheetBackdrop.classList.add("open");
+
+}
+
+
+function closeSheet(){
+
+    sheetBackdrop.classList.remove("open");
+
+    currentSelection=null;
+
+}
+
+
+document.getElementById("closeSheet")
+    .onclick=closeSheet;
+
+
+/* =========================================================
+   DIALOG
+========================================================= */
+
+const dialogBackdrop=
+    document.getElementById("dialogBackdrop");
+
+const dialogTitle=
+    document.getElementById("dialogTitle");
+
+const dialogDescription=
+    document.getElementById("dialogDescription");
+
+const dialogInput=
+    document.getElementById("dialogInput");
+
+let dialogMode=null;
+
+
+function openDialog(mode){
+
+    dialogMode=mode;
+
+    const n=currentSelection;
+
+    if(!n)
+        return;
+
+    if(mode==="talk"){
+
+        dialogTitle.textContent=
+            "Darüber sprechen";
+
+        dialogDescription.textContent=
+            `Kontext: ${n.label}. Diese Aktion verändert noch nichts.`;
+
+    }
+
+    if(mode==="edit"){
+
+        dialogTitle.textContent=
+            "Element ändern";
+
+        dialogDescription.textContent=
+            `Was soll sich an „${n.label}“ ändern?`;
+
+    }
+
+    if(mode==="add"){
+
+        dialogTitle.textContent=
+            "Etwas hinzufügen";
+
+        dialogDescription.textContent=
+            `Was soll zu „${n.label}“ hinzugefügt werden?`;
+
+    }
+
+    if(mode==="problem"){
+
+        dialogTitle.textContent=
+            "Problem markieren";
+
+        dialogDescription.textContent=
+            `Das Problem wird als Kontext gespeichert und verändert die Oberfläche nicht.`;
+
+    }
+
+    dialogInput.value="";
+    dialogBackdrop.classList.add("open");
+    closeSheet();
+
+    setTimeout(
+        ()=>dialogInput.focus(),
+        100
+    );
+
+}
+
+
+document.getElementById("talkBtn")
+    .onclick=()=>openDialog("talk");
+
+document.getElementById("editBtn")
+    .onclick=()=>openDialog("edit");
+
+document.getElementById("addBtn")
+    .onclick=()=>openDialog("add");
+
+document.getElementById("problemBtn")
+    .onclick=()=>openDialog("problem");
+
+
+document.getElementById("dialogCancel")
+    .onclick=()=>{
+        dialogBackdrop.classList.remove("open");
+    };
+
+
+/* =========================================================
+   USER → CHANGE REQUEST
+========================================================= */
+
+function userChange(text){
+
+    if(!currentSelection)
+        return;
+
+    const n=currentSelection;
+
+    /*
+        Extremely small demo translator.
+
+        In production:
+            USER
+              ↓
+            CHATGPT
+              ↓
+            ChangeRequest[]
+    */
+
+    const t=text.toLowerCase();
+
+    let r=null;
+
+    if(
+        t.includes("name") ||
+        t.includes("heiß") ||
+        t.includes("umbenennen")
+    ){
+
+        const newName=
+            text.split(/name|heiß|umbenennen/i)
+                .pop()
+                .replace(/[:=]/g,"")
+                .trim();
+
+        if(newName){
+
+            r=AETHER.request(
+                "user",
+                "rename",
+                n.id,
+                {
+                    label:newName
+                }
+            );
+
+        }
+
+    }
+
+
+    if(!r){
+
+        /*
+            Für die Demo wird eine Änderung
+            nur dann erzeugt, wenn sie eindeutig
+            als Änderung verstanden werden kann.
+
+            Diskussionen bleiben Diskussionen.
+        */
+
+        showToast(
+            "Als Kontext vorgemerkt — keine Änderung."
+        );
+
+        return;
+
+    }
+
+
+    const result=
+        AETHER.stage([r]);
+
+    if(!result.valid){
+
+        showToast(
+            "Änderung abgelehnt: "+
+            result.errors[0]
+        );
+
+        return;
+
+    }
+
+    render();
+
+    showToast(
+        "Änderung ist jetzt als Vorschlag vorgemerkt."
+    );
+
+}
+
+
+/* =========================================================
+   DIALOG CONFIRM
+========================================================= */
+
+document.getElementById("dialogConfirm")
+    .onclick=()=>{
+
+        const text=
+            dialogInput.value.trim();
+
+        if(!text)
+            return;
+
+        if(dialogMode==="talk"){
+
+            /*
+                DISCUSSION ONLY
+
+                Kein Blueprint-Mutation.
+            */
+
+            showToast(
+                "Kontext für ChatGPT erstellt."
+            );
+
+            console.log(
+                "AETHER DISCUSSION CONTEXT",
+                {
+                    type:"discussion",
+                    target:currentSelection?.id,
+                    user:text,
+                    blueprint:AETHER.getCurrent()
+                }
+            );
+
+        }
+
+        else if(dialogMode==="problem"){
+
+            console.log(
+                "AETHER PROBLEM",
+                {
+                    type:"problem",
+                    target:currentSelection?.id,
+                    user:text
+                }
+            );
+
+            showToast(
+                "Problem markiert."
+            );
+
+        }
+
+        else{
+
+            userChange(text);
+
+        }
+
+        dialogBackdrop.classList.remove("open");
+
+    };
+
+
+/* =========================================================
+   PREVIEW
+========================================================= */
+
+function createPreview(text){
+
+    const base=
+        inferSurface(text);
+
+    /*
+        Demo:
+        base becomes the current live state.
+        Then a tiny staged metadata change is created,
+        so the preview visibly demonstrates staging.
+    */
+
+    AETHER.init(base);
+
+    const r=AETHER.request(
+        "llm",
+        "set_property",
+        base.root[0],
+        {
+            key:"preview",
+            value:true
+        }
+    );
+
+    const result=AETHER.stage([r]);
+
+    if(!result.valid){
+
+        showToast("Preview konnte nicht erstellt werden.");
+
+        return;
+
+    }
+
+    document.getElementById("projectTitle")
+        .textContent=
+        base.meta.name;
+
+    document.getElementById("start")
+        .style.display="none";
+
+    document.getElementById("workspace")
+        .classList.add("active");
+
+    render();
+
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+document.getElementById("previewBtn")
+    .onclick=()=>{
+
+        const text=
+            document.getElementById("prompt")
+                .value
+                .trim();
+
+        if(!text){
+
+            showToast(
+                "Beschreibe zuerst, was du bauen möchtest."
+            );
 
             return;
 
-          }
-
-
-          resolve(db);
-
-        };
-
-
-      request.onerror =
-        () => {
-
-          reject(
-            request.error
-          );
-
-        };
-
-    }
-
-  );
-
-}
-
-
-/* =====================================================
-   DB PUT
-====================================================== */
-
-async function saveRecord(
-  record
-){
-
-  const db =
-    await openDB();
-
-  return new Promise(
-    (resolve,reject)=>{
-
-      const tx =
-        db.transaction(
-          CONFIG.STORE,
-          "readwrite"
-        );
-
-
-      tx.objectStore(
-        CONFIG.STORE
-      ).put(record);
-
-
-      tx.oncomplete =
-        () => {
-
-          db.close();
-
-          resolve();
-
-        };
-
-
-      tx.onerror =
-        () => {
-
-          db.close();
-
-          reject(
-            tx.error
-          );
-
-        };
-
-    }
-
-  );
-
-}
-
-
-/* =====================================================
-   DB GET
-====================================================== */
-
-async function getRecord(
-  id
-){
-
-  const db =
-    await openDB();
-
-  return new Promise(
-    (resolve,reject)=>{
-
-      const tx =
-        db.transaction(
-          CONFIG.STORE,
-          "readonly"
-        );
-
-
-      const request =
-        tx.objectStore(
-          CONFIG.STORE
-        ).get(id);
-
-
-      request.onsuccess =
-        () => {
-
-          db.close();
-
-          resolve(
-            request.result
-          );
-
-        };
-
-
-      request.onerror =
-        () => {
-
-          db.close();
-
-          reject(
-            request.error
-          );
-
-        };
-
-    }
-
-  );
-
-}
-
-
-/* =====================================================
-   DB GET ALL
-====================================================== */
-
-async function getAllRecords(){
-
-  const db =
-    await openDB();
-
-  return new Promise(
-    (resolve,reject)=>{
-
-      const tx =
-        db.transaction(
-          CONFIG.STORE,
-          "readonly"
-        );
-
-
-      const request =
-        tx.objectStore(
-          CONFIG.STORE
-        ).getAll();
-
-
-      request.onsuccess =
-        () => {
-
-          db.close();
-
-          resolve(
-            request.result
-          );
-
-        };
-
-
-      request.onerror =
-        () => {
-
-          db.close();
-
-          reject(
-            request.error
-          );
-
-        };
-
-    }
-
-  );
-
-}
-
-
-/* =====================================================
-   DB CLEAR
-====================================================== */
-
-async function clearDB(){
-
-  const db =
-    await openDB();
-
-  return new Promise(
-    (resolve,reject)=>{
-
-      const tx =
-        db.transaction(
-          CONFIG.STORE,
-          "readwrite"
-        );
-
-
-      tx.objectStore(
-        CONFIG.STORE
-      ).clear();
-
-
-      tx.oncomplete =
-        () => {
-
-          db.close();
-
-          resolve();
-
-        };
-
-
-      tx.onerror =
-        () => {
-
-          db.close();
-
-          reject(
-            tx.error
-          );
-
-        };
-
-    }
-
-  );
-
-}
-
-
-/* =====================================================
-   EMBEDDING MODEL
-====================================================== */
-
-async function loadEmbeddingModel(){
-
-  if(
-    state.modelLoaded
-  ){
-
-    return;
-
-  }
-
-
-  setStatus(
-    "LOADING",
-    "busy"
-  );
-
-
-  $("modelStatus").textContent =
-    "LOAD";
-
-
-  log(
-    "Transformers.js wird geladen..."
-  );
-
-
-  try{
-
-    const module =
-      await import(
-        "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1"
-      );
-
-
-    log(
-      "Transformers.js Modul geladen."
-    );
-
-
-    state.extractor =
-      await module.pipeline(
-        "feature-extraction",
-        CONFIG.MODEL
-      );
-
-
-    state.modelLoaded =
-      true;
-
-
-    $("modelStatus").textContent =
-      "ON";
-
-
-    setStatus(
-      "READY"
-    );
-
-
-    log(
-      `Embedding-Modell bereit: ${CONFIG.MODEL}`
-    );
-
-
-  }catch(error){
-
-    setStatus(
-      "ERROR",
-      "error"
-    );
-
-
-    $("modelStatus").textContent =
-      "ERROR";
-
-
-    log(
-      "MODEL ERROR: " +
-      error.message
-    );
-
-
-    throw error;
-
-  }
-
-}
-
-
-/* =====================================================
-   EMBED PASSAGE
-====================================================== */
-
-async function embedPassage(
-  text
-){
-
-  await loadEmbeddingModel();
-
-
-  const result =
-    await state.extractor(
-      "passage: " +
-      text,
-      {
-        pooling:"mean",
-        normalize:true
-      }
-    );
-
-
-  const vector =
-    Array.from(
-      result.data
-    );
-
-
-  if(
-    vector.length !==
-    CONFIG.DIMENSION
-  ){
-
-    throw new Error(
-      `Falsche Embedding-Dimension: ${vector.length}`
-    );
-
-  }
-
-
-  return vector;
-
-}
-
-
-/* =====================================================
-   EMBED QUERY
-====================================================== */
-
-async function embedQuery(
-  text
-){
-
-  await loadEmbeddingModel();
-
-
-  const result =
-    await state.extractor(
-      "query: " +
-      text,
-      {
-        pooling:"mean",
-        normalize:true
-      }
-    );
-
-
-  const vector =
-    Array.from(
-      result.data
-    );
-
-
-  if(
-    vector.length !==
-    CONFIG.DIMENSION
-  ){
-
-    throw new Error(
-      `Falsche Query-Dimension: ${vector.length}`
-    );
-
-  }
-
-
-  return vector;
-
-}
-
-
-/* =====================================================
-   HEADER DETECTION
-====================================================== */
-
-const KNOWN_HEADERS = [
-
-  "Tag",
-  "Datum",
-  "Art",
-  "Name",
-  "Produktklasse",
-  "Tarif",
-  "Auftragsnummer",
-  "BEM",
-  "Schalttermin",
-  "Basis",
-  "Ixus",
-  "HW Bonus",
-  "Gesamt",
-  "Hardware EK",
-  "HW Verkauf",
-  "Gewinn",
-  "Verkäufer",
-  "Hardware",
-  "To Do",
-  "Grund",
-  "Summe",
-  "ID",
-  "VO",
-  "Netzbetreiber",
-  "Datum Eingabe",
-  "Datum Aktivierung",
-  "Datum Storno",
-  "Vorwahl / Rufnummer",
-  "Kunde",
-  "Kunden-Nr.",
-  "Kunden-Kennwort",
-  "Shop",
-  "Mitarbeiter",
-  "Vorgang",
-  "aktueller Tarif",
-  "Tarif Freifeld",
-  "Tarif-Optionen",
-  "Hardware-IMEI",
-  "Hardware-Artikelnummer",
-  "Shop Provision",
-  "Shop Provision bezahlt",
-  "Hardware-EK",
-  "Zuzahlung / Gutschrift",
-  "WKZ",
-  "Schaltungsmarge",
-  "Mitarbeiter Provision",
-  "Mitarbeiter Provision Einheit",
-  "Handset-Tipp",
-  "NBA",
-  "Bemerkung",
-  "AU",
-  "GU"
-
-];
-
-
-function normalizeHeader(
-  value
-){
-
-  return String(
-    value ?? ""
-  )
-  .trim()
-  .toLowerCase();
-
-}
-
-
-function detectHeaderRow(
-  rows
-){
-
-  let bestIndex =
-    0;
-
-  let bestScore =
-    -1;
-
-
-  const known =
-    KNOWN_HEADERS.map(
-      normalizeHeader
-    );
-
-
-  const limit =
-    Math.min(
-      rows.length,
-      30
-    );
-
-
-  for(
-    let i=0;
-    i<limit;
-    i++
-  ){
-
-    const row =
-      rows[i] || [];
-
-
-    let score =
-      0;
-
-
-    for(
-      const cell
-      of row
-    ){
-
-      const value =
-        normalizeHeader(
-          cell
-        );
-
-
-      if(
-        known.includes(
-          value
-        )
-      ){
-
-        score++;
-
-      }
-
-    }
-
-
-    if(
-      score >
-      bestScore
-    ){
-
-      bestScore =
-        score;
-
-      bestIndex =
-        i;
-
-    }
-
-  }
-
-
-  return {
-
-    index:
-      bestIndex,
-
-    score:
-      bestScore
-
-  };
-
-}
-
-
-/* =====================================================
-   DATASET ID
-====================================================== */
-
-function slug(
-  value
-){
-
-  return String(
-    value ?? ""
-  )
-  .trim()
-  .toUpperCase()
-  .replace(
-    /\s+/g,
-    "-"
-  )
-  .replace(
-    /[^A-Z0-9ÄÖÜß_-]/g,
-    ""
-  );
-
-}
-
-
-function datasetId(
-  fileName,
-  sheetName
-){
-
-  return (
-
-    slug(
-      fileName.replace(
-        /\.[^.]+$/,
-        ""
-      )
-    )
-
-    +
-
-    "__"
-
-    +
-
-    slug(
-      sheetName
-    )
-
-  );
-
-}
-
-
-/* =====================================================
-   MEMORY ID
-====================================================== */
-
-function memoryId(
-  dataset,
-  excelRow
-){
-
-  return (
-
-    dataset +
-
-    "__ROW-" +
-
-    String(
-      excelRow
-    )
-    .padStart(
-      6,
-      "0"
-    )
-
-  );
-
-}
-
-
-/* =====================================================
-   RAW ROW
-====================================================== */
-
-function createRawRow(
-  headers,
-  values
-){
-
-  const row = {};
-
-
-  headers.forEach(
-    (
-      header,
-      index
-    ) => {
-
-      const name =
-        String(
-          header ??
-          `COLUMN_${index+1}`
-        )
-        .trim();
-
-
-      row[
-        name ||
-        `COLUMN_${index+1}`
-      ] =
-        values[index] ??
-        null;
-
-    }
-  );
-
-
-  return row;
-
-}
-
-
-/* =====================================================
-   MEMORY TEXT
-====================================================== */
-
-function createMemoryText(
-  record
-){
-
-  const lines = [];
-
-
-  lines.push(
-    `Dataset: ${record.dataset_id}`
-  );
-
-
-  lines.push(
-    `Datei: ${record.source.file}`
-  );
-
-
-  lines.push(
-    `Tabelle: ${record.source.sheet}`
-  );
-
-
-  lines.push(
-    `Excel-Zeile: ${record.source.row}`
-  );
-
-
-  for(
-    const [
-      key,
-      value
-    ]
-    of Object.entries(
-      record.data
-    )
-  ){
-
-    if(
-      value === null ||
-      value === undefined ||
-      value === ""
-    ){
-
-      continue;
-
-    }
-
-
-    lines.push(
-      `${key}: ${value}`
-    );
-
-  }
-
-
-  return lines.join(
-    ". "
-  );
-
-}
-
-
-/* =====================================================
-   MEMORY DISPLAY
-====================================================== */
-
-function createMemoryView(
-  record
-){
-
-  const lines = [];
-
-
-  lines.push(
-    "MEMORY"
-  );
-
-
-  lines.push(
-    `ID: ${record.memory_id}`
-  );
-
-
-  lines.push(
-    `DATASET: ${record.dataset_id}`
-  );
-
-
-  lines.push(
-    `SOURCE: ${record.source.file}`
-  );
-
-
-  lines.push(
-    `SHEET: ${record.source.sheet}`
-  );
-
-
-  lines.push(
-    `ROW: ${record.source.row}`
-  );
-
-
-  lines.push("");
-
-
-  for(
-    const [
-      key,
-      value
-    ]
-    of Object.entries(
-      record.data
-    )
-  ){
-
-    if(
-      value === null ||
-      value === undefined ||
-      value === ""
-    ){
-
-      continue;
-
-    }
-
-
-    lines.push(
-      `${key}: ${value}`
-    );
-
-  }
-
-
-  return lines.join(
-    "\n"
-  );
-
-}
-
-
-/* =====================================================
-   MEMORY RECORD VALIDATION
-====================================================== */
-
-function isValidRecord(
-  record
-){
-
-  return !!record &&
-
-    typeof record.id ===
-      "string" &&
-
-    typeof record.memory_id ===
-      "string" &&
-
-    typeof record.dataset_id ===
-      "string" &&
-
-    Array.isArray(
-      record.embedding
-    ) &&
-
-    record.embedding.length ===
-      CONFIG.DIMENSION &&
-
-    record.data &&
-
-    typeof record.data ===
-      "object";
-
-}
-
-
-/* =====================================================
-   BUILD ONE RECORD
-====================================================== */
-
-async function buildRecord({
-
-  fileName,
-  sheetName,
-  excelRow,
-  data
-
-}){
-
-  const ds =
-    datasetId(
-      fileName,
-      sheetName
-    );
-
-
-  const id =
-    memoryId(
-      ds,
-      excelRow
-    );
-
-
-  const temporaryRecord = {
-
-    memory_id:
-      id,
-
-    dataset_id:
-      ds,
-
-    source:{
-      file:
-        fileName,
-
-      sheet:
-        sheetName,
-
-      row:
-        excelRow
-    },
-
-    data
-
-  };
-
-
-  const embeddingText =
-    createMemoryText(
-      temporaryRecord
-    );
-
-
-  log(
-    `Embedding: ${id} | Text ${embeddingText.length} Zeichen`
-  );
-
-
-  const embedding =
-    await embedPassage(
-      embeddingText
-    );
-
-
-  return {
-
-    id,
-
-    memory_id:
-      id,
-
-    dataset_id:
-      ds,
-
-    schema_version:
-      CONFIG.SCHEMA,
-
-    source:{
-      file:
-        fileName,
-
-      sheet:
-        sheetName,
-
-      row:
-        excelRow
-    },
-
-    data,
-
-    embedding_text:
-      embeddingText,
-
-    embedding,
-
-    dimension:
-      embedding.length,
-
-    model:
-      CONFIG.MODEL,
-
-    created:
-      new Date()
-        .toISOString()
-
-  };
-
-}
-
-
-/* =====================================================
-   IMPORT FILE
-====================================================== */
-
-async function importFile(
-  file,
-  progress
-){
-
-  log(
-    `Datei: ${file.name}`
-  );
-
-
-  const buffer =
-    await file.arrayBuffer();
-
-
-  const workbook =
-    XLSX.read(
-      buffer,
-      {
-        type:"array",
-        cellDates:true
-      }
-    );
-
-
-  log(
-    `${workbook.SheetNames.length} Worksheet(s) erkannt.`
-  );
-
-
-  /*
-     Zuerst zählen wir alle echten Datenzeilen.
-     Dadurch kann der Fortschrittsbalken
-     die gesamte Datei anzeigen.
-  */
-
-  let totalRows =
-    0;
-
-
-  for(
-    const sheetName
-    of workbook.SheetNames
-  ){
-
-    const sheet =
-      workbook.Sheets[
-        sheetName
-      ];
-
-
-    const rows =
-      XLSX.utils.sheet_to_json(
-        sheet,
-        {
-          header:1,
-          defval:null,
-          raw:true
         }
-      );
+
+        createPreview(text);
+
+    };
 
 
-    if(
-      !rows.length
-    ){
+document.querySelectorAll(".quick button")
+    .forEach(button=>{
 
-      continue;
+        button.onclick=()=>{
 
-    }
+            const type=
+                button.dataset.example;
 
+            const prompts={
 
-    const headerInfo =
-      detectHeaderRow(
-        rows
-      );
+                dashboard:
+`Baue eine mobile Projektverwaltung mit Kennzahlen, Projektliste und Navigation.`,
 
+                kanban:
+`Baue ein Kanban Board mit TODO, IN ARBEIT und ERLEDIGT.`,
 
-    const dataRows =
-      rows.slice(
-        headerInfo.index + 1
-      );
+                chat:
+`Baue eine moderne Chat Oberfläche für einen Assistenten.`,
 
+                banking:
+`Baue eine Banking Oberfläche mit Kontostand und Transaktionen.`
 
-    totalRows +=
-      dataRows.filter(
-        values =>
-          values.some(
-            value =>
-              value !== null &&
-              value !== ""
-          )
-      ).length;
+            };
 
-  }
+            document.getElementById("prompt")
+                .value=prompts[type];
+
+        };
+
+    });
 
 
-  let localProcessed =
-    0;
+/* =========================================================
+   APPLY / REJECT
+========================================================= */
 
+function apply(){
 
-  for(
-    const sheetName
-    of workbook.SheetNames
-  ){
+    if(!AETHER.getStaged()){
 
-    if(
-      state.stopRequested
-    ){
+        showToast("Keine Änderungen vorhanden.");
 
-      break;
+        return;
 
     }
 
+    if(AETHER.commit()){
 
-    const sheet =
-      workbook.Sheets[
-        sheetName
-      ];
+        showToast(
+            "Änderungen übernommen."
+        );
 
+        render();
 
-    const rows =
-      XLSX.utils.sheet_to_json(
-        sheet,
-        {
-          header:1,
-          defval:null,
-          raw:true
-        }
-      );
-
-
-    if(
-      !rows.length
-    ){
-
-      continue;
+        updateChangeCount();
 
     }
-
-
-    const headerInfo =
-      detectHeaderRow(
-        rows
-      );
-
-
-    const headerIndex =
-      headerInfo.index;
-
-
-    const headers =
-      rows[
-        headerIndex
-      ] || [];
-
-
-    const dataRows =
-      rows.slice(
-        headerIndex + 1
-      );
-
-
-    log(
-      `Worksheet "${sheetName}" | Header ${headerIndex+1} | ${dataRows.length} Zeilen`
-    );
-
-
-    let excelRow =
-      headerIndex + 2;
-
-
-    for(
-      const values
-      of dataRows
-    ){
-
-      if(
-        state.stopRequested
-      ){
-
-        break;
-
-      }
-
-
-      const data =
-        createRawRow(
-          headers,
-          values
-        );
-
-
-      const hasData =
-        Object.values(
-          data
-        ).some(
-          value =>
-            value !== null &&
-            value !== ""
-        );
-
-
-      if(
-        !hasData
-      ){
-
-        excelRow++;
-
-        continue;
-
-      }
-
-
-      const ds =
-        datasetId(
-          file.name,
-          sheetName
-        );
-
-
-      const id =
-        memoryId(
-          ds,
-          excelRow
-        );
-
-
-      /*
-         RESUME:
-         Existiert bereits ein gültiger Record,
-         wird er NICHT erneut eingebettet.
-      */
-
-      const existing =
-        await getRecord(
-          id
-        );
-
-
-      if(
-        isValidRecord(
-          existing
-        )
-      ){
-
-        progress.skipped++;
-
-        localProcessed++;
-
-        progress.totalProcessed++;
-
-        updateProgress(
-          progress
-        );
-
-
-        log(
-          `SKIP vorhanden: ${id}`
-        );
-
-
-        excelRow++;
-
-        await yieldBrowser();
-
-        continue;
-
-      }
-
-
-      try{
-
-        const record =
-          await buildRecord({
-
-            fileName:
-              file.name,
-
-            sheetName,
-
-            excelRow,
-
-            data
-
-          });
-
-
-        await saveRecord(
-          record
-        );
-
-
-        progress.stored++;
-
-        localProcessed++;
-
-        progress.totalProcessed++;
-
-        updateProgress(
-          progress
-        );
-
-
-        log(
-          `STORED: ${id}`
-        );
-
-
-      }catch(error){
-
-        progress.failed++;
-
-        localProcessed++;
-
-        progress.totalProcessed++;
-
-        updateProgress(
-          progress
-        );
-
-
-        log(
-          `FAILED: ${id} → ${error.message}`
-        );
-
-      }
-
-
-      /*
-         Speicher-/Browser-Pause
-         nach jedem einzelnen Record.
-      */
-
-      await yieldBrowser();
-
-
-      excelRow++;
-
-    }
-
-  }
-
-
-  log(
-    `${file.name}: ${localProcessed} Datensätze bearbeitet.`
-  );
 
 }
 
 
-/* =====================================================
-   PROGRESS
-====================================================== */
+function reject(){
 
-function updateProgress(
-  progress
-){
+    AETHER.reject();
 
-  const total =
-    progress.total;
+    document.getElementById("workspace")
+        .classList.remove("active");
 
+    document.getElementById("start")
+        .style.display="flex";
 
-  const done =
-    progress.totalProcessed;
-
-
-  const percent =
-    total > 0
-      ? Math.min(
-          100,
-          (done / total) * 100
-        )
-      : 0;
-
-
-  $("progressBar")
-    .style.width =
-      percent + "%";
-
-
-  $("progressText")
-    .textContent =
-      `${done} / ${total}`;
-
-
-  $("progressDetails")
-    .textContent =
-      `neu ${progress.stored} · ` +
-      `übersprungen ${progress.skipped} · ` +
-      `fehler ${progress.failed}`;
+    updateChangeCount();
 
 }
 
 
-/* =====================================================
-   COUNT DATA ROWS
-====================================================== */
+document.getElementById("applyBtn")
+    .onclick=apply;
 
-async function countFileRows(
-  files
-){
+document.getElementById("applyTop")
+    .onclick=apply;
 
-  let total =
-    0;
+document.getElementById("rejectBtn")
+    .onclick=reject;
 
 
-  for(
-    const file
-    of files
-  ){
+document.getElementById("backBtn")
+    .onclick=()=>{
 
-    const buffer =
-      await file.arrayBuffer();
+        if(
+            AETHER.getStaged() &&
+            AETHER.diff().length
+        ){
 
-
-    const workbook =
-      XLSX.read(
-        buffer,
-        {
-          type:"array",
-          cellDates:true
-        }
-      );
-
-
-    for(
-      const sheetName
-      of workbook.SheetNames
-    ){
-
-      const rows =
-        XLSX.utils.sheet_to_json(
-          workbook.Sheets[
-            sheetName
-          ],
-          {
-            header:1,
-            defval:null,
-            raw:true
-          }
-        );
-
-
-      if(
-        !rows.length
-      ){
-
-        continue;
-
-      }
-
-
-      const headerInfo =
-        detectHeaderRow(
-          rows
-        );
-
-
-      const dataRows =
-        rows.slice(
-          headerInfo.index + 1
-        );
-
-
-      total +=
-        dataRows.filter(
-          values =>
-            values.some(
-              value =>
-                value !== null &&
-                value !== ""
+            if(
+                confirm(
+                    "Vorschlag verwerfen?"
+                )
             )
-        ).length;
+                reject();
 
-    }
+        }else{
 
-  }
+            reject();
+
+        }
+
+    };
 
 
-  return total;
+/* =========================================================
+   CHANGE COUNT
+========================================================= */
+
+function updateChangeCount(){
+
+    const count=
+        AETHER.diff().length;
+
+    document.getElementById("changeCount")
+        .textContent=
+        `${count} Änderung${count===1?"":"en"}`;
 
 }
 
 
-/* =====================================================
-   IMPORT ALL
-====================================================== */
+/* =========================================================
+   TOAST
+========================================================= */
 
-async function importFiles(){
+let toastTimer=null;
 
-  if(
-    state.processing
-  ){
+function showToast(text){
 
-    return;
+    const toast=
+        document.getElementById("toast");
 
-  }
+    toast.textContent=text;
 
+    toast.classList.add("show");
 
-  const files =
-    Array.from(
-      $("fileInput").files
+    clearTimeout(toastTimer);
+
+    toastTimer=setTimeout(
+        ()=>toast.classList.remove("show"),
+        2300
     );
-
-
-  if(
-    !files.length
-  ){
-
-    alert(
-      "Bitte mindestens eine Datei auswählen."
-    );
-
-    return;
-
-  }
-
-
-  state.processing =
-    true;
-
-
-  state.stopRequested =
-    false;
-
-
-  $("importButton")
-    .disabled =
-      true;
-
-
-  $("modelButton")
-    .disabled =
-      true;
-
-
-  $("clearButton")
-    .disabled =
-      true;
-
-
-  $("stopButton")
-    .disabled =
-      false;
-
-
-  $("progressWrap")
-    .classList.add(
-      "visible"
-    );
-
-
-  setStatus(
-    "BUILDING",
-    "busy"
-  );
-
-
-  const progress = {
-
-    total:
-      await countFileRows(
-        files
-      ),
-
-    totalProcessed:
-      0,
-
-    stored:
-      0,
-
-    skipped:
-      0,
-
-    failed:
-      0
-
-  };
-
-
-  updateProgress(
-    progress
-  );
-
-
-  log(
-    `BUILD START: ${progress.total} Datenzeilen`
-  );
-
-
-  try{
-
-    await loadEmbeddingModel();
-
-
-    for(
-      const file
-      of files
-    ){
-
-      if(
-        state.stopRequested
-      ){
-
-        break;
-
-      }
-
-
-      await importFile(
-        file,
-        progress
-      );
-
-
-      await yieldBrowser(
-        CONFIG.BATCH_YIELD_MS
-      );
-
-    }
-
-
-    await refreshStats();
-
-
-    if(
-      state.stopRequested
-    ){
-
-      setStatus(
-        "STOPPED",
-        "busy"
-      );
-
-
-      log(
-        `BUILD GESTOPPT — neu ${progress.stored}, übersprungen ${progress.skipped}, Fehler ${progress.failed}`
-      );
-
-    }else if(
-      progress.failed > 0
-    ){
-
-      setStatus(
-        "DONE WITH ERRORS",
-        "error"
-      );
-
-
-      log(
-        `BUILD ENDE — ${progress.stored} neu, ${progress.skipped} vorhanden, ${progress.failed} Fehler`
-      );
-
-    }else{
-
-      setStatus(
-        "READY"
-      );
-
-
-      log(
-        `BUILD ENDE — ${progress.stored} neu, ${progress.skipped} bereits vorhanden`
-      );
-
-    }
-
-
-  }catch(error){
-
-    console.error(
-      error
-    );
-
-
-    setStatus(
-      "ERROR",
-      "error"
-    );
-
-
-    log(
-      "BUILD ERROR: " +
-      error.message
-    );
-
-
-  }finally{
-
-    state.processing =
-      false;
-
-
-    $("importButton")
-      .disabled =
-      false;
-
-
-    $("modelButton")
-      .disabled =
-      false;
-
-
-    $("clearButton")
-      .disabled =
-      false;
-
-
-    $("stopButton")
-      .disabled =
-      true;
-
-  }
 
 }
 
 
-/* =====================================================
-   STOP
-====================================================== */
-
-function stopBuild(){
-
-  if(
-    !state.processing
-  ){
-
-    return;
-
-  }
-
-
-  state.stopRequested =
-    true;
-
-
-  $("stopButton")
-    .disabled =
-      true;
-
-
-  log(
-    "STOP angefordert. Aktueller Record wird noch beendet."
-  );
-
-}
-
-
-/* =====================================================
-   DATABASE RESET
-====================================================== */
-
-async function resetDatabase(){
-
-  if(
-    state.processing
-  ){
-
-    alert(
-      "Während des Builds kann die Datenbank nicht gelöscht werden."
-    );
-
-    return;
-
-  }
-
-
-  const answer =
-    confirm(
-      "Alle gespeicherten Memory Records löschen?"
-    );
-
-
-  if(
-    !answer
-  ){
-
-    return;
-
-  }
-
-
-  try{
-
-    await clearDB();
-
-
-    $("results")
-      .innerHTML =
-      "";
-
-
-    $("searchStatus")
-      .textContent =
-      "";
-
-
-    await refreshStats();
-
-
-    log(
-      "Datenbank gelöscht."
-    );
-
-
-  }catch(error){
-
-    log(
-      "DELETE ERROR: " +
-      error.message
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   COSINE
-====================================================== */
-
-function cosine(
-  a,
-  b
-){
-
-  if(
-    !Array.isArray(a) ||
-    !Array.isArray(b) ||
-    a.length !== b.length
-  ){
-
-    return -1;
-
-  }
-
-
-  let dot =
-    0;
-
-  let aNorm =
-    0;
-
-  let bNorm =
-    0;
-
-
-  for(
-    let i=0;
-    i<a.length;
-    i++
-  ){
-
-    dot +=
-      a[i] *
-      b[i];
-
-
-    aNorm +=
-      a[i] *
-      a[i];
-
-
-    bNorm +=
-      b[i] *
-      b[i];
-
-  }
-
-
-  if(
-    aNorm === 0 ||
-    bNorm === 0
-  ){
-
-    return 0;
-
-  }
-
-
-  return (
-
-    dot /
-
-    (
-      Math.sqrt(aNorm) *
-      Math.sqrt(bNorm)
-    )
-
-  );
-
-}
-
-
-/* =====================================================
-   RETRIEVAL
-====================================================== */
-
-async function retrieve(
-  question,
-  topK,
-  dataset
-){
-
-  /*
-     1. Frage → 384D Query-Vektor
-  */
-
-  const queryVector =
-    await embedQuery(
-      question
-    );
-
-
-  /*
-     2. Memory aus IndexedDB laden
-  */
-
-  const records =
-    await getAllRecords();
-
-
-  /*
-     3. Nur gültige Memory Records verwenden
-  */
-
-  let candidates =
-    records.filter(
-      record =>
-        isValidRecord(
-          record
-        )
-    );
-
-
-  /*
-     4. Optional Dataset einschränken
-  */
-
-  if(
-    dataset
-  ){
-
-    candidates =
-      candidates.filter(
-        record =>
-          record.dataset_id ===
-          dataset
-      );
-
-  }
-
-
-  /*
-     5. Jede gespeicherte
-        Embedding-Koordinate vergleichen
-  */
-
-  const ranked =
-    candidates.map(
-      record => ({
-
-        record,
-
-        score:
-          cosine(
-            queryVector,
-            record.embedding
-          )
-
-      })
-    );
-
-
-  /*
-     6. Höchste Ähnlichkeit zuerst
-  */
-
-  ranked.sort(
-    (a,b) =>
-      b.score -
-      a.score
-  );
-
-
-  /*
-     7. Top-K zurückgeben
-  */
-
-  return ranked.slice(
-    0,
-    topK
-  );
-
-}
-
-
-/* =====================================================
-   RETRIEVAL UI
-====================================================== */
-
-async function runRetrieval(){
-
-  const question =
-    $("query")
-      .value
-      .trim();
-
-
-  if(
-    !question
-  ){
-
-    alert(
-      "Bitte eine Anfrage eingeben."
-    );
-
-    return;
-
-  }
-
-
-  const topK =
-    Number(
-      $("topK").value
-    );
-
-
-  const dataset =
-    $("datasetSelect").value;
-
-
-  $("results")
-    .innerHTML =
-      "";
-
-
-  $("searchStatus")
-    .textContent =
-      "Frage wird in den Embeddingraum übertragen...";
-
-
-  $("retrieveButton")
-    .disabled =
-      true;
-
-
-  setStatus(
-    "SEARCH",
-    "busy"
-  );
-
-
-  try{
-
-    log(
-      `QUERY: "${question}"`
-    );
-
-
-    const results =
-      await retrieve(
-        question,
-        topK,
-        dataset
-      );
-
-
-    $("results")
-      .innerHTML =
-      "";
-
-
-    $("searchStatus")
-      .textContent =
-        `${results.length} Treffer gefunden.`;
-
-
-    log(
-      `${results.length} Treffer zurückgegeben.`
-    );
-
-
-    if(
-      !results.length
-    ){
-
-      $("results")
-        .innerHTML =
-        `<div class="meta">
-          Keine Memory Records gefunden.
-        </div>`;
-
-
-      setStatus(
-        "READY"
-      );
-
-
-      return;
-
-    }
-
-
-    results.forEach(
-      (
-        item,
-        index
-      ) => {
-
-        const record =
-          item.record;
-
-
-        const wrapper =
-          document.createElement(
-            "div"
-          );
-
-
-        wrapper.className =
-          "result";
-
-
-        const top =
-          document.createElement(
-            "div"
-          );
-
-
-        top.className =
-          "result-top";
-
-
-        top.innerHTML = `
-
-          <div>
-
-            <div class="rank">
-              #${index+1}
-            </div>
-
-            <div class="meta">
-              ${escapeHtml(
-                record.memory_id
-              )}
-            </div>
-
-          </div>
-
-
-          <div class="score">
-            similarity =
-            ${item.score.toFixed(6)}
-          </div>
-
-        `;
-
-
-        const meta =
-          document.createElement(
-            "div"
-          );
-
-
-        meta.className =
-          "meta";
-
-
-        meta.textContent =
-          `${record.source.file} · ` +
-          `${record.source.sheet} · ` +
-          `Excel-Zeile ${record.source.row}`;
-
-
-        /*
-           Die sichtbare Memory-Darstellung
-           wird erst jetzt erzeugt.
-        */
-
-        const memory =
-          document.createElement(
-            "div"
-          );
-
-
-        memory.className =
-          "memory-view";
-
-
-        memory.textContent =
-          createMemoryView(
-            record
-          );
-
-
-        /*
-           Originaldaten
-        */
-
-        const raw =
-          document.createElement(
-            "details"
-          );
-
-
-        raw.className =
-          "raw";
-
-
-        const summary =
-          document.createElement(
-            "summary"
-          );
-
-
-        summary.textContent =
-          "RAW DATA anzeigen";
-
-
-        const pre =
-          document.createElement(
-            "pre"
-          );
-
-
-        pre.textContent =
-          JSON.stringify(
-            record.data,
-            null,
-            2
-          );
-
-
-        raw.appendChild(
-          summary
-        );
-
-
-        raw.appendChild(
-          pre
-        );
-
-
-        wrapper.appendChild(
-          top
-        );
-
-
-        wrapper.appendChild(
-          meta
-        );
-
-
-        wrapper.appendChild(
-          memory
-        );
-
-
-        wrapper.appendChild(
-          raw
-        );
-
-
-        $("results")
-          .appendChild(
-            wrapper
-          );
-
-      }
-    );
-
-
-    setStatus(
-      "READY"
-    );
-
-
-  }catch(error){
-
-    console.error(
-      error
-    );
-
-
-    $("results")
-      .innerHTML =
-      `<div class="meta">
-        Retrieval fehlgeschlagen:
-        ${escapeHtml(
-          error.message
-        )}
-      </div>`;
-
-
-    $("searchStatus")
-      .textContent =
-        "Retrieval fehlgeschlagen.";
-
-
-    setStatus(
-      "ERROR",
-      "error"
-    );
-
-
-    log(
-      "RETRIEVAL ERROR: " +
-      error.message
-    );
-
-
-  }finally{
-
-    $("retrieveButton")
-      .disabled =
-      false;
-
-  }
-
-}
-
-
-/* =====================================================
-   DATASET LIST
-====================================================== */
-
-async function refreshDatasets(){
-
-  const records =
-    await getAllRecords();
-
-
-  const datasets =
-    [
-      ...new Set(
-        records
-          .map(
-            record =>
-              record.dataset_id
-          )
-          .filter(Boolean)
-      )
-    ]
-    .sort();
-
-
-  const select =
-    $("datasetSelect");
-
-
-  const old =
-    select.value;
-
-
-  select.innerHTML =
-    "";
-
-
-  const all =
-    document.createElement(
-      "option"
-    );
-
-
-  all.value =
-    "";
-
-
-  all.textContent =
-    "ALLE DATASETS";
-
-
-  select.appendChild(
-    all
-  );
-
-
-  datasets.forEach(
-    dataset => {
-
-      const option =
-        document.createElement(
-          "option"
-        );
-
-
-      option.value =
-        dataset;
-
-
-      option.textContent =
-        dataset;
-
-
-      select.appendChild(
-        option
-      );
-
-    }
-  );
-
-
-  if(
-    datasets.includes(
-      old
-    )
-  ){
-
-    select.value =
-      old;
-
-  }
-
-
-  $("datasetCount")
-    .textContent =
-    datasets.length;
-
-}
-
-
-/* =====================================================
-   STATS
-====================================================== */
-
-async function refreshStats(){
-
-  const records =
-    await getAllRecords();
-
-
-  $("recordCount")
-    .textContent =
-    records.length;
-
-
-  $("dimension")
-    .textContent =
-    CONFIG.DIMENSION;
-
-
-  await refreshDatasets();
-
-}
-
-
-/* =====================================================
-   HTML ESCAPE
-====================================================== */
-
-function escapeHtml(
-  value
-){
-
-  return String(
-    value ?? ""
-  )
-
-  .replaceAll(
-    "&",
-    "&amp;"
-  )
-
-  .replaceAll(
-    "<",
-    "&lt;"
-  )
-
-  .replaceAll(
-    ">",
-    "&gt;"
-  )
-
-  .replaceAll(
-    '"',
-    "&quot;"
-  )
-
-  .replaceAll(
-    "'",
-    "&#039;"
-  );
-
-}
-
-
-/* =====================================================
-   EVENTS
-====================================================== */
-
-$("modelButton")
-  .addEventListener(
+/* =========================================================
+   CLOSE SHEET
+========================================================= */
+
+sheetBackdrop.addEventListener(
     "click",
-    async ()=>{
+    e=>{
 
-      try{
-
-        await loadEmbeddingModel();
-
-      }catch(error){
-
-        /*
-           Fehler wurde bereits geloggt.
-        */
-
-      }
+        if(e.target===sheetBackdrop)
+            closeSheet();
 
     }
-  );
+);
 
 
-$("importButton")
-  .addEventListener(
-    "click",
-    importFiles
-  );
+/* =========================================================
+   INITIAL STATE
+========================================================= */
 
+console.log(
+    "%cAETHER V2.0",
+    "font-weight:bold;font-size:18px"
+);
 
-$("stopButton")
-  .addEventListener(
-    "click",
-    stopBuild
-  );
+console.log(
+    "LLM → ChangeRequest → STAGED → VALIDATE → DIFF → COMMIT → LIVE"
+);
 
-
-$("retrieveButton")
-  .addEventListener(
-    "click",
-    runRetrieval
-  );
-
-
-$("clearButton")
-  .addEventListener(
-    "click",
-    resetDatabase
-  );
-
-
-$("query")
-  .addEventListener(
-    "keydown",
-    event => {
-
-      if(
-        event.key ===
-        "Enter"
-      ){
-
-        runRetrieval();
-
-      }
-
-    }
-  );
-
-
-/* =====================================================
-   PUBLIC API
-====================================================== */
-
-window.NEURAL_MEMORY = {
-
-  state,
-
-  loadEmbeddingModel,
-
-  embedPassage,
-
-  embedQuery,
-
-  createMemoryText,
-
-  createMemoryView,
-
-  cosine,
-
-  retrieve,
-
-  getAllRecords,
-
-  refreshStats
-
-};
-
-
-/* =====================================================
-   INIT
-====================================================== */
-
-async function init(){
-
-  try{
-
-    await openDB();
-
-
-    await refreshStats();
-
-
-    log(
-      "NEURAL MEMORY v2.1 bereit."
-    );
-
-
-    log(
-      "RAW DATA + EMBEDDING werden getrennt behandelt."
-    );
-
-
-    log(
-      "BUILD unterstützt Resume über IndexedDB."
-    );
-
-
-    log(
-      "Retrieval: Query → Embedding → Similarity → Top-K."
-    );
-
-
-    log(
-      "LLM ist nicht Bestandteil des Runtime-Retrievals."
-    );
-
-
-  }catch(error){
-
-    setStatus(
-      "ERROR",
-      "error"
-    );
-
-
-    log(
-      "INIT ERROR: " +
-      error.message
-    );
-
-  }
-
-}
-
-
-init();
+console.log(
+    "Public API:",
+    window.AETHER
+);
 
 </script>
 
