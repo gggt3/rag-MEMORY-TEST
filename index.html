@@ -8,7 +8,7 @@
                maximum-scale=1,
                user-scalable=no">
 
-<title>NEURAL MEMORY — Semantic Hypergraph</title>
+<title>NEURAL MEMORY — Hypergraph Memory Space</title>
 
 <script type="importmap">
 {
@@ -22,11 +22,12 @@
 <style>
 :root{
   --bg:#020308;
-  --panel:#080c12;
-  --panel2:#0c121a;
-  --line:#18242e;
-  --text:#dce9ef;
-  --muted:#6e8792;
+  --panel:#070b10;
+  --panel2:#0a1016;
+  --line:#17252e;
+  --line2:#223640;
+  --text:#d9e8ed;
+  --muted:#637983;
 
   --cyan:#00f5ff;
   --green:#4ade80;
@@ -34,10 +35,6 @@
   --yellow:#ffe066;
   --purple:#b56cff;
   --red:#ff5370;
-
-  --shadow:
-    0 0 30px rgba(0,245,255,.05),
-    inset 0 0 20px rgba(0,0,0,.25);
 }
 
 *{
@@ -54,7 +51,6 @@ body{
   color:var(--text);
   font-family:
     Inter,
-    ui-sans-serif,
     system-ui,
     -apple-system,
     BlinkMacSystemFont,
@@ -77,9 +73,13 @@ button{
   width:100vw;
   height:100vh;
   display:grid;
-  grid-template-columns:340px minmax(0,1fr) 370px;
+  grid-template-columns:335px minmax(0,1fr) 365px;
   background:
-    radial-gradient(circle at 50% 50%,rgba(0,245,255,.025),transparent 45%),
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(0,245,255,.025),
+      transparent 45%
+    ),
     #020308;
 }
 
@@ -88,38 +88,41 @@ button{
 ========================================================= */
 
 .left{
-  border-right:1px solid var(--line);
-  background:linear-gradient(180deg,#070b11,#03060a);
-  display:flex;
-  flex-direction:column;
   min-width:0;
-  overflow:hidden;
+  overflow:auto;
+  border-right:1px solid var(--line);
+  background:
+    linear-gradient(
+      180deg,
+      #080c12,
+      #030609
+    );
 }
 
 .brand{
-  height:68px;
+  height:66px;
   display:flex;
   align-items:center;
-  padding:0 18px;
+  padding:0 17px;
   border-bottom:1px solid var(--line);
-  letter-spacing:.12em;
 }
 
 .brand-main{
-  font-size:16px;
   color:#fff;
+  font-size:15px;
   font-weight:700;
+  letter-spacing:.13em;
 }
 
 .brand-sub{
   margin-left:9px;
   color:var(--cyan);
-  font-size:10px;
-  font-weight:700;
+  font-size:9px;
+  letter-spacing:.16em;
 }
 
 .section{
-  padding:13px 15px;
+  padding:13px 14px;
   border-bottom:1px solid var(--line);
 }
 
@@ -128,9 +131,9 @@ button{
   justify-content:space-between;
   align-items:center;
   margin-bottom:9px;
-  font-size:9px;
   color:var(--muted);
-  letter-spacing:.18em;
+  font-size:9px;
+  letter-spacing:.17em;
   text-transform:uppercase;
 }
 
@@ -138,36 +141,31 @@ textarea,
 input,
 select{
   width:100%;
-  color:#dce9ef;
-  background:#05090e;
-  border:1px solid #1a2a34;
-  outline:none;
+  border:1px solid #192b35;
   border-radius:4px;
+  outline:none;
+  background:#04080d;
+  color:#d8e8ed;
   padding:9px 10px;
-  transition:.15s;
-}
-
-textarea:focus,
-input:focus,
-select:focus{
-  border-color:rgba(0,245,255,.55);
-  box-shadow:0 0 0 1px rgba(0,245,255,.08);
+  font-size:11px;
 }
 
 textarea{
   height:100px;
   resize:none;
   line-height:1.45;
-  font-size:12px;
 }
 
-select{
-  font-size:11px;
+textarea:focus,
+input:focus,
+select:focus{
+  border-color:rgba(0,245,255,.5);
+  box-shadow:0 0 0 1px rgba(0,245,255,.06);
 }
 
 .row{
   display:flex;
-  gap:7px;
+  gap:6px;
 }
 
 .row > *{
@@ -176,21 +174,19 @@ select{
 
 .btn{
   width:100%;
-  border:1px solid #20333d;
-  background:#091017;
-  color:#b9d5dd;
-  padding:9px 10px;
+  border:1px solid #1c303a;
   border-radius:4px;
-  font-size:10px;
-  letter-spacing:.08em;
+  padding:9px 8px;
+  background:#071016;
+  color:#8da7b0;
+  font-size:9px;
+  letter-spacing:.1em;
   text-transform:uppercase;
-  transition:.15s;
 }
 
 .btn:hover{
-  border-color:var(--cyan);
-  color:#fff;
-  box-shadow:0 0 14px rgba(0,245,255,.08);
+  border-color:#34515d;
+  color:#e3f2f5;
 }
 
 .btn.primary{
@@ -198,36 +194,36 @@ select{
   border-color:rgba(0,245,255,.35);
 }
 
-.btn.active{
-  color:var(--pink);
-  border-color:rgba(255,44,168,.5);
-}
-
 .btn.green{
   color:var(--green);
   border-color:rgba(74,222,128,.35);
 }
 
+.btn.pink{
+  color:var(--pink);
+  border-color:rgba(255,44,168,.35);
+}
+
 .pipeline{
   display:flex;
   flex-direction:column;
-  gap:5px;
+  gap:6px;
 }
 
 .pipe{
   display:grid;
-  grid-template-columns:9px 1fr auto;
+  grid-template-columns:8px 1fr auto;
   gap:8px;
   align-items:center;
-  font-size:10px;
-  color:#8299a3;
+  color:#607780;
+  font-size:9px;
 }
 
 .pipe-dot{
   width:6px;
   height:6px;
   border-radius:50%;
-  background:#273640;
+  background:#263640;
 }
 
 .pipe.done .pipe-dot{
@@ -241,8 +237,9 @@ select{
 }
 
 .pipe-value{
-  color:#536b75;
-  font-size:9px;
+  color:#425760;
+  font-family:monospace;
+  font-size:8px;
 }
 
 .pipe.done .pipe-value{
@@ -250,15 +247,15 @@ select{
 }
 
 .log{
-  height:100px;
+  height:105px;
   overflow:auto;
-  font-family:monospace;
-  font-size:9px;
-  line-height:1.5;
-  color:#6e8994;
+  border:1px solid #111e25;
   background:#030609;
-  border:1px solid #111c23;
   padding:8px;
+  color:#617983;
+  font-family:monospace;
+  font-size:8px;
+  line-height:1.5;
 }
 
 .log-line{
@@ -280,10 +277,10 @@ select{
 .vector-box{
   height:100px;
   overflow:auto;
+  border:1px solid #111e25;
   background:#030609;
-  border:1px solid #111c23;
   padding:8px;
-  color:#5c737e;
+  color:#536c76;
   font-family:monospace;
   font-size:8px;
   line-height:1.5;
@@ -291,17 +288,13 @@ select{
 }
 
 .method{
-  color:#6e858e;
+  color:#627a84;
   font-size:9px;
-  line-height:1.6;
+  line-height:1.65;
 }
 
 .method strong{
-  color:#b8d1d9;
-}
-
-.spacer{
-  flex:1;
+  color:#b9cfd6;
 }
 
 /* =========================================================
@@ -314,7 +307,11 @@ select{
   min-height:0;
   overflow:hidden;
   background:
-    radial-gradient(circle at 50% 50%,rgba(0,245,255,.035),transparent 40%),
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(0,245,255,.035),
+      transparent 42%
+    ),
     #020408;
 }
 
@@ -323,94 +320,97 @@ select{
   inset:0;
 }
 
-.hud-top{
+.hud{
   position:absolute;
   top:14px;
-  left:15px;
-  right:15px;
+  left:16px;
+  right:16px;
   display:flex;
   justify-content:space-between;
-  align-items:flex-start;
   pointer-events:none;
 }
 
 .hud-title{
-  font-size:10px;
-  letter-spacing:.18em;
-  color:#7f9ba5;
+  color:#78919b;
+  font-size:9px;
+  letter-spacing:.17em;
 }
 
 .hud-title strong{
   color:var(--cyan);
 }
 
-.hud-stats{
+.stats{
   display:flex;
-  gap:14px;
+  gap:15px;
   text-align:right;
 }
 
 .stat{
+  color:#566e78;
   font-family:monospace;
-  font-size:9px;
-  color:#617984;
+  font-size:8px;
 }
 
 .stat b{
   display:block;
+  color:#dbe9ed;
   font-size:12px;
-  color:#dce9ef;
   font-weight:500;
 }
 
 .toolbar{
   position:absolute;
-  top:55px;
+  top:49px;
   left:15px;
   display:flex;
   gap:5px;
   flex-wrap:wrap;
-  max-width:65%;
+  max-width:70%;
 }
 
 .tool{
   pointer-events:auto;
-  border:1px solid #182a34;
-  background:rgba(3,8,12,.85);
-  color:#66818c;
+  border:1px solid #172a34;
   border-radius:3px;
+  background:rgba(3,8,12,.86);
+  color:#58717b;
   padding:6px 8px;
   font-size:8px;
-  letter-spacing:.1em;
+  letter-spacing:.09em;
   text-transform:uppercase;
 }
 
 .tool:hover{
-  color:#c9e4ea;
-  border-color:#31505e;
+  border-color:#36515c;
+  color:#c9dce1;
 }
 
 .tool.on{
   color:var(--cyan);
-  border-color:rgba(0,245,255,.45);
-  background:rgba(0,245,255,.035);
+  border-color:rgba(0,245,255,.42);
+}
+
+.tool.hyper.on{
+  color:var(--pink);
+  border-color:rgba(255,44,168,.45);
 }
 
 .legend{
   position:absolute;
-  bottom:16px;
-  left:16px;
+  bottom:14px;
+  left:15px;
   display:flex;
   gap:12px;
-  pointer-events:none;
   flex-wrap:wrap;
+  pointer-events:none;
 }
 
 .legend-item{
   display:flex;
   align-items:center;
   gap:5px;
-  color:#5e757f;
+  color:#5c747e;
   font-size:8px;
   text-transform:uppercase;
   letter-spacing:.08em;
@@ -422,24 +422,38 @@ select{
   border-radius:50%;
 }
 
-.legend-dot.memory{background:var(--cyan);}
-.legend-dot.concept{background:var(--green);}
-.legend-dot.claim{background:var(--yellow);}
-.legend-dot.evidence{background:var(--pink);}
-.legend-dot.hypothesis{background:var(--purple);}
-.legend-dot.hyper{background:var(--pink);}
+.legend-dot.memory{background:var(--cyan)}
+.legend-dot.concept{background:var(--green)}
+.legend-dot.claim{background:var(--yellow)}
+.legend-dot.evidence{background:var(--pink)}
+.legend-dot.hypothesis{background:var(--purple)}
+
+.legend-line{
+  width:13px;
+  height:1px;
+  background:var(--cyan);
+}
+
+.legend-hyper{
+  width:12px;
+  height:7px;
+  border:1px solid var(--pink);
+  transform:skewX(-25deg);
+}
 
 .inspector{
   position:absolute;
   right:15px;
   bottom:15px;
-  width:280px;
-  max-height:270px;
+  width:285px;
+  max-height:310px;
   overflow:auto;
-  border:1px solid #172832;
-  background:rgba(3,7,11,.92);
-  box-shadow:var(--shadow);
   padding:11px;
+  border:1px solid #192b34;
+  background:rgba(3,7,11,.94);
+  box-shadow:
+    0 0 30px rgba(0,0,0,.4),
+    inset 0 0 20px rgba(0,245,255,.015);
   backdrop-filter:blur(8px);
 }
 
@@ -451,9 +465,9 @@ select{
   display:flex;
   justify-content:space-between;
   align-items:center;
+  margin-bottom:9px;
   padding-bottom:8px;
-  border-bottom:1px solid #15232b;
-  margin-bottom:8px;
+  border-bottom:1px solid #14232b;
 }
 
 .inspector-title{
@@ -463,34 +477,34 @@ select{
 }
 
 .close{
-  color:#526873;
+  color:#526973;
+  font-size:16px;
   cursor:pointer;
-  font-size:14px;
 }
 
 .info-grid{
   display:grid;
-  grid-template-columns:70px 1fr;
-  gap:4px 8px;
+  grid-template-columns:72px 1fr;
+  gap:5px 8px;
   font-family:monospace;
   font-size:8px;
 }
 
 .info-key{
-  color:#526873;
+  color:#4e6570;
 }
 
 .info-val{
-  color:#c7dbe1;
+  color:#c2d5da;
   word-break:break-word;
 }
 
 .inspector-text{
   margin-top:9px;
   padding:8px;
-  background:#05090d;
-  border:1px solid #111d24;
-  color:#8ba3ac;
+  border:1px solid #101c23;
+  background:#04080c;
+  color:#8299a3;
   font-size:9px;
   line-height:1.5;
 }
@@ -500,34 +514,39 @@ select{
 ========================================================= */
 
 .right{
-  border-left:1px solid var(--line);
-  background:linear-gradient(180deg,#070b11,#03060a);
   min-width:0;
   overflow:auto;
+  border-left:1px solid var(--line);
+  background:
+    linear-gradient(
+      180deg,
+      #080c12,
+      #030609
+    );
 }
 
-.right .section{
-  padding:13px 14px;
-}
-
-.bank-list{
+.bank-list,
+.hyper-list,
+.query-results{
   display:flex;
   flex-direction:column;
   gap:5px;
-  max-height:300px;
+}
+
+.bank-list{
+  max-height:290px;
   overflow:auto;
 }
 
 .mem-item{
-  border:1px solid #15242d;
-  background:#05090e;
   padding:8px;
+  border:1px solid #15242d;
+  background:#04090e;
   cursor:pointer;
-  transition:.15s;
 }
 
 .mem-item:hover{
-  border-color:#31505d;
+  border-color:#304b56;
 }
 
 .mem-item.selected{
@@ -538,25 +557,24 @@ select{
 .mem-top{
   display:flex;
   justify-content:space-between;
-  align-items:center;
   gap:8px;
 }
 
 .mem-id{
-  font-family:monospace;
   color:var(--cyan);
+  font-family:monospace;
   font-size:9px;
 }
 
 .mem-type{
+  color:#627a84;
   font-size:7px;
   letter-spacing:.1em;
-  color:#647c86;
 }
 
 .mem-text{
   margin-top:5px;
-  color:#8299a2;
+  color:#8198a1;
   font-size:9px;
   line-height:1.4;
   white-space:nowrap;
@@ -568,29 +586,26 @@ select{
   display:flex;
   gap:8px;
   margin-top:5px;
+  color:#435a64;
   font-family:monospace;
-  color:#455a63;
   font-size:7px;
 }
 
 .hyper-list{
-  display:flex;
-  flex-direction:column;
-  gap:5px;
-  max-height:230px;
+  max-height:280px;
   overflow:auto;
 }
 
 .hyper-item{
-  border:1px solid #18262f;
-  background:#05090e;
   padding:8px;
+  border:1px solid #20232d;
+  background:#05090e;
 }
 
-.hyper-head{
+.hyper-top{
   display:flex;
   justify-content:space-between;
-  gap:8px;
+  align-items:center;
 }
 
 .hyper-id{
@@ -600,55 +615,48 @@ select{
 }
 
 .hyper-score{
-  color:#607a84;
+  color:#627982;
   font-family:monospace;
   font-size:8px;
 }
 
 .hyper-label{
   margin-top:4px;
-  color:#a5bac2;
+  color:#a4b9c0;
   font-size:9px;
 }
 
 .hyper-members{
   margin-top:5px;
-  color:#526a75;
+  color:#536b75;
   font-family:monospace;
   font-size:7px;
   line-height:1.5;
 }
 
-.query-input{
+.query-row{
   display:flex;
   gap:5px;
 }
 
-.query-input input{
+.query-row input{
   min-width:0;
-}
-
-.query-results{
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-  margin-top:8px;
 }
 
 .result{
   display:grid;
-  grid-template-columns:65px 1fr 45px;
+  grid-template-columns:63px 1fr 43px;
   gap:5px;
   align-items:center;
   padding:6px;
-  background:#05090e;
   border:1px solid #121e25;
+  background:#04090e;
   cursor:pointer;
   font-size:8px;
 }
 
 .result:hover{
-  border-color:#2d4b57;
+  border-color:#2b4652;
 }
 
 .result-id{
@@ -657,15 +665,15 @@ select{
 }
 
 .result-text{
-  color:#738b95;
+  color:#728991;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
 }
 
 .result-score{
-  text-align:right;
   color:var(--green);
+  text-align:right;
   font-family:monospace;
 }
 
@@ -676,23 +684,24 @@ select{
 }
 
 .context-chip{
-  border:1px solid #17313a;
-  background:#061016;
-  color:#6f929d;
   padding:4px 6px;
+  border:1px solid #18333b;
+  background:#051015;
+  color:#6e929d;
   font-family:monospace;
   font-size:7px;
 }
 
 .empty{
-  color:#435962;
+  padding:7px 0;
+  color:#405760;
   font-size:9px;
-  padding:8px 0;
 }
 
-/* =========================================================
-   SCROLLBARS
-========================================================= */
+.section{
+  padding:13px 14px;
+  border-bottom:1px solid var(--line);
+}
 
 ::-webkit-scrollbar{
   width:5px;
@@ -704,17 +713,13 @@ select{
 }
 
 ::-webkit-scrollbar-thumb{
-  background:#1b303a;
+  background:#1a303a;
   border-radius:4px;
 }
 
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media(max-width:1050px){
+@media(max-width:1100px){
   .app{
-    grid-template-columns:280px minmax(0,1fr);
+    grid-template-columns:290px minmax(0,1fr);
   }
 
   .right{
@@ -728,18 +733,17 @@ select{
   }
 
   .app{
-    width:100%;
+    display:block;
     height:auto;
     min-height:100vh;
-    display:block;
   }
 
   .left{
-    min-height:650px;
+    min-height:620px;
   }
 
   .center{
-    height:75vh;
+    height:72vh;
     min-height:500px;
   }
 
@@ -754,462 +758,495 @@ select{
 
 <div class="app">
 
-  <!-- =====================================================
-       LEFT
-  ====================================================== -->
+<!-- =======================================================
+     LEFT PANEL
+======================================================= -->
 
-  <aside class="left">
+<aside class="left">
 
-    <div class="brand">
-      <div class="brand-main">NEURAL MEMORY</div>
-      <div class="brand-sub">HYPERGRAPH</div>
+  <div class="brand">
+    <div class="brand-main">
+      NEURAL MEMORY
+    </div>
+    <div class="brand-sub">
+      HYPERGRAPH
+    </div>
+  </div>
+
+
+  <div class="section">
+
+    <div class="section-title">
+      <span>Neue Memory</span>
+      <span id="modelStatus">OFFLINE</span>
     </div>
 
-    <div class="section">
+    <textarea
+      id="memoryText"
+      placeholder="Text oder Kontext eingeben..."></textarea>
 
-      <div class="section-title">
-        <span>Neue Memory</span>
-        <span id="modelStatus">OFFLINE</span>
-      </div>
+    <div style="height:7px"></div>
 
-      <textarea
-        id="memoryText"
-        placeholder="Text oder Kontext eingeben..."></textarea>
+    <div class="row">
 
-      <div style="height:7px"></div>
-
-      <div class="row">
-
-        <select id="memoryType">
-          <option value="memory">MEMORY</option>
-          <option value="concept">CONCEPT</option>
-          <option value="claim">CLAIM</option>
-          <option value="evidence">EVIDENCE</option>
-          <option value="hypothesis">HYPOTHESIS</option>
-        </select>
-
-        <button
-          class="btn primary"
-          id="storeBtn">
-          SPEICHERN
-        </button>
-
-      </div>
-
-    </div>
-
-    <div class="section">
-
-      <div class="section-title">
-        <span>Hyperedge erstellen</span>
-        <span>MANUAL</span>
-      </div>
-
-      <input
-        id="hyperMembers"
-        placeholder="MEM-000001, MEM-000002, MEM-000003">
-
-      <div style="height:6px"></div>
-
-      <input
-        id="hyperLabel"
-        placeholder="z.B. gemeinsamer Kontext">
-
-      <div style="height:6px"></div>
+      <select id="memoryType">
+        <option value="memory">MEMORY</option>
+        <option value="concept">CONCEPT</option>
+        <option value="claim">CLAIM</option>
+        <option value="evidence">EVIDENCE</option>
+        <option value="hypothesis">HYPOTHESIS</option>
+      </select>
 
       <button
-        class="btn"
-        id="createHyperBtn">
-        HYPEREDGE ERSTELLEN
+        id="storeBtn"
+        class="btn primary">
+        SPEICHERN
       </button>
 
     </div>
 
-    <div class="section">
+  </div>
 
-      <div class="section-title">
-        <span>Pipeline</span>
-        <span id="pipelineStatus">READY</span>
-      </div>
 
-      <div class="pipeline">
+  <div class="section">
 
-        <div class="pipe" id="pipeText">
-          <span class="pipe-dot"></span>
-          <span>TEXT</span>
-          <span class="pipe-value">INPUT</span>
-        </div>
-
-        <div class="pipe" id="pipeEmbedding">
-          <span class="pipe-dot"></span>
-          <span>EMBEDDING</span>
-          <span class="pipe-value">384D</span>
-        </div>
-
-        <div class="pipe" id="pipeVector">
-          <span class="pipe-dot"></span>
-          <span>VECTOR SPACE</span>
-          <span class="pipe-value">NORMALIZED</span>
-        </div>
-
-        <div class="pipe" id="pipe3D">
-          <span class="pipe-dot"></span>
-          <span>ANCHORED 3D</span>
-          <span class="pipe-value">FIXED</span>
-        </div>
-
-        <div class="pipe" id="pipeHyper">
-          <span class="pipe-dot"></span>
-          <span>HYPERGRAPH</span>
-          <span class="pipe-value">DERIVED</span>
-        </div>
-
-      </div>
-
+    <div class="section-title">
+      <span>Hyperedge</span>
+      <span>MANUAL</span>
     </div>
 
-    <div class="section">
+    <input
+      id="hyperMembers"
+      placeholder="MEM-000001, MEM-000002, MEM-000003">
 
-      <div class="section-title">
-        <span>System Log</span>
+    <div style="height:6px"></div>
+
+    <input
+      id="hyperLabel"
+      placeholder="Bezeichnung / Kontext">
+
+    <div style="height:6px"></div>
+
+    <button
+      id="createHyperBtn"
+      class="btn pink">
+      HYPEREDGE ERSTELLEN
+    </button>
+
+  </div>
+
+
+  <div class="section">
+
+    <div class="section-title">
+      <span>Pipeline</span>
+      <span id="pipelineStatus">READY</span>
+    </div>
+
+    <div class="pipeline">
+
+      <div
+        class="pipe"
+        id="pipeText">
+
+        <span class="pipe-dot"></span>
+        <span>TEXT</span>
+        <span class="pipe-value">INPUT</span>
+
       </div>
 
       <div
-        class="log"
-        id="log"></div>
+        class="pipe"
+        id="pipeEmbedding">
 
-    </div>
+        <span class="pipe-dot"></span>
+        <span>EMBEDDING</span>
+        <span class="pipe-value">384D</span>
 
-    <div class="section">
-
-      <div class="section-title">
-        <span>Current Vector</span>
-        <span id="vectorNorm">—</span>
       </div>
 
       <div
-        class="vector-box"
-        id="vectorBox">
-        Kein Vektor.
-      </div>
+        class="pipe"
+        id="pipeVector">
 
-    </div>
-
-    <div class="section">
-
-      <div class="section-title">
-        <span>System</span>
-      </div>
-
-      <div class="method">
-
-        <strong>Embedding</strong><br>
-        multilingual-e5-small<br>
-        384 Dimensionen<br><br>
-
-        <strong>3D-Raum</strong><br>
-        deterministische Ankerprojektion<br>
-        bestehende Punkte werden nicht bewegt<br><br>
-
-        <strong>Hypergraph</strong><br>
-        Beziehungen liegen über dem 3D-Raum<br>
-        Hyperedges verändern keine Koordinaten<br><br>
-
-        <strong>Runtime</strong><br>
-        kein LLM zur Laufzeit
+        <span class="pipe-dot"></span>
+        <span>SEMANTIC SPACE</span>
+        <span class="pipe-value">NORMALIZED</span>
 
       </div>
 
-    </div>
+      <div
+        class="pipe"
+        id="pipe3D">
 
-    <div class="spacer"></div>
+        <span class="pipe-dot"></span>
+        <span>FIXED 3D</span>
+        <span class="pipe-value">LOCKED</span>
 
-  </aside>
-
-
-  <!-- =====================================================
-       CENTER
-  ====================================================== -->
-
-  <main class="center">
-
-    <div id="scene"></div>
-
-    <div class="hud-top">
-
-      <div class="hud-title">
-        <strong>SEMANTIC MEMORY SPACE</strong>
-        &nbsp; / &nbsp;
-        FIXED CONTEXT DISTRIBUTION
       </div>
 
-      <div class="hud-stats">
+      <div
+        class="pipe"
+        id="pipeHyper">
 
-        <div class="stat">
-          <b id="nodeCount">0</b>
-          NODES
-        </div>
-
-        <div class="stat">
-          <b id="hyperCount">0</b>
-          HYPEREDGES
-        </div>
-
-        <div class="stat">
-          <b>384D → R³</b>
-          PROJECTION
-        </div>
+        <span class="pipe-dot"></span>
+        <span>HYPERGRAPH</span>
+        <span class="pipe-value">EDGES</span>
 
       </div>
 
     </div>
 
-    <div class="toolbar">
+  </div>
 
-      <button
-        class="tool on"
-        id="toggleNodes">
+
+  <div class="section">
+
+    <div class="section-title">
+      <span>System Log</span>
+    </div>
+
+    <div
+      id="log"
+      class="log">
+    </div>
+
+  </div>
+
+
+  <div class="section">
+
+    <div class="section-title">
+      <span>Current Vector</span>
+      <span id="vectorNorm">—</span>
+    </div>
+
+    <div
+      id="vectorBox"
+      class="vector-box">
+      Kein Vektor.
+    </div>
+
+  </div>
+
+
+  <div class="section">
+
+    <div class="section-title">
+      <span>Modell</span>
+    </div>
+
+    <div class="method">
+
+      <strong>Embedding</strong><br>
+      multilingual-e5-small<br>
+      384 Dimensionen<br><br>
+
+      <strong>Memory Space</strong><br>
+      feste 3D-Koordinaten<br>
+      keine Force Simulation<br><br>
+
+      <strong>Edges</strong><br>
+      binäre Beziehungen<br><br>
+
+      <strong>Hyperedges</strong><br>
+      Beziehungen zwischen 3+ Nodes<br><br>
+
+      <strong>Runtime</strong><br>
+      deterministisch · kein LLM
+
+    </div>
+
+  </div>
+
+</aside>
+
+
+<!-- =======================================================
+     CENTER
+======================================================= -->
+
+<main class="center">
+
+  <div id="scene"></div>
+
+
+  <div class="hud">
+
+    <div class="hud-title">
+      <strong>3D HYPERGRAPH MEMORY</strong>
+      &nbsp; / &nbsp;
+      FIXED CONTEXT SPACE
+    </div>
+
+    <div class="stats">
+
+      <div class="stat">
+        <b id="nodeCount">0</b>
         NODES
-      </button>
+      </div>
 
-      <button
-        class="tool on"
-        id="togglePairs">
-        PAIR LINKS
-      </button>
+      <div class="stat">
+        <b id="edgeCount">0</b>
+        EDGES
+      </div>
 
-      <button
-        class="tool on"
-        id="toggleHyper">
+      <div class="stat">
+        <b id="hyperCount">0</b>
         HYPEREDGES
-      </button>
-
-      <button
-        class="tool"
-        id="toggleAnchors">
-        ANCHORS
-      </button>
-
-      <button
-        class="tool"
-        id="resetView">
-        RESET VIEW
-      </button>
-
-      <button
-        class="tool"
-        id="clearContext">
-        CLEAR CONTEXT
-      </button>
+      </div>
 
     </div>
 
-    <div class="legend">
+  </div>
 
-      <div class="legend-item">
-        <span class="legend-dot memory"></span>
-        memory
+
+  <div class="toolbar">
+
+    <button
+      id="toggleNodes"
+      class="tool on">
+      NODES
+    </button>
+
+    <button
+      id="toggleEdges"
+      class="tool on">
+      EDGES
+    </button>
+
+    <button
+      id="toggleHyper"
+      class="tool hyper on">
+      HYPEREDGES
+    </button>
+
+    <button
+      id="toggleHull"
+      class="tool hyper on">
+      HYPER SURFACES
+    </button>
+
+    <button
+      id="toggleAnchors"
+      class="tool">
+      ANCHORS
+    </button>
+
+    <button
+      id="resetView"
+      class="tool">
+      RESET
+    </button>
+
+    <button
+      id="clearContext"
+      class="tool">
+      CLEAR CONTEXT
+    </button>
+
+  </div>
+
+
+  <div class="legend">
+
+    <div class="legend-item">
+      <span class="legend-dot memory"></span>
+      memory
+    </div>
+
+    <div class="legend-item">
+      <span class="legend-dot concept"></span>
+      concept
+    </div>
+
+    <div class="legend-item">
+      <span class="legend-dot claim"></span>
+      claim
+    </div>
+
+    <div class="legend-item">
+      <span class="legend-dot evidence"></span>
+      evidence
+    </div>
+
+    <div class="legend-item">
+      <span class="legend-line"></span>
+      edge
+    </div>
+
+    <div class="legend-item">
+      <span class="legend-hyper"></span>
+      hyperedge
+    </div>
+
+  </div>
+
+
+  <div
+    id="inspector"
+    class="inspector hidden">
+
+    <div class="inspector-head">
+
+      <div
+        id="inspectorTitle"
+        class="inspector-title">
+        NODE
       </div>
 
-      <div class="legend-item">
-        <span class="legend-dot concept"></span>
-        concept
-      </div>
-
-      <div class="legend-item">
-        <span class="legend-dot claim"></span>
-        claim
-      </div>
-
-      <div class="legend-item">
-        <span class="legend-dot evidence"></span>
-        evidence
-      </div>
-
-      <div class="legend-item">
-        <span class="legend-dot hypothesis"></span>
-        hypothesis
-      </div>
-
-      <div class="legend-item">
-        <span class="legend-dot hyper"></span>
-        hyperedge
+      <div
+        id="closeInspector"
+        class="close">
+        ×
       </div>
 
     </div>
 
     <div
-      class="inspector hidden"
-      id="inspector">
+      id="inspectorGrid"
+      class="info-grid">
+    </div>
 
-      <div class="inspector-head">
+    <div
+      id="inspectorText"
+      class="inspector-text">
+    </div>
 
-        <div
-          class="inspector-title"
-          id="inspectorTitle">
-          MEMORY
-        </div>
+    <div style="height:8px"></div>
 
-        <div
-          class="close"
-          id="closeInspector">
-          ×
-        </div>
+    <button
+      id="activateContextBtn"
+      class="btn green">
+      KONTEXT AKTIVIEREN
+    </button>
 
-      </div>
+  </div>
 
-      <div
-        class="info-grid"
-        id="inspectorGrid">
-      </div>
+</main>
 
-      <div
-        class="inspector-text"
-        id="inspectorText">
-      </div>
 
-      <div style="height:8px"></div>
+<!-- =======================================================
+     RIGHT PANEL
+======================================================= -->
+
+<aside class="right">
+
+  <div class="section">
+
+    <div class="section-title">
+      <span>Memory Bank</span>
+      <span id="memoryCounter">0</span>
+    </div>
+
+    <div
+      id="memoryList"
+      class="bank-list">
+    </div>
+
+  </div>
+
+
+  <div class="section">
+
+    <div class="section-title">
+      <span>Hypergraph</span>
+      <span id="hyperCounter">0</span>
+    </div>
+
+    <div
+      id="hyperList"
+      class="hyper-list">
+    </div>
+
+  </div>
+
+
+  <div class="section">
+
+    <div class="section-title">
+      <span>Semantic Query</span>
+      <span>384D</span>
+    </div>
+
+    <div class="query-row">
+
+      <input
+        id="queryInput"
+        placeholder="Kontext suchen...">
 
       <button
-        class="btn green"
-        id="activateContextBtn">
-        CONTEXT AKTIVIEREN
+        id="queryBtn"
+        class="btn primary"
+        style="width:90px">
+        SEARCH
       </button>
 
     </div>
 
-  </main>
+    <div
+      id="queryResults"
+      class="query-results"
+      style="margin-top:8px">
+    </div>
+
+  </div>
 
 
-  <!-- =====================================================
-       RIGHT
-  ====================================================== -->
+  <div class="section">
 
-  <aside class="right">
+    <div class="section-title">
+      <span>Active Context</span>
+      <span id="contextCounter">0</span>
+    </div>
 
-    <div class="section">
+    <div
+      id="contextList"
+      class="context-list">
 
-      <div class="section-title">
-
-        <span>Memory Bank</span>
-
-        <span id="memoryCounter">
-          0
-        </span>
-
-      </div>
-
-      <div
-        class="bank-list"
-        id="memoryList">
+      <div class="empty">
+        Kein aktiver Kontext.
       </div>
 
     </div>
 
+  </div>
 
-    <div class="section">
 
-      <div class="section-title">
+  <div class="section">
 
-        <span>Hypergraph</span>
+    <div class="section-title">
+      <span>Geometrie</span>
+    </div>
 
-        <span id="hyperCounter">
-          0
-        </span>
+    <div class="method">
 
-      </div>
+      <strong>Node</strong><br>
+      besitzt feste Position
+      <br><br>
 
-      <div
-        class="hyper-list"
-        id="hyperList">
-      </div>
+      <strong>Edge</strong><br>
+      verbindet zwei Nodes
+      <br><br>
+
+      <strong>Hyperedge</strong><br>
+      verbindet mindestens drei Nodes
+      <br><br>
+
+      <strong>Hyper Surface</strong><br>
+      visuelle Fläche der
+      gemeinsamen Hyperkante
+      <br><br>
+
+      <strong>Wichtig</strong><br>
+      Beziehungen beeinflussen
+      nicht die Position der Nodes.
 
     </div>
 
+  </div>
 
-    <div class="section">
-
-      <div class="section-title">
-        <span>Semantic Query</span>
-        <span>QUERY VECTOR</span>
-      </div>
-
-      <div class="query-input">
-
-        <input
-          id="queryInput"
-          placeholder="Kontext suchen...">
-
-        <button
-          class="btn primary"
-          id="queryBtn"
-          style="width:95px">
-          SEARCH
-        </button>
-
-      </div>
-
-      <div
-        class="query-results"
-        id="queryResults">
-      </div>
-
-    </div>
-
-
-    <div class="section">
-
-      <div class="section-title">
-
-        <span>Active Context</span>
-
-        <span id="contextCounter">
-          0
-        </span>
-
-      </div>
-
-      <div
-        class="context-list"
-        id="contextList">
-
-        <div class="empty">
-          Kein aktiver Kontext.
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <div class="section">
-
-      <div class="section-title">
-        <span>Hypergraph Policy</span>
-      </div>
-
-      <div class="method">
-
-        Similarity threshold:
-        <strong id="thresholdValue">0.72</strong>
-
-        <br>
-
-        Max. Hyperedge members:
-        <strong id="hyperSizeValue">4</strong>
-
-        <br><br>
-
-        Hyperedges werden deterministisch aus
-        bereits vorhandenen Vektoren gebildet.
-        Die räumliche Position eines bestehenden
-        Memory-Nodes wird danach nicht verändert.
-
-      </div>
-
-    </div>
-
-  </aside>
+</aside>
 
 </div>
 
@@ -1229,7 +1266,7 @@ import {
 
 
 /* =========================================================
-   CONFIGURATION
+   CONFIG
 ========================================================= */
 
 const MODEL =
@@ -1248,15 +1285,20 @@ const MEMORY_STORE =
 const HYPER_STORE =
   "hyperedges";
 
-const EDGE_THRESHOLD = 0.72;
+const EDGE_THRESHOLD =
+  0.72;
 
-const HYPEREDGE_THRESHOLD = 0.72;
+const HYPEREDGE_THRESHOLD =
+  0.72;
 
-const HYPEREDGE_SIZE = 4;
+const MAX_HYPEREDGE_MEMBERS =
+  6;
 
-const ANCHOR_COUNT = 5;
+const ANCHOR_COUNT =
+  5;
 
-const RELAX_ITERATIONS = 140;
+const RELAX_ITERATIONS =
+  140;
 
 
 /* =========================================================
@@ -1267,19 +1309,15 @@ const state = {
 
   extractor:null,
 
-  loading:false,
-
   modelReady:false,
+
+  loading:false,
 
   memories:[],
 
   hyperedges:[],
 
-  currentVector:null,
-
-  currentText:"",
-
-  nextId:1,
+  nextMemoryId:1,
 
   nextHyperId:1,
 
@@ -1287,13 +1325,17 @@ const state = {
 
   activeContext:new Set(),
 
+  currentVector:null,
+
   queryVector:null,
 
   showNodes:true,
 
-  showPairs:true,
+  showEdges:true,
 
   showHyper:true,
+
+  showHull:true,
 
   showAnchors:false
 
@@ -1301,44 +1343,51 @@ const state = {
 
 
 /* =========================================================
-   DOM
+   DOM HELPER
 ========================================================= */
 
-const $ = id =>
-  document.getElementById(id);
+const $ =
+  id =>
+    document.getElementById(id);
 
 
 /* =========================================================
    LOG
 ========================================================= */
 
-function log(message,type=""){
-
-  const el = $("log");
+function log(
+  text,
+  type=""
+){
 
   const line =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
   line.className =
     "log-line " + type;
 
   const time =
-    new Date().toLocaleTimeString(
-      "de-DE",
-      {
-        hour:"2-digit",
-        minute:"2-digit",
-        second:"2-digit"
-      }
-    );
+    new Date()
+      .toLocaleTimeString(
+        "de-DE",
+        {
+          hour:"2-digit",
+          minute:"2-digit",
+          second:"2-digit"
+        }
+      );
 
   line.textContent =
-    `[${time}] ${message}`;
+    `[${time}] ${text}`;
 
-  el.appendChild(line);
+  $("log").appendChild(
+    line
+  );
 
-  el.scrollTop =
-    el.scrollHeight;
+  $("log").scrollTop =
+    $("log").scrollHeight;
 
 }
 
@@ -1347,21 +1396,25 @@ function log(message,type=""){
    PIPELINE
 ========================================================= */
 
-function pipe(id,status){
+function pipe(
+  id,
+  status
+){
 
-  const el = $(id);
+  const el =
+    $(id);
 
   el.classList.remove(
-    "done",
-    "active"
+    "active",
+    "done"
   );
-
-  if(status==="done"){
-    el.classList.add("done");
-  }
 
   if(status==="active"){
     el.classList.add("active");
+  }
+
+  if(status==="done"){
+    el.classList.add("done");
   }
 
 }
@@ -1375,17 +1428,22 @@ function dot(a,b){
 
   let s=0;
 
-  const n =
-    Math.min(
+  for(
+    let i=0;
+    i<Math.min(
       a.length,
       b.length
     );
+    i++
+  ){
 
-  for(let i=0;i<n;i++){
-    s += a[i]*b[i];
+    s +=
+      a[i]*b[i];
+
   }
 
   return s;
+
 }
 
 
@@ -1393,11 +1451,17 @@ function norm(a){
 
   let s=0;
 
-  for(let i=0;i<a.length;i++){
-    s += a[i]*a[i];
+  for(
+    const x of a
+  ){
+
+    s +=
+      x*x;
+
   }
 
   return Math.sqrt(s);
+
 }
 
 
@@ -1416,7 +1480,9 @@ function cosine(a,b){
     return 0;
   }
 
-  return dot(a,b)/(na*nb);
+  return dot(a,b) /
+    (na*nb);
+
 }
 
 
@@ -1434,7 +1500,7 @@ function clamp(
 }
 
 
-function cdistAngular(
+function angularDistance(
   a,
   b
 ){
@@ -1450,7 +1516,7 @@ function cdistAngular(
 }
 
 
-function vec3Distance(
+function distance3(
   a,
   b
 ){
@@ -1473,98 +1539,46 @@ function vec3Distance(
 }
 
 
-function vec3Add(
-  a,
-  b
-){
-
-  return [
-    a[0]+b[0],
-    a[1]+b[1],
-    a[2]+b[2]
-  ];
-
-}
-
-
-function vec3Scale(
-  a,
-  s
-){
-
-  return [
-    a[0]*s,
-    a[1]*s,
-    a[2]*s
-  ];
-
-}
-
-
-function vec3Normalize(
-  a
-){
-
-  const n =
-    Math.sqrt(
-      a[0]*a[0]+
-      a[1]*a[1]+
-      a[2]*a[2]
-    );
-
-  if(!n){
-    return [1,0,0];
-  }
-
-  return [
-    a[0]/n,
-    a[1]/n,
-    a[2]/n
-  ];
-
-}
-
-
 /* =========================================================
-   DETERMINISTIC HASH
+   VECTOR HASH
 ========================================================= */
 
-function hashVector(v){
+function hashVector(
+  vector
+){
 
-  let h =
+  let hash =
     2166136261;
 
   const step =
     Math.max(
       1,
-      Math.floor(v.length/32)
+      Math.floor(
+        vector.length/32
+      )
     );
 
   for(
     let i=0;
-    i<v.length;
+    i<vector.length;
     i+=step
   ){
 
-    const x =
+    hash ^=
       Math.floor(
-        (v[i]+1)*100000
+        (vector[i]+1)*
+        100000
       );
 
-    h ^=
-      x;
-
-    h =
+    hash =
       Math.imul(
-        h,
+        hash,
         16777619
       );
 
   }
 
-  return (
-    h >>> 0
-  );
+  return hash >>> 0;
 
 }
 
@@ -1573,7 +1587,7 @@ function hashVector(v){
    DATABASE
 ========================================================= */
 
-let db = null;
+let db=null;
 
 
 function openDB(){
@@ -1631,7 +1645,7 @@ function openDB(){
           db =
             request.result;
 
-          resolve(db);
+          resolve();
 
         };
 
@@ -1647,37 +1661,36 @@ function openDB(){
 }
 
 
-function dbGetAll(
+function dbAll(
   storeName
 ){
 
   return new Promise(
     (resolve,reject)=>{
 
-      const tx =
+      const transaction =
         db.transaction(
           storeName,
           "readonly"
         );
 
-      const store =
-        tx.objectStore(
-          storeName
-        );
+      const request =
+        transaction
+          .objectStore(
+            storeName
+          )
+          .getAll();
 
-      const req =
-        store.getAll();
-
-      req.onsuccess =
+      request.onsuccess =
         () =>
           resolve(
-            req.result || []
+            request.result || []
           );
 
-      req.onerror =
+      request.onerror =
         () =>
           reject(
-            req.error
+            request.error
           );
 
     }
@@ -1694,56 +1707,26 @@ function dbPut(
   return new Promise(
     (resolve,reject)=>{
 
-      const tx =
+      const transaction =
         db.transaction(
           storeName,
           "readwrite"
         );
 
-      tx.objectStore(
-        storeName
-      ).put(object);
+      transaction
+        .objectStore(
+          storeName
+        )
+        .put(object);
 
-      tx.oncomplete =
-        () => resolve();
+      transaction.oncomplete =
+        () =>
+          resolve();
 
-      tx.onerror =
+      transaction.onerror =
         () =>
           reject(
-            tx.error
-          );
-
-    }
-  );
-
-}
-
-
-function dbDelete(
-  storeName,
-  id
-){
-
-  return new Promise(
-    (resolve,reject)=>{
-
-      const tx =
-        db.transaction(
-          storeName,
-          "readwrite"
-        );
-
-      tx.objectStore(
-        storeName
-      ).delete(id);
-
-      tx.oncomplete =
-        () => resolve();
-
-      tx.onerror =
-        () =>
-          reject(
-            tx.error
+            transaction.error
           );
 
     }
@@ -1753,10 +1736,10 @@ function dbDelete(
 
 
 /* =========================================================
-   ID GENERATORS
+   IDs
 ========================================================= */
 
-function nextMemoryId(){
+function createMemoryId(){
 
   let id;
 
@@ -1765,7 +1748,7 @@ function nextMemoryId(){
     id =
       "MEM-" +
       String(
-        state.nextId++
+        state.nextMemoryId++
       ).padStart(
         6,
         "0"
@@ -1782,7 +1765,7 @@ function nextMemoryId(){
 }
 
 
-function nextHyperId(){
+function createHyperId(){
 
   let id;
 
@@ -1815,13 +1798,19 @@ function nextHyperId(){
 async function loadModel(){
 
   if(
-    state.modelReady ||
+    state.modelReady
+  ){
+    return;
+  }
+
+  if(
     state.loading
   ){
     return;
   }
 
-  state.loading = true;
+  state.loading =
+    true;
 
   $("modelStatus").textContent =
     "LOADING";
@@ -1832,9 +1821,11 @@ async function loadModel(){
 
   try{
 
-    env.allowLocalModels = false;
+    env.allowLocalModels =
+      false;
 
-    env.useBrowserCache = true;
+    env.useBrowserCache =
+      true;
 
     state.extractor =
       await pipeline(
@@ -1842,32 +1833,12 @@ async function loadModel(){
         MODEL,
         {
           dtype:"q8",
-          device:"wasm",
-          progress_callback:data => {
-
-            if(
-              data?.status==="progress"
-            ){
-
-              const p =
-                Math.round(
-                  data.progress || 0
-                );
-
-              $("modelStatus").textContent =
-                p + "%";
-
-            }
-
-          }
+          device:"wasm"
         }
       );
 
     state.modelReady =
       true;
-
-    state.loading =
-      false;
 
     $("modelStatus").textContent =
       "READY";
@@ -1879,19 +1850,21 @@ async function loadModel(){
 
   }catch(error){
 
-    state.loading =
-      false;
-
     $("modelStatus").textContent =
       "ERROR";
 
     log(
-      "Modellfehler: " +
+      "Modellfehler: "+
       error.message,
       "err"
     );
 
     console.error(error);
+
+  }finally{
+
+    state.loading =
+      false;
 
   }
 
@@ -1907,9 +1880,7 @@ async function embed(
   mode="passage"
 ){
 
-  if(!state.modelReady){
-    await loadModel();
-  }
+  await loadModel();
 
   const prefix =
     mode==="query"
@@ -1918,61 +1889,65 @@ async function embed(
 
   const output =
     await state.extractor(
-      prefix + text,
+      prefix+text,
       {
         pooling:"mean",
         normalize:true
       }
     );
 
-  let data;
+  let values;
 
-  if(
-    output &&
-    output.data
-  ){
+  if(output.data){
 
-    data =
+    values =
       Array.from(
         output.data
       );
 
   }else{
 
-    data =
+    values =
       output.tolist();
 
     if(
-      Array.isArray(data[0])
+      Array.isArray(
+        values[0]
+      )
     ){
-      data = data[0];
+
+      values =
+        values[0];
+
     }
 
   }
 
-  return data;
+  return values;
 
 }
 
 
 /* =========================================================
-   NEIGHBORS
+   NEAREST NEIGHBORS
 ========================================================= */
 
-function nearestNeighbors(
+function neighbors(
   vector,
-  pool=state.memories
+  pool
 ){
 
   return pool
-    .map(memory => ({
-      memory,
-      score:
-        cosine(
-          vector,
-          memory.vector
-        )
-    }))
+    .map(
+      memory => ({
+        memory,
+        score:
+          cosine(
+            vector,
+            memory.vector
+          )
+      })
+    )
     .sort(
       (a,b) =>
         b.score-a.score
@@ -1985,35 +1960,32 @@ function nearestNeighbors(
    ANCHOR SELECTION
 ========================================================= */
 
-function chooseAnchors(
+function selectAnchors(
   candidates
 ){
-
-  const selected=[];
 
   if(
     !candidates.length
   ){
-    return selected;
+    return [];
   }
 
-  selected.push(
+  const selected=[
     candidates[0]
-  );
+  ];
+
 
   while(
     selected.length <
-      Math.min(
-        ANCHOR_COUNT,
-        candidates.length
-      )
+    Math.min(
+      ANCHOR_COUNT,
+      candidates.length
+    )
   ){
 
-    let best =
-      null;
+    let best=null;
+    let bestScore=-Infinity;
 
-    let bestScore =
-      -Infinity;
 
     for(
       const candidate
@@ -2028,31 +2000,30 @@ function chooseAnchors(
         continue;
       }
 
-      let minSemantic =
-        Infinity;
+
+      let diversity=0;
 
       for(
-        const s
+        const selectedCandidate
         of selected
       ){
 
-        const d =
-          cdistAngular(
-            candidate.memory.vector,
-            s.memory.vector
-          );
-
-        minSemantic =
-          Math.min(
-            minSemantic,
-            d
+        diversity =
+          Math.max(
+            diversity,
+            angularDistance(
+              candidate.memory.vector,
+              selectedCandidate.memory.vector
+            )
           );
 
       }
 
+
       const score =
         candidate.score +
-        minSemantic*0.4;
+        diversity*.4;
+
 
       if(
         score >
@@ -2069,11 +2040,14 @@ function chooseAnchors(
 
     }
 
+
     if(!best){
       break;
     }
 
-    selected.push(best);
+    selected.push(
+      best
+    );
 
   }
 
@@ -2083,21 +2057,79 @@ function chooseAnchors(
 
 
 /* =========================================================
-   LOCAL SCALE
+   FIXED 3D POSITION
 ========================================================= */
+
+function initialPosition(
+  anchors
+){
+
+  if(
+    !anchors.length
+  ){
+    return [0,0,0];
+  }
+
+  let result=[
+    0,
+    0,
+    0
+  ];
+
+  let weightSum=0;
+
+
+  for(
+    const anchor
+    of anchors
+  ){
+
+    const weight =
+      Math.max(
+        .01,
+        anchor.score+1
+      );
+
+    result[0] +=
+      anchor.memory.pos3d[0] *
+      weight;
+
+    result[1] +=
+      anchor.memory.pos3d[1] *
+      weight;
+
+    result[2] +=
+      anchor.memory.pos3d[2] *
+      weight;
+
+    weightSum +=
+      weight;
+
+  }
+
+
+  return [
+    result[0]/weightSum,
+    result[1]/weightSum,
+    result[2]/weightSum
+  ];
+
+}
+
 
 function localScale(
   anchors
 ){
 
   if(
-    anchors.length < 2
+    anchors.length<2
   ){
     return 3;
   }
 
-  let total=0;
+  let sum=0;
   let count=0;
+
 
   for(
     let i=0;
@@ -2111,8 +2143,8 @@ function localScale(
       j++
     ){
 
-      total +=
-        vec3Distance(
+      sum +=
+        distance3(
           anchors[i].memory.pos3d,
           anchors[j].memory.pos3d
         );
@@ -2123,13 +2155,12 @@ function localScale(
 
   }
 
-  const mean =
-    count
-      ? total/count
-      : 3;
 
   return clamp(
-    mean/1.15,
+    sum/Math.max(
+      1,
+      count
+    ),
     1.5,
     6
   );
@@ -2137,114 +2168,96 @@ function localScale(
 }
 
 
-/* =========================================================
-   INITIAL POSITION
-========================================================= */
-
-function initialPosition(
-  anchors
-){
-
-  if(!anchors.length){
-    return [0,0,0];
-  }
-
-  let totalWeight=0;
-
-  let p=[
-    0,
-    0,
-    0
-  ];
-
-  for(
-    const anchor
-    of anchors
-  ){
-
-    const weight =
-      Math.max(
-        0.001,
-        anchor.score+1
-      );
-
-    p =
-      vec3Add(
-        p,
-        vec3Scale(
-          anchor.memory.pos3d,
-          weight
-        )
-      );
-
-    totalWeight +=
-      weight;
-
-  }
-
-  return vec3Scale(
-    p,
-    1/totalWeight
-  );
-
-}
-
-
-/* =========================================================
-   SOLVE POSITION FOR NEW NODE ONLY
-========================================================= */
-
-function solveLocalPosition(
+function solveNewPosition(
   vector,
   anchors
 ){
 
-  if(!anchors.length){
+  if(
+    !anchors.length
+  ){
     return [0,0,0];
   }
+
 
   if(
     anchors.length===1
   ){
 
-    const a =
-      anchors[0];
+    const anchor =
+      anchors[0].memory;
 
     const angle =
-      cdistAngular(
+      angularDistance(
         vector,
-        a.memory.vector
+        anchor.vector
       );
 
     const radius =
-      2.5 +
-      angle*1.5;
+      3+
+      angle*1.8;
 
     const hash =
       hashVector(vector);
 
-    const theta =
-      (hash%10000)/
-      10000*
+    const angle2 =
+      (
+        hash%100000
+      ) /
+      100000 *
       Math.PI*2;
 
     return [
-      a.memory.pos3d[0] +
-        Math.cos(theta)*radius,
 
-      a.memory.pos3d[1] +
-        Math.sin(theta)*radius,
+      anchor.pos3d[0] +
+        Math.cos(angle2)*
+        radius,
 
-      a.memory.pos3d[2]
+      anchor.pos3d[1] +
+        Math.sin(angle2)*
+        radius,
+
+      anchor.pos3d[2]
+
     ];
 
   }
 
 
-  let p =
+  let position =
     initialPosition(
       anchors
     );
+
+
+  /*
+    Deterministischer Seed.
+    Er bricht symmetrische Situationen,
+    ohne bestehende Nodes zu verändern.
+  */
+
+  const hash =
+    hashVector(vector);
+
+  const theta =
+    (
+      hash%100000
+    )/
+    100000*
+    Math.PI*2;
+
+  position[0] +=
+    Math.cos(theta)*.35;
+
+  position[1] +=
+    Math.sin(theta)*.35;
+
+  position[2] +=
+    (
+      ((hash>>>8)%1000)/1000-
+      .5
+    )*.8;
+
 
   const scale =
     localScale(
@@ -2252,26 +2265,11 @@ function solveLocalPosition(
     );
 
 
-  const seed =
-    hashVector(vector);
-
-  const phi =
-    (seed%100000)/
-    100000*
-    Math.PI*2;
-
-  const z =
-    (((seed>>>8)%1000)/1000-.5)
-    *0.8;
-
-  p[0] +=
-    Math.cos(phi)*0.35;
-
-  p[1] +=
-    Math.sin(phi)*0.35;
-
-  p[2] += z;
-
+  /*
+    Nur der NEUE Punkt wird
+    iterativ an die bereits
+    festen Anker angepasst.
+  */
 
   for(
     let iteration=0;
@@ -2279,13 +2277,11 @@ function solveLocalPosition(
     iteration++
   ){
 
-    let gradient=[
-      0,
-      0,
-      0
-    ];
+    let gx=0;
+    let gy=0;
+    let gz=0;
+    let weightSum=0;
 
-    let totalWeight=0;
 
     for(
       const anchor
@@ -2294,116 +2290,118 @@ function solveLocalPosition(
 
       const target =
         clamp(
-          cdistAngular(
+          angularDistance(
             vector,
             anchor.memory.vector
-          ) * scale,
-          0.8,
-          7
+          )*
+          scale,
+          .8,
+          8
         );
 
+
       const dx =
-        p[0] -
+        position[0] -
         anchor.memory.pos3d[0];
 
       const dy =
-        p[1] -
+        position[1] -
         anchor.memory.pos3d[1];
 
       const dz =
-        p[2] -
+        position[2] -
         anchor.memory.pos3d[2];
 
-      const d =
+
+      const distance =
         Math.sqrt(
           dx*dx+
           dy*dy+
           dz*dz
-        ) || 0.0001;
+        ) ||
+        .0001;
+
 
       const error =
-        d-target;
+        distance-target;
+
 
       const weight =
         Math.max(
-          0.05,
+          .05,
           anchor.score+1
         );
 
-      gradient[0] +=
-        error *
-        dx/d *
+
+      gx +=
+        error*
+        dx/distance*
         weight;
 
-      gradient[1] +=
-        error *
-        dy/d *
+      gy +=
+        error*
+        dy/distance*
         weight;
 
-      gradient[2] +=
-        error *
-        dz/d *
+      gz +=
+        error*
+        dz/distance*
         weight;
 
-      totalWeight +=
+      weightSum +=
         weight;
 
     }
 
+
     const step =
-      0.09 *
-      (1-
+      .09*
+      (
+        1-
         iteration/
         RELAX_ITERATIONS
       );
 
-    p[0] -=
-      gradient[0]/
-      totalWeight*
+
+    position[0] -=
+      gx/weightSum*
       step;
 
-    p[1] -=
-      gradient[1]/
-      totalWeight*
+    position[1] -=
+      gy/weightSum*
       step;
 
-    p[2] -=
-      gradient[2]/
-      totalWeight*
+    position[2] -=
+      gz/weightSum*
       step;
 
   }
 
-  return p;
+
+  return position;
 
 }
 
 
-/* =========================================================
-   FIXED POSITION ASSIGNMENT
-========================================================= */
-
-function assignFixedPosition(
+function assignPosition(
   memory
 ){
 
-  /*
-    WICHTIG:
-
-    Diese Funktion wird ausschließlich
-    für den NEUEN Node ausgeführt.
-
-    Bereits gespeicherte Nodes werden
-    niemals neu berechnet.
-  */
-
   const pool =
     state.memories.filter(
-      m => m.id!==memory.id
+      m =>
+        m.id!==memory.id
     );
 
 
-  if(pool.length===0){
+  /*
+    Node 1:
+    absoluter Ursprung.
+  */
+
+  if(
+    pool.length===0
+  ){
 
     memory.pos3d =
       [0,0,0];
@@ -2415,26 +2413,34 @@ function assignFixedPosition(
   }
 
 
-  if(pool.length===1){
+  /*
+    Node 2:
+    nur der neue Punkt wird
+    neben Node 1 platziert.
+  */
+
+  if(
+    pool.length===1
+  ){
 
     const anchor =
       pool[0];
 
     const angle =
-      cdistAngular(
+      angularDistance(
         memory.vector,
         anchor.vector
       );
 
     const distance =
       clamp(
-        3 +
+        3+
         angle*2,
         3,
         6
       );
 
-    memory.pos3d = [
+    memory.pos3d=[
       anchor.pos3d[0]+distance,
       anchor.pos3d[1],
       anchor.pos3d[2]
@@ -2449,26 +2455,26 @@ function assignFixedPosition(
   }
 
 
-  const candidates =
-    nearestNeighbors(
-      memory.vector,
-      pool
+  const candidateAnchors =
+    selectAnchors(
+      neighbors(
+        memory.vector,
+        pool
+      )
     );
 
-  const anchors =
-    chooseAnchors(
-      candidates
-    );
 
   memory.anchors =
-    anchors.map(
-      x => x.memory.id
+    candidateAnchors.map(
+      x =>
+        x.memory.id
     );
 
+
   memory.pos3d =
-    solveLocalPosition(
+    solveNewPosition(
       memory.vector,
-      anchors
+      candidateAnchors
     );
 
 }
@@ -2486,29 +2492,23 @@ async function createMemory(){
       .trim();
 
   if(!text){
+
     log(
-      "Kein Text eingegeben.",
+      "Kein Text.",
       "warn"
     );
+
     return;
-  }
-
-  if(
-    !state.modelReady
-  ){
-
-    await loadModel();
 
   }
 
-  const type =
-    $("memoryType").value;
 
   $("storeBtn").disabled =
     true;
 
   $("pipelineStatus").textContent =
     "EMBEDDING";
+
 
   pipe(
     "pipeText",
@@ -2520,17 +2520,15 @@ async function createMemory(){
     "active"
   );
 
-  try{
 
-    log(
-      "Embedding wird berechnet..."
-    );
+  try{
 
     const vector =
       await embed(
         text,
         "passage"
       );
+
 
     pipe(
       "pipeEmbedding",
@@ -2542,14 +2540,16 @@ async function createMemory(){
       "done"
     );
 
-    const memory = {
+
+    const memory={
 
       id:
-        nextMemoryId(),
+        createMemoryId(),
 
       text,
 
-      type,
+      type:
+        $("memoryType").value,
 
       vector,
 
@@ -2557,44 +2557,48 @@ async function createMemory(){
 
       anchors:[],
 
-      createdAt:
-        new Date().toISOString(),
+      positionLocked:false,
 
-      positionLocked:false
+      createdAt:
+        new Date().toISOString()
 
     };
 
 
     /*
-      Erst jetzt wird der neue Punkt
-      in den 3D-Raum eingesetzt.
-      Bestehende Punkte bleiben unverändert.
+      Entscheidend:
+      memory wird zunächst nur
+      als NEUER Node berechnet.
     */
 
-    assignFixedPosition(
+    assignPosition(
       memory
     );
+
 
     memory.positionLocked =
       true;
 
+
     state.memories.push(
       memory
     );
+
 
     await dbPut(
       MEMORY_STORE,
       memory
     );
 
+
     state.currentVector =
       vector;
 
-    state.currentText =
-      text;
 
     $("vectorNorm").textContent =
-      norm(vector).toFixed(4);
+      norm(vector)
+        .toFixed(5);
+
 
     $("vectorBox").textContent =
       vector
@@ -2604,46 +2608,53 @@ async function createMemory(){
         )
         .join("  ");
 
+
     pipe(
       "pipe3D",
       "done"
     );
 
+
     log(
-      `${memory.id} positioniert: ` +
+      `${memory.id} FIXED @ `+
       `[${memory.pos3d.map(
         x=>x.toFixed(2)
       ).join(", ")}]`,
       "ok"
     );
 
+
     /*
-      Hyperedge-Erzeugung erfolgt
-      deterministisch aus den vorhandenen
-      Vektoren.
+      Automatische Hyperkante:
+      neuer Node + seine stärksten
+      semantischen Nachbarn.
     */
 
-    await autoCreateHyperedge(
+    await autoHyperedge(
       memory
     );
+
 
     pipe(
       "pipeHyper",
       "done"
     );
 
-    $("pipelineStatus").textContent =
-      "READY";
 
     $("memoryText").value =
       "";
 
+    $("pipelineStatus").textContent =
+      "READY";
+
+
     renderAll();
+
 
   }catch(error){
 
     log(
-      "Speicherfehler: " +
+      "Fehler: "+
       error.message,
       "err"
     );
@@ -2661,15 +2672,15 @@ async function createMemory(){
 
 
 /* =========================================================
-   HYPEREDGE DEDUPLICATION
+   HYPEREDGE
 ========================================================= */
 
 function hyperKey(
-  nodeIds
+  ids
 ){
 
   return [
-    ...nodeIds
+    ...ids
   ]
     .sort()
     .join("|");
@@ -2677,12 +2688,12 @@ function hyperKey(
 }
 
 
-function hyperedgeExists(
-  nodeIds
+function hyperExists(
+  ids
 ){
 
   const key =
-    hyperKey(nodeIds);
+    hyperKey(ids);
 
   return state.hyperedges.some(
     h =>
@@ -2694,60 +2705,64 @@ function hyperedgeExists(
 }
 
 
-/* =========================================================
-   CREATE HYPEREDGE
-========================================================= */
-
 async function createHyperedge(
   nodeIds,
-  label="semantic context",
+  label,
   type="manual"
 ){
 
   const unique =
     [...new Set(nodeIds)];
 
-  if(unique.length<3){
+
+  if(
+    unique.length<3
+  ){
 
     log(
-      "Ein Hyperedge benötigt mindestens 3 Nodes.",
+      "Hyperedge benötigt mindestens 3 Nodes.",
       "warn"
     );
 
-    return null;
+    return;
 
   }
 
-  const existing =
-    state.memories
-      .filter(
-        m => unique.includes(m.id)
-      );
+
+  const members =
+    state.memories.filter(
+      m =>
+        unique.includes(
+          m.id
+        )
+    );
+
 
   if(
-    existing.length !==
+    members.length !==
     unique.length
   ){
 
     log(
-      "Hyperedge enthält unbekannte Node-ID.",
+      "Mindestens eine Node-ID existiert nicht.",
       "err"
     );
 
-    return null;
+    return;
 
   }
 
+
   if(
-    hyperedgeExists(unique)
+    hyperExists(unique)
   ){
 
     log(
-      "Hyperedge existiert bereits.",
+      "Diese Hyperkante existiert bereits.",
       "warn"
     );
 
-    return null;
+    return;
 
   }
 
@@ -2755,22 +2770,23 @@ async function createHyperedge(
   let score=0;
   let count=0;
 
+
   for(
     let i=0;
-    i<existing.length;
+    i<members.length;
     i++
   ){
 
     for(
       let j=i+1;
-      j<existing.length;
+      j<members.length;
       j++
     ){
 
       score +=
         cosine(
-          existing[i].vector,
-          existing[j].vector
+          members[i].vector,
+          members[j].vector
         );
 
       count++;
@@ -2779,20 +2795,24 @@ async function createHyperedge(
 
   }
 
+
   score =
     count
       ? score/count
       : 0;
 
 
-  const hyperedge = {
+  const hyperedge={
 
     id:
-      nextHyperId(),
+      createHyperId(),
 
-    nodeIds:unique,
+    nodeIds:
+      unique,
 
-    label,
+    label:
+      label ||
+      "CONTEXT",
 
     type,
 
@@ -2808,18 +2828,19 @@ async function createHyperedge(
     hyperedge
   );
 
+
   await dbPut(
     HYPER_STORE,
     hyperedge
   );
 
+
   log(
-    `${hyperedge.id} erstellt: ` +
+    `${hyperedge.id}: `+
     `${unique.length} Nodes`,
     "ok"
   );
 
-  renderAll();
 
   return hyperedge;
 
@@ -2827,12 +2848,19 @@ async function createHyperedge(
 
 
 /* =========================================================
-   AUTOMATIC SEMANTIC HYPEREDGE
+   AUTOMATIC HYPEREDGE
 ========================================================= */
 
-async function autoCreateHyperedge(
+async function autoHyperedge(
   memory
 ){
+
+  if(
+    state.memories.length<3
+  ){
+    return;
+  }
+
 
   const pool =
     state.memories.filter(
@@ -2840,14 +2868,9 @@ async function autoCreateHyperedge(
         m.id!==memory.id
     );
 
-  if(
-    pool.length<2
-  ){
-    return;
-  }
 
-  const neighbors =
-    nearestNeighbors(
+  const top =
+    neighbors(
       memory.vector,
       pool
     )
@@ -2858,50 +2881,57 @@ async function autoCreateHyperedge(
     )
     .slice(
       0,
-      HYPEREDGE_SIZE-1
+      MAX_HYPEREDGE_MEMBERS-1
     );
 
+
   if(
-    neighbors.length<2
+    top.length<2
   ){
     return;
   }
 
-  const nodeIds = [
+
+  const ids=[
     memory.id,
-    ...neighbors.map(
-      x=>x.memory.id
+    ...top.map(
+      x =>
+        x.memory.id
     )
   ];
 
+
   await createHyperedge(
-    nodeIds,
-    "COSINE CONTEXT",
-    "semantic-context"
+    ids,
+    "SEMANTIC CONTEXT",
+    "semantic"
   );
 
 }
 
 
 /* =========================================================
-   ACTIVE CONTEXT
+   CONTEXT
 ========================================================= */
 
 function activateContext(
-  memoryId
+  id
 ){
 
   const memory =
     state.memories.find(
-      m => m.id===memoryId
+      m =>
+        m.id===id
     );
 
   if(!memory){
     return;
   }
 
+
   const context =
     new Set();
+
 
   context.add(
     memory.id
@@ -2909,17 +2939,17 @@ function activateContext(
 
 
   /*
-    Semantisch ähnliche Nodes
+    Direkte semantische Nachbarn.
   */
 
-  nearestNeighbors(
+  neighbors(
     memory.vector,
-    state.memories
-      .filter(
-        m => m.id!==memory.id
-      )
+    state.memories.filter(
+      m =>
+        m.id!==memory.id
+    )
   )
-  .slice(0,7)
+  .slice(0,8)
   .forEach(
     x =>
       context.add(
@@ -2929,7 +2959,8 @@ function activateContext(
 
 
   /*
-    Hypergraph-Kontext
+    Alle Hypergraph-Beziehungen
+    des ausgewählten Nodes.
   */
 
   state.hyperedges
@@ -2942,8 +2973,10 @@ function activateContext(
     .forEach(
       h =>
         h.nodeIds.forEach(
-          id =>
-            context.add(id)
+          nodeId =>
+            context.add(
+              nodeId
+            )
         )
     );
 
@@ -2951,19 +2984,16 @@ function activateContext(
   state.activeContext =
     context;
 
+
   log(
-    `Context aktiviert: ` +
-    `${context.size} Nodes`
+    `Context: ${context.size} Nodes`
   );
+
 
   renderAll();
 
 }
 
-
-/* =========================================================
-   CLEAR CONTEXT
-========================================================= */
 
 function clearContext(){
 
@@ -2982,22 +3012,21 @@ async function loadDatabase(){
 
   await openDB();
 
+
   state.memories =
-    await dbGetAll(
+    await dbAll(
       MEMORY_STORE
     );
 
+
   state.hyperedges =
-    await dbGetAll(
+    await dbAll(
       HYPER_STORE
     );
 
 
-  /*
-    Alte IDs erkennen
-  */
-
   let maxMemory=0;
+
 
   for(
     const memory
@@ -3014,18 +3043,22 @@ async function loadDatabase(){
       maxMemory =
         Math.max(
           maxMemory,
-          Number(match[1])
+          Number(
+            match[1]
+          )
         );
 
     }
 
   }
 
-  state.nextId =
+
+  state.nextMemoryId =
     maxMemory+1;
 
 
   let maxHyper=0;
+
 
   for(
     const hyper
@@ -3042,24 +3075,24 @@ async function loadDatabase(){
       maxHyper =
         Math.max(
           maxHyper,
-          Number(match[1])
+          Number(
+            match[1]
+          )
         );
 
     }
 
   }
 
+
   state.nextHyperId =
     maxHyper+1;
 
 
   /*
-    Legacy-Daten ohne Position
-    werden einmalig positioniert.
-    Danach werden sie ebenfalls gelockt.
+    Legacy Nodes ohne Position
+    werden genau einmal gesetzt.
   */
-
-  let migrated=0;
 
   for(
     const memory
@@ -3075,9 +3108,10 @@ async function loadDatabase(){
         Number.isFinite
       );
 
+
     if(!valid){
 
-      assignFixedPosition(
+      assignPosition(
         memory
       );
 
@@ -3089,25 +3123,31 @@ async function loadDatabase(){
         memory
       );
 
-      migrated++;
-
     }
 
   }
 
 
-  if(migrated){
+  /*
+    Hyperedges mit nicht mehr vorhandenen
+    Nodes werden nicht dargestellt.
+  */
 
-    log(
-      `${migrated} Legacy-Memory(s) positioniert.`,
-      "ok"
+  state.hyperedges =
+    state.hyperedges.filter(
+      hyper =>
+        hyper.nodeIds.every(
+          id =>
+            state.memories.some(
+              m =>
+                m.id===id
+            )
+        )
     );
 
-  }
 
   log(
-    `DB geladen: ` +
-    `${state.memories.length} Memories, ` +
+    `DB: ${state.memories.length} Nodes / `+
     `${state.hyperedges.length} Hyperedges`,
     "ok"
   );
@@ -3116,30 +3156,20 @@ async function loadDatabase(){
 
 
 /* =========================================================
-   THREE.JS
+   THREE
 ========================================================= */
 
 let scene;
-
 let camera;
-
 let renderer;
-
 let controls;
-
-let pointCloud;
-
-let pairGroup;
-
-let hyperGroup;
-
-let anchorGroup;
-
 let raycaster;
-
 let pointer;
 
-let clock;
+let nodeGroup;
+let edgeGroup;
+let hyperGroup;
+let anchorGroup;
 
 
 function initThree(){
@@ -3155,7 +3185,7 @@ function initThree(){
   scene.fog =
     new THREE.FogExp2(
       0x020408,
-      0.018
+      .018
     );
 
 
@@ -3163,7 +3193,7 @@ function initThree(){
     new THREE.PerspectiveCamera(
       50,
       1,
-      0.1,
+      .1,
       1000
     );
 
@@ -3176,8 +3206,7 @@ function initThree(){
 
   renderer =
     new THREE.WebGLRenderer({
-      antialias:true,
-      alpha:false
+      antialias:true
     });
 
   renderer.setPixelRatio(
@@ -3190,9 +3219,11 @@ function initThree(){
   renderer.outputColorSpace =
     THREE.SRGBColorSpace;
 
-  $("scene").appendChild(
-    renderer.domElement
-  );
+
+  $("scene")
+    .appendChild(
+      renderer.domElement
+    );
 
 
   controls =
@@ -3205,7 +3236,7 @@ function initThree(){
     true;
 
   controls.dampingFactor =
-    0.06;
+    .055;
 
   controls.minDistance =
     2;
@@ -3220,11 +3251,11 @@ function initThree(){
   pointer =
     new THREE.Vector2();
 
-  clock =
-    new THREE.Clock();
 
+  nodeGroup =
+    new THREE.Group();
 
-  pairGroup =
+  edgeGroup =
     new THREE.Group();
 
   hyperGroup =
@@ -3235,9 +3266,10 @@ function initThree(){
 
 
   scene.add(
-    pairGroup,
+    edgeGroup,
     hyperGroup,
-    anchorGroup
+    anchorGroup,
+    nodeGroup
   );
 
 
@@ -3245,14 +3277,17 @@ function initThree(){
 
   createAxes();
 
+
+  renderer.domElement
+    .addEventListener(
+      "pointerdown",
+      onPointerDown
+    );
+
+
   window.addEventListener(
     "resize",
     resizeThree
-  );
-
-  renderer.domElement.addEventListener(
-    "pointerdown",
-    onPointerDown
   );
 
 
@@ -3273,7 +3308,7 @@ function createGrid(){
     new THREE.GridHelper(
       60,
       60,
-      0x10232a,
+      0x10262d,
       0x071116
     );
 
@@ -3297,86 +3332,106 @@ function createAxes(){
     new THREE.LineBasicMaterial({
       color:0x123039,
       transparent:true,
-      opacity:.5
+      opacity:.45
     });
 
-  const pointsX=[
-    new THREE.Vector3(-20,0,0),
-    new THREE.Vector3(20,0,0)
-  ];
 
-  const pointsY=[
-    new THREE.Vector3(0,-20,0),
-    new THREE.Vector3(0,20,0)
-  ];
-
-  const pointsZ=[
-    new THREE.Vector3(0,0,-20),
-    new THREE.Vector3(0,0,20)
-  ];
-
-
-  const makeLine =
-    points => {
-
-      const geometry =
+  const make =
+    points =>
+      new THREE.Line(
         new THREE.BufferGeometry()
           .setFromPoints(
             points
-          );
-
-      return new THREE.Line(
-        geometry,
+          ),
         material
       );
 
-    };
-
 
   scene.add(
-    makeLine(pointsX),
-    makeLine(pointsY),
-    makeLine(pointsZ)
+
+    make([
+      new THREE.Vector3(
+        -20,0,0
+      ),
+      new THREE.Vector3(
+        20,0,0
+      )
+    ]),
+
+    make([
+      new THREE.Vector3(
+        0,-20,0
+      ),
+      new THREE.Vector3(
+        0,20,0
+      )
+    ]),
+
+    make([
+      new THREE.Vector3(
+        0,0,-20
+      ),
+      new THREE.Vector3(
+        0,0,20
+      )
+    ])
+
   );
 
 }
 
 
 /* =========================================================
-   TYPE COLORS
+   NODE COLORS
 ========================================================= */
 
 function typeColor(
   type
 ){
 
-  switch(type){
+  if(type==="concept")
+    return 0x4ade80;
 
-    case "concept":
-      return 0x4ade80;
+  if(type==="claim")
+    return 0xffe066;
 
-    case "claim":
-      return 0xffe066;
+  if(type==="evidence")
+    return 0xff2ca8;
 
-    case "evidence":
-      return 0xff2ca8;
+  if(type==="hypothesis")
+    return 0xb56cff;
 
-    case "hypothesis":
-      return 0xb56cff;
+  return 0x00f5ff;
 
-    default:
-      return 0x00f5ff;
+}
 
-  }
+
+function typeIndex(
+  type
+){
+
+  if(type==="concept")
+    return 1;
+
+  if(type==="claim")
+    return 2;
+
+  if(type==="evidence")
+    return 3;
+
+  if(type==="hypothesis")
+    return 4;
+
+  return 0;
 
 }
 
 
 /* =========================================================
-   POINT SHADER
+   NODE SHADER
 ========================================================= */
 
-const pointVertexShader = `
+const nodeVertexShader=`
 
 attribute float aSelected;
 attribute float aActive;
@@ -3388,132 +3443,154 @@ varying float vType;
 
 void main(){
 
-  vSelected = aSelected;
-  vActive = aActive;
-  vType = aType;
+  vSelected =
+    aSelected;
 
-  vec4 mvPosition =
+  vActive =
+    aActive;
+
+  vType =
+    aType;
+
+
+  vec4 mv =
     modelViewMatrix *
-    vec4(position,1.0);
+    vec4(
+      position,
+      1.0
+    );
+
 
   float size =
     7.0;
 
-  if(aSelected > 0.5){
-    size = 12.0;
+  if(
+    aSelected > .5
+  ){
+    size =
+      13.0;
   }
 
+
   gl_PointSize =
-    size *
-    (300.0 /
-    max(
-      1.0,
-      -mvPosition.z
-    ));
+    size*
+    (
+      300.0/
+      max(
+        1.0,
+        -mv.z
+      )
+    );
+
 
   gl_Position =
-    projectionMatrix *
-    mvPosition;
+    projectionMatrix*
+    mv;
 
 }
 `;
 
 
-const pointFragmentShader = `
+const nodeFragmentShader=`
 
 varying float vSelected;
 varying float vActive;
 varying float vType;
 
-vec3 typeColor(){
+vec3 nodeColor(){
 
-  if(vType < 0.5)
+  if(vSelected > .5)
+    return vec3(
+      1.0,
+      .10,
+      .66
+    );
+
+  if(vType < .5)
     return vec3(
       0.0,
-      0.96,
+      .96,
       1.0
     );
 
   if(vType < 1.5)
     return vec3(
-      0.29,
-      0.87,
-      0.50
+      .29,
+      .87,
+      .50
     );
 
   if(vType < 2.5)
     return vec3(
       1.0,
-      0.88,
-      0.40
+      .88,
+      .40
     );
 
   if(vType < 3.5)
     return vec3(
       1.0,
-      0.17,
-      0.66
+      .17,
+      .66
     );
 
   return vec3(
-    0.71,
-    0.42,
+    .71,
+    .42,
     1.0
   );
 
 }
 
+
 void main(){
 
-  vec2 uv =
-    gl_PointCoord.xy -
+  vec2 p =
+    gl_PointCoord-
     vec2(.5);
 
   float d =
-    length(uv);
+    length(p);
 
-  if(d > .5)
+  if(d>.5)
     discard;
+
+
+  vec3 color =
+    nodeColor();
+
 
   float alpha =
     smoothstep(
       .5,
-      .22,
+      .12,
       d
     );
 
-  vec3 color =
-    typeColor();
 
-  if(vSelected > .5){
+  if(
+    vActive < .5
+  ){
 
-    color =
-      vec3(
-        1.0,
-        .12,
-        .66
-      );
+    color *= .28;
+
+    alpha *= .22;
 
   }
 
-  if(vActive < .5){
-
-    color *= .35;
-    alpha *= .28;
-
-  }
 
   float glow =
-    1.0 -
+    1.0-
     smoothstep(
-      .05,
+      .02,
       .5,
       d
     );
 
+
   color +=
-    glow *
-    .12;
+    glow*.15;
+
 
   gl_FragColor =
     vec4(
@@ -3526,48 +3603,12 @@ void main(){
 
 
 /* =========================================================
-   POINT CLOUD
+   BUILD NODES
 ========================================================= */
 
-function typeIndex(
-  type
-){
+function rebuildNodes(){
 
-  switch(type){
-
-    case "concept":
-      return 1;
-
-    case "claim":
-      return 2;
-
-    case "evidence":
-      return 3;
-
-    case "hypothesis":
-      return 4;
-
-    default:
-      return 0;
-
-  }
-
-}
-
-
-function makePoints(){
-
-  if(pointCloud){
-
-    scene.remove(
-      pointCloud
-    );
-
-    pointCloud.geometry.dispose();
-
-    pointCloud.material.dispose();
-
-  }
+  nodeGroup.clear();
 
   if(
     !state.showNodes ||
@@ -3592,11 +3633,14 @@ function makePoints(){
       ...memory.pos3d
     );
 
+
     selected.push(
-      memory.id===state.selectedId
+      memory.id===
+      state.selectedId
         ? 1
         : 0
     );
+
 
     active.push(
       state.activeContext.size===0 ||
@@ -3606,6 +3650,7 @@ function makePoints(){
         ? 1
         : 0
     );
+
 
     types.push(
       typeIndex(
@@ -3628,6 +3673,7 @@ function makePoints(){
     )
   );
 
+
   geometry.setAttribute(
     "aSelected",
     new THREE.Float32BufferAttribute(
@@ -3636,6 +3682,7 @@ function makePoints(){
     )
   );
 
+
   geometry.setAttribute(
     "aActive",
     new THREE.Float32BufferAttribute(
@@ -3643,6 +3690,7 @@ function makePoints(){
       1
     )
   );
+
 
   geometry.setAttribute(
     "aType",
@@ -3657,10 +3705,10 @@ function makePoints(){
     new THREE.ShaderMaterial({
 
       vertexShader:
-        pointVertexShader,
+        nodeVertexShader,
 
       fragmentShader:
-        pointFragmentShader,
+        nodeFragmentShader,
 
       transparent:true,
 
@@ -3672,35 +3720,40 @@ function makePoints(){
     });
 
 
-  pointCloud =
+  const points =
     new THREE.Points(
       geometry,
       material
     );
 
-  scene.add(
-    pointCloud
+
+  nodeGroup.add(
+    points
   );
 
 }
 
 
 /* =========================================================
-   PAIR LINKS
+   BUILD EDGES
 ========================================================= */
 
-function rebuildPairLinks(){
+function rebuildEdges(){
 
-  pairGroup.clear();
+  edgeGroup.clear();
+
 
   if(
-    !state.showPairs
+    !state.showEdges
   ){
     return;
   }
 
+
   const vertices=[];
   const colors=[];
+
+  let edgeCount=0;
 
 
   for(
@@ -3721,14 +3774,16 @@ function rebuildPairLinks(){
       const b =
         state.memories[j];
 
-      const score =
+
+      const similarity =
         cosine(
           a.vector,
           b.vector
         );
 
+
       if(
-        score <
+        similarity <
         EDGE_THRESHOLD
       ){
         continue;
@@ -3752,38 +3807,55 @@ function rebuildPairLinks(){
       const alpha =
         active
           ? clamp(
-              (score-EDGE_THRESHOLD)/
-              (1-EDGE_THRESHOLD),
+              (
+                similarity-
+                EDGE_THRESHOLD
+              )/
+              (
+                1-
+                EDGE_THRESHOLD
+              ),
               .15,
-              .75
+              .85
             )
-          : .08;
+          : .06;
 
 
       colors.push(
         0,
-        0.8,
-        0.95,
+        .85,
+        1,
         alpha,
 
         0,
-        0.8,
-        0.95,
+        .85,
+        1,
         alpha
       );
+
+
+      edgeCount++;
 
     }
 
   }
 
 
-  if(!vertices.length){
+  $("edgeCount")
+    .textContent =
+      edgeCount;
+
+
+  if(
+    !vertices.length
+  ){
     return;
   }
 
 
   const geometry =
     new THREE.BufferGeometry();
+
 
   geometry.setAttribute(
     "position",
@@ -3792,6 +3864,7 @@ function rebuildPairLinks(){
       3
     )
   );
+
 
   geometry.setAttribute(
     "color",
@@ -3818,7 +3891,8 @@ function rebuildPairLinks(){
       material
     );
 
-  pairGroup.add(
+
+  edgeGroup.add(
     lines
   );
 
@@ -3826,12 +3900,609 @@ function rebuildPairLinks(){
 
 
 /* =========================================================
-   HYPERGRAPH VISUALIZATION
+   HYPEREDGE GEOMETRY
 ========================================================= */
 
-function rebuildHyperedges(){
+/*
+  Für eine Hyperkante mit mindestens drei
+  Mitgliedern erzeugen wir eine geometrische
+  Fläche.
+
+  Wichtig:
+  Diese Fläche ist eine Visualisierung
+  der Relation.
+
+  Sie wird NICHT verwendet, um die
+  Nodes physikalisch zu verschieben.
+*/
+
+
+function calculateCentroid(
+  points
+){
+
+  const center =
+    new THREE.Vector3();
+
+
+  for(
+    const point
+    of points
+  ){
+
+    center.add(
+      new THREE.Vector3(
+        ...point
+      )
+    );
+
+  }
+
+
+  return center
+    .multiplyScalar(
+      1/points.length
+    );
+
+}
+
+
+/*
+  Wir bauen eine geschlossene triangulierte
+  Oberfläche über einem lokalen 3D-Best-Fit-Rahmen.
+
+  Für 3 Nodes:
+      Dreieck
+
+  Für 4+ Nodes:
+      mehrere Dreiecke rund um einen
+      deterministischen Mittelpunkt.
+*/
+
+
+function buildHyperSurface(
+  members,
+  color,
+  opacity
+){
+
+  if(
+    members.length<3
+  ){
+    return null;
+  }
+
+
+  const points =
+    members.map(
+      m =>
+        new THREE.Vector3(
+          ...m.pos3d
+        )
+    );
+
+
+  const center =
+    points
+      .reduce(
+        (sum,p) =>
+          sum.add(p),
+        new THREE.Vector3()
+      )
+      .multiplyScalar(
+        1/points.length
+      );
+
+
+  /*
+    Lokale Achsen.
+
+    Wir suchen eine stabile Ebene,
+    die nicht von einem Physiksystem
+    abhängt.
+  */
+
+  let axisX =
+    points[0]
+      .clone()
+      .sub(center);
+
+
+  if(
+    axisX.lengthSq()<1e-8
+  ){
+    axisX.set(
+      1,0,0
+    );
+  }
+
+  axisX.normalize();
+
+
+  let axisY =
+    new THREE.Vector3();
+
+
+  for(
+    let i=1;
+    i<points.length;
+    i++
+  ){
+
+    const candidate =
+      points[i]
+        .clone()
+        .sub(center);
+
+
+    candidate.sub(
+      axisX.clone()
+        .multiplyScalar(
+          candidate.dot(axisX)
+        )
+    );
+
+
+    if(
+      candidate.lengthSq()>1e-8
+    ){
+
+      axisY =
+        candidate.normalize();
+
+      break;
+
+    }
+
+  }
+
+
+  if(
+    axisY.lengthSq()<1e-8
+  ){
+
+    axisY =
+      new THREE.Vector3(
+        0,
+        1,
+        0
+      );
+
+    if(
+      Math.abs(
+        axisX.dot(axisY)
+      )>.9
+    ){
+
+      axisY =
+        new THREE.Vector3(
+          0,
+          0,
+          1
+        );
+
+    }
+
+    axisY.sub(
+      axisX.clone()
+        .multiplyScalar(
+          axisY.dot(axisX)
+        )
+    );
+
+    axisY.normalize();
+
+  }
+
+
+  const axisZ =
+    new THREE.Vector3()
+      .crossVectors(
+        axisX,
+        axisY
+      )
+      .normalize();
+
+
+  /*
+    Winkelpositionen der Nodes
+    in der lokalen Hyperedge-Ebene.
+  */
+
+  const projected =
+    points.map(
+      point => {
+
+        const v =
+          point
+            .clone()
+            .sub(center);
+
+        return {
+
+          point,
+
+          x:
+            v.dot(axisX),
+
+          y:
+            v.dot(axisY)
+
+        };
+
+      }
+    );
+
+
+  projected.sort(
+    (a,b) =>
+      Math.atan2(
+        a.y,
+        a.x
+      ) -
+      Math.atan2(
+        b.y,
+        b.x
+      )
+  );
+
+
+  const vertices=[];
+
+
+  /*
+    Für jeden Randpunkt:
+      center → point[i] → point[i+1]
+  */
+
+  for(
+    let i=0;
+    i<projected.length;
+    i++
+  ){
+
+    const a =
+      projected[i].point;
+
+    const b =
+      projected[
+        (i+1)%
+        projected.length
+      ].point;
+
+
+    vertices.push(
+      center.x,
+      center.y,
+      center.z,
+
+      a.x,
+      a.y,
+      a.z,
+
+      b.x,
+      b.y,
+      b.z
+    );
+
+  }
+
+
+  const geometry =
+    new THREE.BufferGeometry();
+
+
+  geometry.setAttribute(
+    "position",
+    new THREE.Float32BufferAttribute(
+      vertices,
+      3
+    )
+  );
+
+
+  const material =
+    new THREE.MeshBasicMaterial({
+
+      color,
+
+      transparent:true,
+
+      opacity,
+
+      side:
+        THREE.DoubleSide,
+
+      depthWrite:false,
+
+      blending:
+        THREE.AdditiveBlending
+
+    });
+
+
+  return new THREE.Mesh(
+    geometry,
+    material
+  );
+
+}
+
+
+/* =========================================================
+   HYPEREDGE BOUNDARY
+========================================================= */
+
+function buildHyperBoundary(
+  members,
+  color,
+  opacity
+){
+
+  if(
+    members.length<3
+  ){
+    return null;
+  }
+
+
+  const points =
+    members.map(
+      m =>
+        new THREE.Vector3(
+          ...m.pos3d
+        )
+    );
+
+
+  const center =
+    calculateCentroid(
+      members.map(
+        m => m.pos3d
+      )
+    );
+
+
+  let axisX =
+    points[0]
+      .clone()
+      .sub(center);
+
+
+  if(
+    axisX.lengthSq()<1e-8
+  ){
+    axisX.set(
+      1,0,0
+    );
+  }
+
+  axisX.normalize();
+
+
+  let axisY =
+    null;
+
+
+  for(
+    let i=1;
+    i<points.length;
+    i++
+  ){
+
+    const candidate =
+      points[i]
+        .clone()
+        .sub(center);
+
+
+    candidate.sub(
+      axisX.clone()
+        .multiplyScalar(
+          candidate.dot(axisX)
+        )
+    );
+
+
+    if(
+      candidate.lengthSq()>1e-8
+    ){
+
+      axisY =
+        candidate.normalize();
+
+      break;
+
+    }
+
+  }
+
+
+  if(!axisY){
+
+    axisY =
+      new THREE.Vector3(
+        0,1,0
+      );
+
+    if(
+      Math.abs(
+        axisX.dot(axisY)
+      )>.9
+    ){
+
+      axisY =
+        new THREE.Vector3(
+          0,0,1
+        );
+
+    }
+
+    axisY.sub(
+      axisX.clone()
+        .multiplyScalar(
+          axisY.dot(axisX)
+        )
+    );
+
+    axisY.normalize();
+
+  }
+
+
+  const ordered =
+    points
+      .map(
+        point => {
+
+          const v =
+            point
+              .clone()
+              .sub(center);
+
+          return {
+
+            point,
+
+            angle:
+              Math.atan2(
+                v.dot(axisY),
+                v.dot(axisX)
+              )
+
+          };
+
+        }
+      )
+      .sort(
+        (a,b) =>
+          a.angle-b.angle
+      );
+
+
+  const vertices=[];
+
+
+  for(
+    let i=0;
+    i<ordered.length;
+    i++
+  ){
+
+    vertices.push(
+      ...ordered[i].point.toArray(),
+
+      ...ordered[
+        (i+1)%
+        ordered.length
+      ].point.toArray()
+    );
+
+  }
+
+
+  const geometry =
+    new THREE.BufferGeometry();
+
+
+  geometry.setAttribute(
+    "position",
+    new THREE.Float32BufferAttribute(
+      vertices,
+      3
+    )
+  );
+
+
+  const material =
+    new THREE.LineBasicMaterial({
+      color,
+      transparent:true,
+      opacity,
+      depthWrite:false,
+      blending:
+        THREE.AdditiveBlending
+    });
+
+
+  return new THREE.LineSegments(
+    geometry,
+    material
+  );
+
+}
+
+
+/* =========================================================
+   HYPEREDGE MEMBERSHIP LINES
+========================================================= */
+
+function buildHyperMembership(
+  members,
+  center,
+  color,
+  opacity
+){
+
+  const vertices=[];
+
+
+  for(
+    const member
+    of members
+  ){
+
+    vertices.push(
+      center.x,
+      center.y,
+      center.z,
+
+      ...member.pos3d
+    );
+
+  }
+
+
+  const geometry =
+    new THREE.BufferGeometry();
+
+
+  geometry.setAttribute(
+    "position",
+    new THREE.Float32BufferAttribute(
+      vertices,
+      3
+    )
+  );
+
+
+  const material =
+    new THREE.LineBasicMaterial({
+      color,
+      transparent:true,
+      opacity,
+      depthWrite:false,
+      blending:
+        THREE.AdditiveBlending
+    });
+
+
+  return new THREE.LineSegments(
+    geometry,
+    material
+  );
+
+}
+
+
+/* =========================================================
+   REBUILD HYPERGRAPH
+========================================================= */
+
+function rebuildHypergraph(){
 
   hyperGroup.clear();
+
 
   if(
     !state.showHyper
@@ -3840,17 +4511,23 @@ function rebuildHyperedges(){
   }
 
 
+  $("hyperCount")
+    .textContent =
+      state.hyperedges.length;
+
+
   for(
-    const hyper
+    const hyperedge
     of state.hyperedges
   ){
 
     const members =
-      hyper.nodeIds
+      hyperedge.nodeIds
         .map(
           id =>
             state.memories.find(
-              m => m.id===id
+              m =>
+                m.id===id
             )
         )
         .filter(Boolean);
@@ -3863,61 +4540,116 @@ function rebuildHyperedges(){
     }
 
 
-    let center=[
-      0,
-      0,
-      0
-    ];
-
-
-    for(
-      const memory
-      of members
-    ){
-
-      center =
-        vec3Add(
-          center,
-          memory.pos3d
-        );
-
-    }
-
-
-    center =
-      vec3Scale(
-        center,
-        1/members.length
-      );
-
-
-    const active =
+    const isActive =
       state.activeContext.size===0 ||
       members.some(
-        m =>
+        member =>
           state.activeContext.has(
-            m.id
+            member.id
           )
       );
 
 
-    const alpha =
-      active
-        ? .55
-        : .08;
+    const opacity =
+      isActive
+        ? .46
+        : .055;
+
+
+    const edgeOpacity =
+      isActive
+        ? .82
+        : .07;
 
 
     /*
-      Der Hyperedge-Hub ist KEIN Memory.
-      Er ist ausschließlich eine visuelle
-      Darstellung der Mehrfachbeziehung.
+      1. Hyperedge surface
+    */
+
+    if(
+      state.showHull
+    ){
+
+      const surface =
+        buildHyperSurface(
+          members,
+          0xff2ca8,
+          opacity*.32
+        );
+
+
+      if(surface){
+
+        hyperGroup.add(
+          surface
+        );
+
+      }
+
+    }
+
+
+    /*
+      2. Geschlossene Hyperedge-Grenze
+    */
+
+    const boundary =
+      buildHyperBoundary(
+        members,
+        0xff2ca8,
+        edgeOpacity
+      );
+
+
+    if(boundary){
+
+      hyperGroup.add(
+        boundary
+      );
+
+    }
+
+
+    /*
+      3. Membership-Verbindungen
+    */
+
+    const center =
+      calculateCentroid(
+        members.map(
+          m => m.pos3d
+        )
+      );
+
+
+    const membership =
+      buildHyperMembership(
+        members,
+        center,
+        0xff2ca8,
+        edgeOpacity*.65
+      );
+
+
+    hyperGroup.add(
+      membership
+    );
+
+
+    /*
+      4. Kleiner Hyperedge-Marker.
+
+      Dies ist KEIN Node.
+      Er markiert nur den
+      geometrischen Mittelpunkt
+      der Hyperkante.
     */
 
     const hubGeometry =
       new THREE.SphereGeometry(
-        .12,
-        10,
-        10
+        .055,
+        8,
+        8
       );
 
 
@@ -3925,8 +4657,10 @@ function rebuildHyperedges(){
       new THREE.MeshBasicMaterial({
         color:0xff2ca8,
         transparent:true,
-        opacity:alpha,
-        depthWrite:false
+        opacity:edgeOpacity,
+        depthWrite:false,
+        blending:
+          THREE.AdditiveBlending
       });
 
 
@@ -3936,63 +4670,14 @@ function rebuildHyperedges(){
         hubMaterial
       );
 
-    hub.position.set(
-      ...center
+
+    hub.position.copy(
+      center
     );
+
 
     hyperGroup.add(
       hub
-    );
-
-
-    const vertices=[];
-
-
-    for(
-      const member
-      of members
-    ){
-
-      vertices.push(
-        ...center,
-        ...member.pos3d
-      );
-
-    }
-
-
-    const geometry =
-      new THREE.BufferGeometry();
-
-    geometry.setAttribute(
-      "position",
-      new THREE.Float32BufferAttribute(
-        vertices,
-        3
-      )
-    );
-
-
-    const material =
-      new THREE.LineBasicMaterial({
-        color:0xff2ca8,
-        transparent:true,
-        opacity:alpha,
-        depthWrite:false,
-        blending:
-          THREE.AdditiveBlending
-      });
-
-
-    const lines =
-      new THREE.LineSegments(
-        geometry,
-        material
-      );
-
-
-    hyperGroup.add(
-      lines
     );
 
   }
@@ -4001,12 +4686,13 @@ function rebuildHyperedges(){
 
 
 /* =========================================================
-   ANCHOR VISUALIZATION
+   ANCHORS
 ========================================================= */
 
 function rebuildAnchors(){
 
   anchorGroup.clear();
+
 
   if(
     !state.showAnchors
@@ -4015,12 +4701,20 @@ function rebuildAnchors(){
   }
 
 
+  const geometry =
+    new THREE.SphereGeometry(
+      .17,
+      8,
+      8
+    );
+
+
   const material =
     new THREE.MeshBasicMaterial({
       color:0x4ade80,
+      wireframe:true,
       transparent:true,
-      opacity:.45,
-      wireframe:true
+      opacity:.45
     });
 
 
@@ -4034,36 +4728,30 @@ function rebuildAnchors(){
   ){
 
     for(
-      const anchorId
+      const id
       of memory.anchors || []
     ){
 
       if(
-        used.has(anchorId)
+        used.has(id)
       ){
         continue;
       }
 
+
       const anchor =
         state.memories.find(
-          m => m.id===anchorId
+          m =>
+            m.id===id
         );
+
 
       if(!anchor){
         continue;
       }
 
-      used.add(
-        anchorId
-      );
 
-
-      const geometry =
-        new THREE.SphereGeometry(
-          .18,
-          8,
-          8
-        );
+      used.add(id);
 
 
       const mesh =
@@ -4072,9 +4760,11 @@ function rebuildAnchors(){
           material
         );
 
+
       mesh.position.set(
         ...anchor.pos3d
       );
+
 
       anchorGroup.add(
         mesh
@@ -4088,16 +4778,16 @@ function rebuildAnchors(){
 
 
 /* =========================================================
-   RENDER SCENE
+   SCENE RENDER
 ========================================================= */
 
 function renderScene(){
 
-  makePoints();
+  rebuildNodes();
 
-  rebuildPairLinks();
+  rebuildEdges();
 
-  rebuildHyperedges();
+  rebuildHypergraph();
 
   rebuildAnchors();
 
@@ -4136,16 +4826,28 @@ function renderMemoryList(){
   ){
 
     const item =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
+
 
     item.className =
       "mem-item " +
       (
-        memory.id===
-        state.selectedId
+        state.selectedId===
+        memory.id
           ? "selected"
           : ""
       );
+
+
+    const hyperCount =
+      state.hyperedges.filter(
+        h =>
+          h.nodeIds.includes(
+            memory.id
+          )
+      ).length;
 
 
     item.innerHTML = `
@@ -4153,7 +4855,9 @@ function renderMemoryList(){
       <div class="mem-top">
 
         <span class="mem-id">
-          ${escapeHTML(memory.id)}
+          ${escapeHTML(
+            memory.id
+          )}
         </span>
 
         <span class="mem-type">
@@ -4176,19 +4880,14 @@ function renderMemoryList(){
           3D:
           ${memory.pos3d
             .map(
-              x=>x.toFixed(1)
+              x =>
+                x.toFixed(1)
             )
             .join(",")}
         </span>
 
         <span>
-          H:
-          ${state.hyperedges.filter(
-            h =>
-              h.nodeIds.includes(
-                memory.id
-              )
-          ).length}
+          H:${hyperCount}
         </span>
 
       </div>
@@ -4245,7 +4944,10 @@ function renderHyperList(){
   ){
 
     const item =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
+
 
     item.className =
       "hyper-item";
@@ -4253,7 +4955,7 @@ function renderHyperList(){
 
     item.innerHTML = `
 
-      <div class="hyper-head">
+      <div class="hyper-top">
 
         <span class="hyper-id">
           ${escapeHTML(
@@ -4297,176 +4999,7 @@ function renderHyperList(){
 
 
 /* =========================================================
-   INSPECTOR
-========================================================= */
-
-function selectMemory(
-  id
-){
-
-  const memory =
-    state.memories.find(
-      m => m.id===id
-    );
-
-  if(!memory){
-    return;
-  }
-
-  state.selectedId =
-    id;
-
-  renderInspector(
-    memory
-  );
-
-  renderAll();
-
-  focusMemory(
-    memory
-  );
-
-}
-
-
-function renderInspector(
-  memory
-){
-
-  $("inspector")
-    .classList.remove(
-      "hidden"
-    );
-
-
-  $("inspectorTitle")
-    .textContent =
-      memory.id +
-      " / " +
-      memory.type
-        .toUpperCase();
-
-
-  const hyperedges =
-    state.hyperedges
-      .filter(
-        h =>
-          h.nodeIds.includes(
-            memory.id
-          )
-      )
-      .map(
-        h => h.id
-      );
-
-
-  $("inspectorGrid").innerHTML = `
-
-    <div class="info-key">ID</div>
-    <div class="info-val">
-      ${escapeHTML(memory.id)}
-    </div>
-
-    <div class="info-key">TYPE</div>
-    <div class="info-val">
-      ${escapeHTML(memory.type)}
-    </div>
-
-    <div class="info-key">POSITION</div>
-    <div class="info-val">
-      ${memory.pos3d
-        .map(
-          x=>x.toFixed(4)
-        )
-        .join(", ")}
-    </div>
-
-    <div class="info-key">LOCK</div>
-    <div class="info-val">
-      ${memory.positionLocked
-        ? "FIXED"
-        : "OPEN"}
-    </div>
-
-    <div class="info-key">ANCHORS</div>
-    <div class="info-val">
-      ${
-        memory.anchors?.length
-          ? memory.anchors.join(", ")
-          : "—"
-      }
-    </div>
-
-    <div class="info-key">HYPEREDGES</div>
-    <div class="info-val">
-      ${
-        hyperedges.length
-          ? hyperedges.join(", ")
-          : "—"
-      }
-    </div>
-
-    <div class="info-key">NORM</div>
-    <div class="info-val">
-      ${norm(
-        memory.vector
-      ).toFixed(6)}
-    </div>
-
-  `;
-
-
-  $("inspectorText")
-    .textContent =
-      memory.text;
-
-}
-
-
-/* =========================================================
-   FOCUS CAMERA
-========================================================= */
-
-function focusMemory(
-  memory
-){
-
-  const target =
-    new THREE.Vector3(
-      ...memory.pos3d
-    );
-
-  const direction =
-    camera.position
-      .clone()
-      .sub(
-        controls.target
-      )
-      .normalize();
-
-
-  controls.target.copy(
-    target
-  );
-
-
-  camera.position.copy(
-    target
-      .clone()
-      .add(
-        direction.multiplyScalar(
-          7
-        )
-      )
-  );
-
-  controls.update();
-
-}
-
-
-/* =========================================================
-   SEARCH
+   QUERY
 ========================================================= */
 
 async function runQuery(){
@@ -4476,9 +5009,13 @@ async function runQuery(){
       .value
       .trim();
 
+
   if(!text){
+
     return;
+
   }
+
 
   if(
     !state.memories.length
@@ -4497,16 +5034,8 @@ async function runQuery(){
   $("queryBtn").disabled =
     true;
 
-  pipe(
-    "pipeEmbedding",
-    "active"
-  );
 
   try{
-
-    log(
-      "Query-Embedding..."
-    );
 
     const vector =
       await embed(
@@ -4514,12 +5043,13 @@ async function runQuery(){
         "query"
       );
 
+
     state.queryVector =
       vector;
 
 
     const results =
-      nearestNeighbors(
+      neighbors(
         vector,
         state.memories
       );
@@ -4530,21 +5060,15 @@ async function runQuery(){
     );
 
 
-    /*
-      Query aktiviert keinen Node
-      automatisch. Sie liefert nur
-      eine semantische Ordnung.
-    */
-
-    pipe(
-      "pipeEmbedding",
-      "done"
+    log(
+      `Query berechnet: ${results.length} Ergebnisse`
     );
+
 
   }catch(error){
 
     log(
-      "Query-Fehler: " +
+      "Query-Fehler: "+
       error.message,
       "err"
     );
@@ -4558,10 +5082,6 @@ async function runQuery(){
 
 }
 
-
-/* =========================================================
-   QUERY RESULTS
-========================================================= */
 
 function renderQueryResults(
   results
@@ -4579,7 +5099,10 @@ function renderQueryResults(
       result => {
 
         const item =
-          document.createElement("div");
+          document.createElement(
+            "div"
+          );
+
 
         item.className =
           "result";
@@ -4626,15 +5149,287 @@ function renderQueryResults(
 
 
 /* =========================================================
+   INSPECTOR
+========================================================= */
+
+function selectMemory(
+  id
+){
+
+  const memory =
+    state.memories.find(
+      m =>
+        m.id===id
+    );
+
+
+  if(!memory){
+    return;
+  }
+
+
+  state.selectedId =
+    id;
+
+
+  renderInspector(
+    memory
+  );
+
+
+  renderAll();
+
+
+  focusMemory(
+    memory
+  );
+
+}
+
+
+function renderInspector(
+  memory
+){
+
+  $("inspector")
+    .classList.remove(
+      "hidden"
+    );
+
+
+  $("inspectorTitle")
+    .textContent =
+      memory.id+
+      " / "+
+      memory.type.toUpperCase();
+
+
+  const relatedHyperedges =
+    state.hyperedges
+      .filter(
+        h =>
+          h.nodeIds.includes(
+            memory.id
+          )
+      )
+      .map(
+        h =>
+          h.id
+      );
+
+
+  $("inspectorGrid")
+    .innerHTML = `
+
+      <div class="info-key">
+        ID
+      </div>
+
+      <div class="info-val">
+        ${escapeHTML(
+          memory.id
+        )}
+      </div>
+
+
+      <div class="info-key">
+        TYPE
+      </div>
+
+      <div class="info-val">
+        ${escapeHTML(
+          memory.type
+        )}
+      </div>
+
+
+      <div class="info-key">
+        POSITION
+      </div>
+
+      <div class="info-val">
+        ${memory.pos3d
+          .map(
+            x =>
+              x.toFixed(4)
+          )
+          .join(", ")}
+      </div>
+
+
+      <div class="info-key">
+        STATE
+      </div>
+
+      <div class="info-val">
+        ${memory.positionLocked
+          ? "FIXED"
+          : "OPEN"}
+      </div>
+
+
+      <div class="info-key">
+        ANCHORS
+      </div>
+
+      <div class="info-val">
+        ${
+          memory.anchors?.length
+            ? memory.anchors.join(", ")
+            : "—"
+        }
+      </div>
+
+
+      <div class="info-key">
+        EDGES
+      </div>
+
+      <div class="info-val">
+        ${
+          countEdges(
+            memory.id
+          )
+        }
+      </div>
+
+
+      <div class="info-key">
+        HYPEREDGES
+      </div>
+
+      <div class="info-val">
+        ${
+          relatedHyperedges.length
+            ? relatedHyperedges.join(", ")
+            : "—"
+        }
+      </div>
+
+
+      <div class="info-key">
+        NORM
+      </div>
+
+      <div class="info-val">
+        ${norm(
+          memory.vector
+        ).toFixed(6)}
+      </div>
+
+    `;
+
+
+  $("inspectorText")
+    .textContent =
+      memory.text;
+
+}
+
+
+function countEdges(
+  id
+){
+
+  const memory =
+    state.memories.find(
+      m =>
+        m.id===id
+    );
+
+
+  if(!memory){
+    return 0;
+  }
+
+
+  return state.memories
+    .filter(
+      m =>
+        m.id!==id &&
+        cosine(
+          memory.vector,
+          m.vector
+        )>=EDGE_THRESHOLD
+    )
+    .length;
+
+}
+
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+function focusMemory(
+  memory
+){
+
+  const target =
+    new THREE.Vector3(
+      ...memory.pos3d
+    );
+
+
+  const direction =
+    camera.position
+      .clone()
+      .sub(
+        controls.target
+      )
+      .normalize();
+
+
+  controls.target.copy(
+    target
+  );
+
+
+  camera.position.copy(
+    target
+      .clone()
+      .add(
+        direction.multiplyScalar(
+          7
+        )
+      )
+  );
+
+
+  controls.update();
+
+}
+
+
+function resetView(){
+
+  camera.position.set(
+    0,
+    2,
+    22
+  );
+
+  controls.target.set(
+    0,
+    0,
+    0
+  );
+
+  controls.update();
+
+}
+
+
+/* =========================================================
    CONTEXT UI
 ========================================================= */
 
 function renderContext(){
 
-  const box =
+  const list =
     $("contextList");
 
-  box.innerHTML="";
+  list.innerHTML="";
 
 
   $("contextCounter")
@@ -4643,10 +5438,10 @@ function renderContext(){
 
 
   if(
-    !state.activeContext.size
+    state.activeContext.size===0
   ){
 
-    box.innerHTML =
+    list.innerHTML =
       `<div class="empty">
         Kein aktiver Kontext.
       </div>`;
@@ -4662,7 +5457,9 @@ function renderContext(){
   ){
 
     const chip =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
     chip.className =
       "context-chip";
@@ -4670,7 +5467,7 @@ function renderContext(){
     chip.textContent =
       id;
 
-    box.appendChild(
+    list.appendChild(
       chip
     );
 
@@ -4680,7 +5477,7 @@ function renderContext(){
 
 
 /* =========================================================
-   MAIN RENDER
+   RENDER ALL
 ========================================================= */
 
 function renderAll(){
@@ -4689,13 +5486,16 @@ function renderAll(){
     .textContent =
       state.memories.length;
 
+
   $("hyperCount")
     .textContent =
       state.hyperedges.length;
 
+
   $("memoryCounter")
     .textContent =
       state.memories.length;
+
 
   $("hyperCounter")
     .textContent =
@@ -4714,49 +5514,17 @@ function renderAll(){
 
 
 /* =========================================================
-   ESCAPE HTML
-========================================================= */
-
-function escapeHTML(
-  value
-){
-
-  return String(
-    value ?? ""
-  )
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-    .replace(
-      /</g,
-      "&lt;"
-    )
-    .replace(
-      />/g,
-      "&gt;"
-    )
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-    .replace(
-      /'/g,
-      "&#039;"
-    );
-
-}
-
-
-/* =========================================================
-   POINTER
+   POINTER / NODE SELECTION
 ========================================================= */
 
 function onPointerDown(
-  event
+event
 ){
 
-  if(!pointCloud){
+  if(
+    !state.showNodes ||
+    !state.memories.length
+  ){
     return;
   }
 
@@ -4770,9 +5538,9 @@ function onPointerDown(
     (
       event.clientX-
       rect.left
-    ) /
-    rect.width *
-    2 -
+    )/
+    rect.width*
+    2-
     1;
 
 
@@ -4781,10 +5549,10 @@ function onPointerDown(
       (
         event.clientY-
         rect.top
-      ) /
+      )/
       rect.height
-    ) *
-    2 +
+    )*
+    2+
     1;
 
 
@@ -4794,21 +5562,30 @@ function onPointerDown(
   );
 
 
-  const intersections =
+  const points =
+    nodeGroup.children[0];
+
+
+  if(!points){
+    return;
+  }
+
+
+  const hits =
     raycaster.intersectObject(
-      pointCloud
+      points
     );
 
 
   if(
-    !intersections.length
+    !hits.length
   ){
     return;
   }
 
 
   const index =
-    intersections[0].index;
+    hits[0].index;
 
 
   if(
@@ -4820,6 +5597,7 @@ function onPointerDown(
 
   const memory =
     state.memories[index];
+
 
   if(memory){
 
@@ -4838,8 +5616,14 @@ function onPointerDown(
 
 function resizeThree(){
 
+  if(!renderer){
+    return;
+  }
+
+
   const container =
     $("scene");
+
 
   const width =
     container.clientWidth;
@@ -4872,29 +5656,6 @@ function resizeThree(){
 
 
 /* =========================================================
-   RESET VIEW
-========================================================= */
-
-function resetView(){
-
-  camera.position.set(
-    0,
-    2,
-    22
-  );
-
-  controls.target.set(
-    0,
-    0,
-    0
-  );
-
-  controls.update();
-
-}
-
-
-/* =========================================================
    ANIMATION
 ========================================================= */
 
@@ -4904,7 +5665,9 @@ function animate(){
     animate
   );
 
+
   controls.update();
+
 
   renderer.render(
     scene,
@@ -4915,7 +5678,42 @@ function animate(){
 
 
 /* =========================================================
-   UI EVENTS
+   ESCAPE
+========================================================= */
+
+function escapeHTML(
+value
+){
+
+  return String(
+    value ?? ""
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+/* =========================================================
+   EVENTS
 ========================================================= */
 
 $("storeBtn")
@@ -4977,9 +5775,11 @@ $("createHyperBtn")
           .value
           .split(",")
           .map(
-            x=>x.trim()
+            x =>
+              x.trim()
           )
           .filter(Boolean);
+
 
       const label =
         $("hyperLabel")
@@ -5003,6 +5803,8 @@ $("createHyperBtn")
 
         $("hyperLabel")
           .value="";
+
+        renderAll();
 
       }
 
@@ -5077,18 +5879,18 @@ $("toggleNodes")
   );
 
 
-$("togglePairs")
+$("toggleEdges")
   .addEventListener(
     "click",
     event => {
 
-      state.showPairs =
-        !state.showPairs;
+      state.showEdges =
+        !state.showEdges;
 
       event.currentTarget
         .classList.toggle(
           "on",
-          state.showPairs
+          state.showEdges
         );
 
       renderScene();
@@ -5109,6 +5911,26 @@ $("toggleHyper")
         .classList.toggle(
           "on",
           state.showHyper
+        );
+
+      renderScene();
+
+    }
+  );
+
+
+$("toggleHull")
+  .addEventListener(
+    "click",
+    event => {
+
+      state.showHull =
+        !state.showHull;
+
+      event.currentTarget
+        .classList.toggle(
+          "on",
+          state.showHull
         );
 
       renderScene();
@@ -5144,16 +5966,16 @@ $("toggleAnchors")
 async function boot(){
 
   log(
-    "NEURAL MEMORY startet..."
+    "NEURAL MEMORY / HYPERGRAPH startet..."
   );
 
-  $("thresholdValue")
-    .textContent =
-      EDGE_THRESHOLD.toFixed(2);
+  log(
+    "3D-Modell: feste Node-Positionen."
+  );
 
-  $("hyperSizeValue")
-    .textContent =
-      HYPEREDGE_SIZE;
+  log(
+    "Relationen: Edges + Hyperedges."
+  );
 
 
   initThree();
@@ -5166,7 +5988,7 @@ async function boot(){
   }catch(error){
 
     log(
-      "IndexedDB Fehler: " +
+      "IndexedDB: "+
       error.message,
       "err"
     );
