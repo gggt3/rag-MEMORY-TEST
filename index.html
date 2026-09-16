@@ -3,1416 +3,1643 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
-      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+      content="width=device-width,
+               initial-scale=1,
+               maximum-scale=1,
+               user-scalable=no">
 
-<title>NEURAL MEMORY — Embedding RAG Lab</title>
+<title>NEURAL MEMORY — Semantic Hypergraph</title>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+  }
+}
+</script>
 
 <style>
 :root{
   --bg:#020308;
-  --panel:#060914;
-  --panel2:#09101d;
+  --panel:#080c12;
+  --panel2:#0c121a;
+  --line:#18242e;
+  --text:#dce9ef;
+  --muted:#6e8792;
+
   --cyan:#00f5ff;
-  --cyan2:#00aaff;
-  --pink:#ff00aa;
-  --green:#4aff88;
-  --yellow:#ffe600;
-  --red:#ff3355;
-  --text:#d9faff;
-  --muted:#62818c;
-  --line:rgba(0,245,255,.22);
-  --glow:0 0 12px rgba(0,245,255,.55),
-         0 0 35px rgba(0,245,255,.18);
+  --green:#4ade80;
+  --pink:#ff2ca8;
+  --yellow:#ffe066;
+  --purple:#b56cff;
+  --red:#ff5370;
+
+  --shadow:
+    0 0 30px rgba(0,245,255,.05),
+    inset 0 0 20px rgba(0,0,0,.25);
 }
 
 *{
   box-sizing:border-box;
 }
 
-html,body{
+html,
+body{
   margin:0;
   width:100%;
   height:100%;
+  overflow:hidden;
   background:var(--bg);
   color:var(--text);
   font-family:
-    "Courier New",
-    monospace;
-  overflow-x:hidden;
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
 }
 
-body{
-  background:
-    radial-gradient(
-      circle at 50% 20%,
-      rgba(0,245,255,.08),
-      transparent 35%
-    ),
-    linear-gradient(
-      rgba(0,245,255,.018) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      90deg,
-      rgba(0,245,255,.018) 1px,
-      transparent 1px
-    ),
-    var(--bg);
-
-  background-size:
-    auto,
-    40px 40px,
-    40px 40px;
+button,
+input,
+textarea,
+select{
+  font:inherit;
 }
 
-/* SCANLINES */
-
-body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:9999;
-
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      rgba(255,255,255,.018) 0px,
-      rgba(255,255,255,.018) 1px,
-      transparent 2px,
-      transparent 5px
-    );
+button{
+  cursor:pointer;
 }
 
-/* HEADER */
-
-header{
-  position:sticky;
-  top:0;
-  z-index:100;
-
-  height:72px;
-
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-
-  padding:0 22px;
-
-  background:
-    linear-gradient(
-      90deg,
-      rgba(0,245,255,.05),
-      rgba(255,0,170,.05)
-    ),
-    rgba(2,3,8,.92);
-
-  border-bottom:1px solid var(--line);
-
-  box-shadow:
-    0 0 25px rgba(0,245,255,.08);
-
-  backdrop-filter:blur(8px);
-}
-
-.logo{
-  display:flex;
-  align-items:center;
-  gap:14px;
-}
-
-.logoMark{
-  width:34px;
-  height:34px;
-
-  border:1px solid var(--cyan);
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  color:var(--cyan);
-
-  box-shadow:var(--glow);
-
-  font-size:18px;
-}
-
-.logoText{
-  letter-spacing:3px;
-  font-size:15px;
-}
-
-.logoText span{
-  color:var(--cyan);
-}
-
-.status{
-  display:flex;
-  align-items:center;
-  gap:8px;
-
-  font-size:11px;
-  color:var(--muted);
-
-  letter-spacing:1px;
-}
-
-.statusDot{
-  width:8px;
-  height:8px;
-
-  border-radius:50%;
-
-  background:var(--red);
-
-  box-shadow:0 0 10px var(--red);
-
-  transition:.3s;
-}
-
-.statusDot.online{
-  background:var(--green);
-  box-shadow:0 0 12px var(--green);
-}
-
-/* LAYOUT */
-
-main{
-  width:min(1500px,100%);
-  margin:auto;
-
-  padding:22px;
-
+.app{
+  width:100vw;
+  height:100vh;
   display:grid;
-
-  grid-template-columns:
-    minmax(280px,360px)
-    minmax(420px,1fr)
-    minmax(280px,360px);
-
-  gap:18px;
-}
-
-@media(max-width:1100px){
-
-  main{
-    grid-template-columns:1fr;
-  }
-
-}
-
-/* PANELS */
-
-.panel{
-  position:relative;
-
+  grid-template-columns:340px minmax(0,1fr) 370px;
   background:
-    linear-gradient(
-      180deg,
-      rgba(0,245,255,.025),
-      rgba(255,0,170,.018)
-    ),
-    var(--panel);
+    radial-gradient(circle at 50% 50%,rgba(0,245,255,.025),transparent 45%),
+    #020308;
+}
 
-  border:1px solid var(--line);
+/* =========================================================
+   LEFT
+========================================================= */
 
-  min-height:100px;
-
-  box-shadow:
-    inset 0 0 30px rgba(0,245,255,.025);
-
+.left{
+  border-right:1px solid var(--line);
+  background:linear-gradient(180deg,#070b11,#03060a);
+  display:flex;
+  flex-direction:column;
+  min-width:0;
   overflow:hidden;
 }
 
-.panel::before{
-  content:"";
-  position:absolute;
-
-  left:0;
-  top:0;
-
-  width:70px;
-  height:1px;
-
-  background:var(--cyan);
-
-  box-shadow:0 0 10px var(--cyan);
+.brand{
+  height:68px;
+  display:flex;
+  align-items:center;
+  padding:0 18px;
+  border-bottom:1px solid var(--line);
+  letter-spacing:.12em;
 }
 
-.panelTitle{
-  padding:14px 16px;
+.brand-main{
+  font-size:16px;
+  color:#fff;
+  font-weight:700;
+}
 
-  border-bottom:1px solid rgba(0,245,255,.12);
-
-  font-size:11px;
-
-  letter-spacing:2px;
-
+.brand-sub{
+  margin-left:9px;
   color:var(--cyan);
+  font-size:10px;
+  font-weight:700;
 }
 
-.panelBody{
-  padding:16px;
+.section{
+  padding:13px 15px;
+  border-bottom:1px solid var(--line);
 }
 
-/* INPUT */
+.section-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:9px;
+  font-size:9px;
+  color:var(--muted);
+  letter-spacing:.18em;
+  text-transform:uppercase;
+}
 
 textarea,
-input{
+input,
+select{
   width:100%;
-
-  background:#02050b;
-
-  color:var(--text);
-
-  border:1px solid rgba(0,245,255,.25);
-
+  color:#dce9ef;
+  background:#05090e;
+  border:1px solid #1a2a34;
   outline:none;
-
-  padding:12px;
-
-  font-family:inherit;
-
-  font-size:13px;
-
-  resize:vertical;
-
-  transition:.2s;
-}
-
-textarea{
-  min-height:120px;
+  border-radius:4px;
+  padding:9px 10px;
+  transition:.15s;
 }
 
 textarea:focus,
-input:focus{
-  border-color:var(--cyan);
-
-  box-shadow:
-    0 0 15px rgba(0,245,255,.15);
+input:focus,
+select:focus{
+  border-color:rgba(0,245,255,.55);
+  box-shadow:0 0 0 1px rgba(0,245,255,.08);
 }
 
-/* BUTTONS */
+textarea{
+  height:100px;
+  resize:none;
+  line-height:1.45;
+  font-size:12px;
+}
 
-button{
-  width:100%;
-
-  border:1px solid var(--cyan);
-
-  background:
-    linear-gradient(
-      90deg,
-      rgba(0,245,255,.06),
-      rgba(255,0,170,.06)
-    );
-
-  color:var(--cyan);
-
-  padding:13px;
-
-  margin-top:10px;
-
-  font-family:inherit;
-
+select{
   font-size:11px;
-
-  letter-spacing:2px;
-
-  cursor:pointer;
-
-  transition:.2s;
 }
 
-button:hover{
-  background:rgba(0,245,255,.12);
-
-  box-shadow:
-    0 0 18px rgba(0,245,255,.22);
+.row{
+  display:flex;
+  gap:7px;
 }
 
-button:disabled{
-  opacity:.35;
-  cursor:not-allowed;
+.row > *{
+  flex:1;
 }
 
-button.pink{
-  border-color:var(--pink);
+.btn{
+  width:100%;
+  border:1px solid #20333d;
+  background:#091017;
+  color:#b9d5dd;
+  padding:9px 10px;
+  border-radius:4px;
+  font-size:10px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  transition:.15s;
+}
+
+.btn:hover{
+  border-color:var(--cyan);
+  color:#fff;
+  box-shadow:0 0 14px rgba(0,245,255,.08);
+}
+
+.btn.primary{
+  color:var(--cyan);
+  border-color:rgba(0,245,255,.35);
+}
+
+.btn.active{
   color:var(--pink);
+  border-color:rgba(255,44,168,.5);
 }
 
-button.green{
-  border-color:var(--green);
+.btn.green{
   color:var(--green);
+  border-color:rgba(74,222,128,.35);
 }
-
-/* PIPELINE */
 
 .pipeline{
   display:flex;
   flex-direction:column;
-  gap:7px;
+  gap:5px;
 }
 
-.stage{
-  position:relative;
-
-  border:1px solid rgba(0,245,255,.12);
-
-  background:#030710;
-
-  padding:10px 12px;
-
-  font-size:11px;
-
-  color:#47626c;
-
-  transition:.4s;
+.pipe{
+  display:grid;
+  grid-template-columns:9px 1fr auto;
+  gap:8px;
+  align-items:center;
+  font-size:10px;
+  color:#8299a3;
 }
 
-.stage.active{
-  color:var(--cyan);
-
-  border-color:var(--cyan);
-
-  box-shadow:
-    0 0 14px rgba(0,245,255,.2);
-
-  text-shadow:
-    0 0 8px var(--cyan);
-}
-
-.stage.done{
-  color:var(--green);
-
-  border-color:rgba(74,255,136,.4);
-}
-
-.stage::before{
-  content:"";
-
-  display:inline-block;
-
+.pipe-dot{
   width:6px;
   height:6px;
-
-  margin-right:9px;
-
   border-radius:50%;
-
-  background:#20343b;
+  background:#273640;
 }
 
-.stage.active::before{
-  background:var(--cyan);
-
-  box-shadow:
-    0 0 10px var(--cyan);
-}
-
-.stage.done::before{
+.pipe.done .pipe-dot{
   background:var(--green);
-
-  box-shadow:
-    0 0 10px var(--green);
+  box-shadow:0 0 7px rgba(74,222,128,.5);
 }
 
-/* BOOT / LOG */
+.pipe.active .pipe-dot{
+  background:var(--cyan);
+  box-shadow:0 0 7px rgba(0,245,255,.6);
+}
+
+.pipe-value{
+  color:#536b75;
+  font-size:9px;
+}
+
+.pipe.done .pipe-value{
+  color:var(--green);
+}
 
 .log{
-  height:145px;
-
+  height:100px;
   overflow:auto;
-
-  background:#010207;
-
-  border:1px solid rgba(0,245,255,.12);
-
-  padding:10px;
-
-  font-size:10px;
-
-  line-height:1.7;
-
-  color:#59737b;
+  font-family:monospace;
+  font-size:9px;
+  line-height:1.5;
+  color:#6e8994;
+  background:#030609;
+  border:1px solid #111c23;
+  padding:8px;
 }
 
-.logLine.ok{
-  color:var(--green);
+.log-line{
+  white-space:pre-wrap;
 }
 
-.logLine.info{
-  color:var(--cyan);
+.log-line.ok{
+  color:#5fe58c;
 }
 
-.logLine.warn{
-  color:var(--yellow);
+.log-line.warn{
+  color:#ffe066;
 }
 
-.logLine.error{
-  color:var(--red);
+.log-line.err{
+  color:#ff5370;
 }
 
-/* VECTOR */
-
-.vectorBox{
-  background:#010308;
-
-  border:1px solid rgba(0,245,255,.14);
-
-  padding:12px;
-
-  max-height:250px;
-
+.vector-box{
+  height:100px;
   overflow:auto;
-
-  font-size:10px;
-
-  line-height:1.7;
-
+  background:#030609;
+  border:1px solid #111c23;
+  padding:8px;
+  color:#5c737e;
+  font-family:monospace;
+  font-size:8px;
+  line-height:1.5;
   word-break:break-all;
-
-  color:#8acdd5;
 }
 
-.vectorDim{
-  color:var(--yellow);
-
-  font-size:13px;
-
-  margin-bottom:8px;
+.method{
+  color:#6e858e;
+  font-size:9px;
+  line-height:1.6;
 }
 
-/* 3D */
+.method strong{
+  color:#b8d1d9;
+}
 
-.scene{
+.spacer{
+  flex:1;
+}
+
+/* =========================================================
+   CENTER
+========================================================= */
+
+.center{
   position:relative;
-
-  height:520px;
-
-  background:
-    radial-gradient(
-      ellipse at center,
-      rgba(0,245,255,.07),
-      transparent 55%
-    ),
-    #010308;
-
+  min-width:0;
+  min-height:0;
   overflow:hidden;
-
-  perspective:700px;
-}
-
-.grid3d{
-  position:absolute;
-
-  left:-20%;
-  width:140%;
-
-  bottom:-40px;
-
-  height:70%;
-
-  transform:
-    perspective(400px)
-    rotateX(62deg);
-
   background:
-    linear-gradient(
-      rgba(0,245,255,.15) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      90deg,
-      rgba(0,245,255,.15) 1px,
-      transparent 1px
-    );
-
-  background-size:
-    45px 45px;
-
-  box-shadow:
-    0 -20px 60px rgba(0,245,255,.08);
+    radial-gradient(circle at 50% 50%,rgba(0,245,255,.035),transparent 40%),
+    #020408;
 }
 
-.axis{
+#scene{
   position:absolute;
-
-  left:50%;
-  top:50%;
-
-  transform-origin:left center;
-
-  height:1px;
-
-  width:230px;
-
-  background:var(--cyan);
-
-  box-shadow:0 0 10px var(--cyan);
+  inset:0;
 }
 
-.axis.x{
-  transform:rotate(0deg);
-}
-
-.axis.y{
-  transform:rotate(120deg);
-}
-
-.axis.z{
-  transform:rotate(-120deg);
-}
-
-.axisLabel{
+.hud-top{
   position:absolute;
-
-  font-size:10px;
-
-  color:var(--cyan);
-
-  text-shadow:
-    0 0 8px var(--cyan);
-}
-
-.axisLabel.x{
-  right:25px;
-  top:49%;
-}
-
-.axisLabel.y{
-  left:27%;
-  top:29%;
-}
-
-.axisLabel.z{
-  right:27%;
-  top:29%;
-}
-
-.point{
-  position:absolute;
-
-  width:9px;
-  height:9px;
-
-  border-radius:50%;
-
-  background:var(--pink);
-
-  box-shadow:
-    0 0 8px var(--pink),
-    0 0 25px var(--pink);
-
-  transform:
-    translate(-50%,-50%);
-
-  animation:
-    pulse 1.6s infinite ease-in-out;
-}
-
-@keyframes pulse{
-
-  0%,100%{
-    opacity:.65;
-    transform:
-      translate(-50%,-50%)
-      scale(.8);
-  }
-
-  50%{
-    opacity:1;
-    transform:
-      translate(-50%,-50%)
-      scale(1.5);
-  }
-
-}
-
-/* HUD */
-
-.hud{
-  position:absolute;
-
-  top:12px;
-  left:12px;
-  right:12px;
-
+  top:14px;
+  left:15px;
+  right:15px;
   display:flex;
   justify-content:space-between;
-
+  align-items:flex-start;
   pointer-events:none;
-
-  font-size:9px;
-
-  color:var(--muted);
-
-  letter-spacing:1px;
 }
 
-.hudRight{
-  color:var(--pink);
+.hud-title{
+  font-size:10px;
+  letter-spacing:.18em;
+  color:#7f9ba5;
 }
 
-/* MEMORY */
+.hud-title strong{
+  color:var(--cyan);
+}
 
-.memoryList{
+.hud-stats{
   display:flex;
-  flex-direction:column;
+  gap:14px;
+  text-align:right;
+}
 
-  gap:8px;
+.stat{
+  font-family:monospace;
+  font-size:9px;
+  color:#617984;
+}
 
-  max-height:330px;
+.stat b{
+  display:block;
+  font-size:12px;
+  color:#dce9ef;
+  font-weight:500;
+}
 
+.toolbar{
+  position:absolute;
+  top:55px;
+  left:15px;
+  display:flex;
+  gap:5px;
+  flex-wrap:wrap;
+  max-width:65%;
+}
+
+.tool{
+  pointer-events:auto;
+  border:1px solid #182a34;
+  background:rgba(3,8,12,.85);
+  color:#66818c;
+  border-radius:3px;
+  padding:6px 8px;
+  font-size:8px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+
+.tool:hover{
+  color:#c9e4ea;
+  border-color:#31505e;
+}
+
+.tool.on{
+  color:var(--cyan);
+  border-color:rgba(0,245,255,.45);
+  background:rgba(0,245,255,.035);
+}
+
+.legend{
+  position:absolute;
+  bottom:16px;
+  left:16px;
+  display:flex;
+  gap:12px;
+  pointer-events:none;
+  flex-wrap:wrap;
+}
+
+.legend-item{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  color:#5e757f;
+  font-size:8px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+.legend-dot{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+}
+
+.legend-dot.memory{background:var(--cyan);}
+.legend-dot.concept{background:var(--green);}
+.legend-dot.claim{background:var(--yellow);}
+.legend-dot.evidence{background:var(--pink);}
+.legend-dot.hypothesis{background:var(--purple);}
+.legend-dot.hyper{background:var(--pink);}
+
+.inspector{
+  position:absolute;
+  right:15px;
+  bottom:15px;
+  width:280px;
+  max-height:270px;
   overflow:auto;
+  border:1px solid #172832;
+  background:rgba(3,7,11,.92);
+  box-shadow:var(--shadow);
+  padding:11px;
+  backdrop-filter:blur(8px);
 }
 
-.memory{
-  padding:10px;
-
-  border:1px solid rgba(0,245,255,.12);
-
-  background:#030710;
-
-  font-size:10px;
-
-  cursor:pointer;
-
-  transition:.2s;
-}
-
-.memory:hover{
-  border-color:var(--cyan);
-
-  box-shadow:
-    0 0 12px rgba(0,245,255,.1);
-}
-
-.memoryId{
-  color:var(--pink);
-
-  font-size:9px;
-
-  margin-bottom:5px;
-}
-
-.memoryText{
-  color:#9bb8bf;
-
-  line-height:1.4;
-}
-
-/* RANKING */
-
-.rank{
-  border:1px solid rgba(0,245,255,.12);
-
-  padding:10px;
-
-  margin-bottom:8px;
-
-  background:#030710;
-}
-
-.rankTop{
-  display:flex;
-
-  justify-content:space-between;
-
-  font-size:10px;
-}
-
-.rankScore{
-  color:var(--green);
-}
-
-.bar{
-  height:3px;
-
-  background:#0b1820;
-
-  margin-top:7px;
-}
-
-.barFill{
-  height:100%;
-
-  background:
-    linear-gradient(
-      90deg,
-      var(--cyan),
-      var(--pink)
-    );
-
-  box-shadow:
-    0 0 8px var(--cyan);
-
-  width:0%;
-
-  transition:1s;
-}
-
-/* ERROR */
-
-.errorBox{
+.inspector.hidden{
   display:none;
+}
 
-  border:1px solid var(--red);
+.inspector-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding-bottom:8px;
+  border-bottom:1px solid #15232b;
+  margin-bottom:8px;
+}
 
-  color:#ff8a99;
+.inspector-title{
+  color:var(--cyan);
+  font-size:9px;
+  letter-spacing:.15em;
+}
 
-  background:rgba(255,0,50,.05);
+.close{
+  color:#526873;
+  cursor:pointer;
+  font-size:14px;
+}
 
-  padding:12px;
+.info-grid{
+  display:grid;
+  grid-template-columns:70px 1fr;
+  gap:4px 8px;
+  font-family:monospace;
+  font-size:8px;
+}
 
-  margin-top:12px;
+.info-key{
+  color:#526873;
+}
 
-  font-size:10px;
+.info-val{
+  color:#c7dbe1;
+  word-break:break-word;
+}
 
+.inspector-text{
+  margin-top:9px;
+  padding:8px;
+  background:#05090d;
+  border:1px solid #111d24;
+  color:#8ba3ac;
+  font-size:9px;
   line-height:1.5;
 }
 
-.errorBox.show{
-  display:block;
+/* =========================================================
+   RIGHT
+========================================================= */
+
+.right{
+  border-left:1px solid var(--line);
+  background:linear-gradient(180deg,#070b11,#03060a);
+  min-width:0;
+  overflow:auto;
 }
 
-/* METRICS */
+.right .section{
+  padding:13px 14px;
+}
 
-.metrics{
-  display:grid;
+.bank-list{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  max-height:300px;
+  overflow:auto;
+}
 
-  grid-template-columns:1fr 1fr;
+.mem-item{
+  border:1px solid #15242d;
+  background:#05090e;
+  padding:8px;
+  cursor:pointer;
+  transition:.15s;
+}
 
+.mem-item:hover{
+  border-color:#31505d;
+}
+
+.mem-item.selected{
+  border-color:rgba(255,44,168,.55);
+  box-shadow:inset 2px 0 var(--pink);
+}
+
+.mem-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
   gap:8px;
-
-  margin-top:12px;
 }
 
-.metric{
-  padding:10px;
-
-  background:#030710;
-
-  border:1px solid rgba(0,245,255,.12);
-}
-
-.metricLabel{
-  font-size:8px;
-
-  color:var(--muted);
-
-  letter-spacing:1px;
-}
-
-.metricValue{
-  margin-top:5px;
-
-  font-size:14px;
-
+.mem-id{
+  font-family:monospace;
   color:var(--cyan);
+  font-size:9px;
 }
 
-/* FOOTER */
+.mem-type{
+  font-size:7px;
+  letter-spacing:.1em;
+  color:#647c86;
+}
 
-footer{
-  width:min(1500px,100%);
-
-  margin:auto;
-
-  padding:0 22px 30px;
-
-  color:#304850;
-
+.mem-text{
+  margin-top:5px;
+  color:#8299a2;
   font-size:9px;
+  line-height:1.4;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
 
-  letter-spacing:1px;
+.mem-meta{
+  display:flex;
+  gap:8px;
+  margin-top:5px;
+  font-family:monospace;
+  color:#455a63;
+  font-size:7px;
+}
+
+.hyper-list{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  max-height:230px;
+  overflow:auto;
+}
+
+.hyper-item{
+  border:1px solid #18262f;
+  background:#05090e;
+  padding:8px;
+}
+
+.hyper-head{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.hyper-id{
+  color:var(--pink);
+  font-family:monospace;
+  font-size:9px;
+}
+
+.hyper-score{
+  color:#607a84;
+  font-family:monospace;
+  font-size:8px;
+}
+
+.hyper-label{
+  margin-top:4px;
+  color:#a5bac2;
+  font-size:9px;
+}
+
+.hyper-members{
+  margin-top:5px;
+  color:#526a75;
+  font-family:monospace;
+  font-size:7px;
+  line-height:1.5;
+}
+
+.query-input{
+  display:flex;
+  gap:5px;
+}
+
+.query-input input{
+  min-width:0;
+}
+
+.query-results{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  margin-top:8px;
+}
+
+.result{
+  display:grid;
+  grid-template-columns:65px 1fr 45px;
+  gap:5px;
+  align-items:center;
+  padding:6px;
+  background:#05090e;
+  border:1px solid #121e25;
+  cursor:pointer;
+  font-size:8px;
+}
+
+.result:hover{
+  border-color:#2d4b57;
+}
+
+.result-id{
+  color:var(--cyan);
+  font-family:monospace;
+}
+
+.result-text{
+  color:#738b95;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.result-score{
+  text-align:right;
+  color:var(--green);
+  font-family:monospace;
+}
+
+.context-list{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;
+}
+
+.context-chip{
+  border:1px solid #17313a;
+  background:#061016;
+  color:#6f929d;
+  padding:4px 6px;
+  font-family:monospace;
+  font-size:7px;
+}
+
+.empty{
+  color:#435962;
+  font-size:9px;
+  padding:8px 0;
+}
+
+/* =========================================================
+   SCROLLBARS
+========================================================= */
+
+::-webkit-scrollbar{
+  width:5px;
+  height:5px;
+}
+
+::-webkit-scrollbar-track{
+  background:#030609;
+}
+
+::-webkit-scrollbar-thumb{
+  background:#1b303a;
+  border-radius:4px;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:1050px){
+  .app{
+    grid-template-columns:280px minmax(0,1fr);
+  }
+
+  .right{
+    display:none;
+  }
+}
+
+@media(max-width:700px){
+  body{
+    overflow:auto;
+  }
+
+  .app{
+    width:100%;
+    height:auto;
+    min-height:100vh;
+    display:block;
+  }
+
+  .left{
+    min-height:650px;
+  }
+
+  .center{
+    height:75vh;
+    min-height:500px;
+  }
+
+  .right{
+    display:block;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<header>
+<div class="app">
 
-  <div class="logo">
+  <!-- =====================================================
+       LEFT
+  ====================================================== -->
 
-    <div class="logoMark">Σ</div>
+  <aside class="left">
 
-    <div class="logoText">
-      NEURAL <span>MEMORY</span>
+    <div class="brand">
+      <div class="brand-main">NEURAL MEMORY</div>
+      <div class="brand-sub">HYPERGRAPH</div>
     </div>
 
-  </div>
+    <div class="section">
 
-  <div class="status">
-
-    <div
-      id="statusDot"
-      class="statusDot">
-    </div>
-
-    <span id="statusText">
-      EMBEDDING CORE OFFLINE
-    </span>
-
-  </div>
-
-</header>
-
-
-<main>
-
-<!-- =====================================================
-     LEFT
-===================================================== -->
-
-<section>
-
-  <div class="panel">
-
-    <div class="panelTitle">
-      01 / TEXT INPUT
-    </div>
-
-    <div class="panelBody">
+      <div class="section-title">
+        <span>Neue Memory</span>
+        <span id="modelStatus">OFFLINE</span>
+      </div>
 
       <textarea
-        id="textInput"
-        placeholder="Schreibe hier einen Satz oder eine Erinnerung ...">Der Kunde hat am Freitag einen Termin in Stuttgart.</textarea>
+        id="memoryText"
+        placeholder="Text oder Kontext eingeben..."></textarea>
 
-      <button
-        id="embedBtn">
-        GENERATE EMBEDDING
-      </button>
+      <div style="height:7px"></div>
 
-      <button
-        id="storeBtn"
-        class="green"
-        disabled>
-        STORE VECTOR
-      </button>
+      <div class="row">
 
-      <div
-        id="errorBox"
-        class="errorBox">
+        <select id="memoryType">
+          <option value="memory">MEMORY</option>
+          <option value="concept">CONCEPT</option>
+          <option value="claim">CLAIM</option>
+          <option value="evidence">EVIDENCE</option>
+          <option value="hypothesis">HYPOTHESIS</option>
+        </select>
+
+        <button
+          class="btn primary"
+          id="storeBtn">
+          SPEICHERN
+        </button>
+
       </div>
 
     </div>
 
-  </div>
+    <div class="section">
 
+      <div class="section-title">
+        <span>Hyperedge erstellen</span>
+        <span>MANUAL</span>
+      </div>
 
-  <div
-    class="panel"
-    style="margin-top:18px">
+      <input
+        id="hyperMembers"
+        placeholder="MEM-000001, MEM-000002, MEM-000003">
 
-    <div class="panelTitle">
-      PIPELINE
+      <div style="height:6px"></div>
+
+      <input
+        id="hyperLabel"
+        placeholder="z.B. gemeinsamer Kontext">
+
+      <div style="height:6px"></div>
+
+      <button
+        class="btn"
+        id="createHyperBtn">
+        HYPEREDGE ERSTELLEN
+      </button>
+
     </div>
 
-    <div class="panelBody">
+    <div class="section">
+
+      <div class="section-title">
+        <span>Pipeline</span>
+        <span id="pipelineStatus">READY</span>
+      </div>
 
       <div class="pipeline">
 
-        <div
-          id="stageText"
-          class="stage">
-          TEXT
+        <div class="pipe" id="pipeText">
+          <span class="pipe-dot"></span>
+          <span>TEXT</span>
+          <span class="pipe-value">INPUT</span>
         </div>
 
-        <div
-          id="stageToken"
-          class="stage">
-          TOKENIZATION
+        <div class="pipe" id="pipeEmbedding">
+          <span class="pipe-dot"></span>
+          <span>EMBEDDING</span>
+          <span class="pipe-value">384D</span>
         </div>
 
-        <div
-          id="stageModel"
-          class="stage">
-          EMBEDDING MODEL
+        <div class="pipe" id="pipeVector">
+          <span class="pipe-dot"></span>
+          <span>VECTOR SPACE</span>
+          <span class="pipe-value">NORMALIZED</span>
         </div>
 
-        <div
-          id="stageVector"
-          class="stage">
-          VECTOR 384D
+        <div class="pipe" id="pipe3D">
+          <span class="pipe-dot"></span>
+          <span>ANCHORED 3D</span>
+          <span class="pipe-value">FIXED</span>
         </div>
 
-        <div
-          id="stageStore"
-          class="stage">
-          VECTOR STORE
-        </div>
-
-        <div
-          id="stageSearch"
-          class="stage">
-          COSINE SEARCH
+        <div class="pipe" id="pipeHyper">
+          <span class="pipe-dot"></span>
+          <span>HYPERGRAPH</span>
+          <span class="pipe-value">DERIVED</span>
         </div>
 
       </div>
 
     </div>
 
-  </div>
+    <div class="section">
 
-
-  <div
-    class="panel"
-    style="margin-top:18px">
-
-    <div class="panelTitle">
-      SYSTEM LOG
-    </div>
-
-    <div class="panelBody">
-
-      <div
-        id="log"
-        class="log">
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- =====================================================
-     CENTER
-===================================================== -->
-
-<section>
-
-  <div class="panel">
-
-    <div class="panelTitle">
-      EMBEDDING SPACE / 3D VIEW
-    </div>
-
-    <div class="panelBody"
-         style="padding:0">
-
-      <div
-        id="scene"
-        class="scene">
-
-        <div class="hud">
-
-          <div>
-            VECTOR SPACE // R³ VIEW
-          </div>
-
-          <div
-            id="hudStatus"
-            class="hudRight">
-            NO VECTOR
-          </div>
-
-        </div>
-
-        <div class="grid3d"></div>
-
-        <div class="axis x"></div>
-        <div class="axis y"></div>
-        <div class="axis z"></div>
-
-        <div class="axisLabel x">
-          v₁
-        </div>
-
-        <div class="axisLabel y">
-          v₂
-        </div>
-
-        <div class="axisLabel z">
-          v₃
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <div
-    class="panel"
-    style="margin-top:18px">
-
-    <div class="panelTitle">
-      EMBEDDING VECTOR
-    </div>
-
-    <div class="panelBody">
-
-      <div
-        id="vectorDim"
-        class="vectorDim">
-        d = —
+      <div class="section-title">
+        <span>System Log</span>
       </div>
 
       <div
-        id="vectorBox"
-        class="vectorBox">
-        Noch kein Embedding berechnet.
+        class="log"
+        id="log"></div>
+
+    </div>
+
+    <div class="section">
+
+      <div class="section-title">
+        <span>Current Vector</span>
+        <span id="vectorNorm">—</span>
+      </div>
+
+      <div
+        class="vector-box"
+        id="vectorBox">
+        Kein Vektor.
       </div>
 
     </div>
 
-  </div>
+    <div class="section">
 
-</section>
+      <div class="section-title">
+        <span>System</span>
+      </div>
 
+      <div class="method">
 
-<!-- =====================================================
-     RIGHT
-===================================================== -->
+        <strong>Embedding</strong><br>
+        multilingual-e5-small<br>
+        384 Dimensionen<br><br>
 
-<section>
+        <strong>3D-Raum</strong><br>
+        deterministische Ankerprojektion<br>
+        bestehende Punkte werden nicht bewegt<br><br>
 
-  <div class="panel">
+        <strong>Hypergraph</strong><br>
+        Beziehungen liegen über dem 3D-Raum<br>
+        Hyperedges verändern keine Koordinaten<br><br>
 
-    <div class="panelTitle">
-      MEMORY BANK
+        <strong>Runtime</strong><br>
+        kein LLM zur Laufzeit
+
+      </div>
+
     </div>
 
-    <div class="panelBody">
+    <div class="spacer"></div>
 
-      <div
-        id="memoryList"
-        class="memoryList">
+  </aside>
 
-        <div
-          style="
-          color:#405861;
-          font-size:10px">
-          VECTOR STORE EMPTY
+
+  <!-- =====================================================
+       CENTER
+  ====================================================== -->
+
+  <main class="center">
+
+    <div id="scene"></div>
+
+    <div class="hud-top">
+
+      <div class="hud-title">
+        <strong>SEMANTIC MEMORY SPACE</strong>
+        &nbsp; / &nbsp;
+        FIXED CONTEXT DISTRIBUTION
+      </div>
+
+      <div class="hud-stats">
+
+        <div class="stat">
+          <b id="nodeCount">0</b>
+          NODES
+        </div>
+
+        <div class="stat">
+          <b id="hyperCount">0</b>
+          HYPEREDGES
+        </div>
+
+        <div class="stat">
+          <b>384D → R³</b>
+          PROJECTION
         </div>
 
       </div>
 
     </div>
 
-  </div>
-
-
-  <div
-    class="panel"
-    style="margin-top:18px">
-
-    <div class="panelTitle">
-      SEMANTIC QUERY
-    </div>
-
-    <div class="panelBody">
-
-      <input
-        id="queryInput"
-        placeholder="z.B. Wann ist der Stuttgart-Termin?">
+    <div class="toolbar">
 
       <button
-        id="searchBtn"
-        class="pink"
-        disabled>
-        RUN COSINE SEARCH
+        class="tool on"
+        id="toggleNodes">
+        NODES
       </button>
 
-      <div class="metrics">
+      <button
+        class="tool on"
+        id="togglePairs">
+        PAIR LINKS
+      </button>
 
-        <div class="metric">
+      <button
+        class="tool on"
+        id="toggleHyper">
+        HYPEREDGES
+      </button>
 
-          <div class="metricLabel">
-            MEMORY COUNT
-          </div>
+      <button
+        class="tool"
+        id="toggleAnchors">
+        ANCHORS
+      </button>
 
-          <div
-            id="memoryCount"
-            class="metricValue">
-            0
-          </div>
+      <button
+        class="tool"
+        id="resetView">
+        RESET VIEW
+      </button>
 
-        </div>
+      <button
+        class="tool"
+        id="clearContext">
+        CLEAR CONTEXT
+      </button>
 
-        <div class="metric">
+    </div>
 
-          <div class="metricLabel">
-            VECTOR DIM
-          </div>
+    <div class="legend">
 
-          <div
-            id="dimension"
-            class="metricValue">
-            —
-          </div>
+      <div class="legend-item">
+        <span class="legend-dot memory"></span>
+        memory
+      </div>
 
-        </div>
+      <div class="legend-item">
+        <span class="legend-dot concept"></span>
+        concept
+      </div>
 
+      <div class="legend-item">
+        <span class="legend-dot claim"></span>
+        claim
+      </div>
+
+      <div class="legend-item">
+        <span class="legend-dot evidence"></span>
+        evidence
+      </div>
+
+      <div class="legend-item">
+        <span class="legend-dot hypothesis"></span>
+        hypothesis
+      </div>
+
+      <div class="legend-item">
+        <span class="legend-dot hyper"></span>
+        hyperedge
       </div>
 
     </div>
 
-  </div>
+    <div
+      class="inspector hidden"
+      id="inspector">
 
-
-  <div
-    class="panel"
-    style="margin-top:18px">
-
-    <div class="panelTitle">
-      RELEVANCE SCANNER
-    </div>
-
-    <div class="panelBody">
-
-      <div
-        id="ranking">
+      <div class="inspector-head">
 
         <div
-          style="
-          color:#405861;
-          font-size:10px">
-          NO SEARCH RESULT
+          class="inspector-title"
+          id="inspectorTitle">
+          MEMORY
+        </div>
+
+        <div
+          class="close"
+          id="closeInspector">
+          ×
+        </div>
+
+      </div>
+
+      <div
+        class="info-grid"
+        id="inspectorGrid">
+      </div>
+
+      <div
+        class="inspector-text"
+        id="inspectorText">
+      </div>
+
+      <div style="height:8px"></div>
+
+      <button
+        class="btn green"
+        id="activateContextBtn">
+        CONTEXT AKTIVIEREN
+      </button>
+
+    </div>
+
+  </main>
+
+
+  <!-- =====================================================
+       RIGHT
+  ====================================================== -->
+
+  <aside class="right">
+
+    <div class="section">
+
+      <div class="section-title">
+
+        <span>Memory Bank</span>
+
+        <span id="memoryCounter">
+          0
+        </span>
+
+      </div>
+
+      <div
+        class="bank-list"
+        id="memoryList">
+      </div>
+
+    </div>
+
+
+    <div class="section">
+
+      <div class="section-title">
+
+        <span>Hypergraph</span>
+
+        <span id="hyperCounter">
+          0
+        </span>
+
+      </div>
+
+      <div
+        class="hyper-list"
+        id="hyperList">
+      </div>
+
+    </div>
+
+
+    <div class="section">
+
+      <div class="section-title">
+        <span>Semantic Query</span>
+        <span>QUERY VECTOR</span>
+      </div>
+
+      <div class="query-input">
+
+        <input
+          id="queryInput"
+          placeholder="Kontext suchen...">
+
+        <button
+          class="btn primary"
+          id="queryBtn"
+          style="width:95px">
+          SEARCH
+        </button>
+
+      </div>
+
+      <div
+        class="query-results"
+        id="queryResults">
+      </div>
+
+    </div>
+
+
+    <div class="section">
+
+      <div class="section-title">
+
+        <span>Active Context</span>
+
+        <span id="contextCounter">
+          0
+        </span>
+
+      </div>
+
+      <div
+        class="context-list"
+        id="contextList">
+
+        <div class="empty">
+          Kein aktiver Kontext.
         </div>
 
       </div>
 
     </div>
 
-  </div>
 
-</section>
+    <div class="section">
 
-</main>
+      <div class="section-title">
+        <span>Hypergraph Policy</span>
+      </div>
 
+      <div class="method">
 
-<footer>
+        Similarity threshold:
+        <strong id="thresholdValue">0.72</strong>
 
-  NEURAL MEMORY LAB //
-  TEXT → TOKENS → TRANSFORMER → EMBEDDING → VECTOR STORE → COSINE
+        <br>
 
-</footer>
+        Max. Hyperedge members:
+        <strong id="hyperSizeValue">4</strong>
+
+        <br><br>
+
+        Hyperedges werden deterministisch aus
+        bereits vorhandenen Vektoren gebildet.
+        Die räumliche Position eines bestehenden
+        Memory-Nodes wird danach nicht verändert.
+
+      </div>
+
+    </div>
+
+  </aside>
+
+</div>
 
 
 <script type="module">
 
-/* =====================================================
-   IMPORT
-===================================================== */
+import * as THREE from "three";
 
 import {
-  pipeline
-} from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1";
+  OrbitControls
+} from "three/addons/controls/OrbitControls.js";
+
+import {
+  pipeline,
+  env
+} from "https://cdn.jsdelivr.net/npm/@xenova/transformers@3.8.1/dist/transformers.min.js";
 
 
-/* =====================================================
-   CONFIG
-===================================================== */
+/* =========================================================
+   CONFIGURATION
+========================================================= */
 
 const MODEL =
   "Xenova/multilingual-e5-small";
 
-const EMBEDDING_DIM =
-  384;
+const DIM = 384;
+
+const DB_NAME =
+  "NEURAL_MEMORY_ANCHORED_V1";
+
+const DB_VERSION = 2;
+
+const MEMORY_STORE =
+  "memories";
+
+const HYPER_STORE =
+  "hyperedges";
+
+const EDGE_THRESHOLD = 0.72;
+
+const HYPEREDGE_THRESHOLD = 0.72;
+
+const HYPEREDGE_SIZE = 4;
+
+const ANCHOR_COUNT = 5;
+
+const RELAX_ITERATIONS = 140;
 
 
-/* =====================================================
+/* =========================================================
    STATE
-===================================================== */
+========================================================= */
 
-let extractor = null;
+const state = {
 
-let modelLoading = false;
+  extractor:null,
 
-let modelReady = false;
+  loading:false,
 
-let currentVector = null;
+  modelReady:false,
 
-let memory = [];
+  memories:[],
 
-let memoryCounter = 0;
+  hyperedges:[],
+
+  currentVector:null,
+
+  currentText:"",
+
+  nextId:1,
+
+  nextHyperId:1,
+
+  selectedId:null,
+
+  activeContext:new Set(),
+
+  queryVector:null,
+
+  showNodes:true,
+
+  showPairs:true,
+
+  showHyper:true,
+
+  showAnchors:false
+
+};
 
 
-/* =====================================================
+/* =========================================================
    DOM
-===================================================== */
+========================================================= */
 
 const $ = id =>
   document.getElementById(id);
 
-const textInput =
-  $("textInput");
 
-const queryInput =
-  $("queryInput");
-
-const embedBtn =
-  $("embedBtn");
-
-const storeBtn =
-  $("storeBtn");
-
-const searchBtn =
-  $("searchBtn");
-
-const vectorBox =
-  $("vectorBox");
-
-const vectorDim =
-  $("vectorDim");
-
-const memoryList =
-  $("memoryList");
-
-const ranking =
-  $("ranking");
-
-const log =
-  $("log");
-
-const errorBox =
-  $("errorBox");
-
-const statusDot =
-  $("statusDot");
-
-const statusText =
-  $("statusText");
-
-const hudStatus =
-  $("hudStatus");
-
-const memoryCount =
-  $("memoryCount");
-
-const dimension =
-  $("dimension");
-
-
-/* =====================================================
+/* =========================================================
    LOG
-===================================================== */
+========================================================= */
 
-function addLog(
-  message,
-  type = "info"
-){
+function log(message,type=""){
+
+  const el = $("log");
 
   const line =
     document.createElement("div");
 
   line.className =
-    "logLine " + type;
+    "log-line " + type;
 
   const time =
-    new Date()
-      .toLocaleTimeString(
-        "de-DE",
-        {
-          hour12:false
-        }
-      );
+    new Date().toLocaleTimeString(
+      "de-DE",
+      {
+        hour:"2-digit",
+        minute:"2-digit",
+        second:"2-digit"
+      }
+    );
 
   line.textContent =
     `[${time}] ${message}`;
 
-  log.appendChild(line);
+  el.appendChild(line);
 
-  log.scrollTop =
-    log.scrollHeight;
+  el.scrollTop =
+    el.scrollHeight;
+
 }
 
 
-/* =====================================================
-   ERROR
-===================================================== */
+/* =========================================================
+   PIPELINE
+========================================================= */
 
-function showError(error){
+function pipe(id,status){
 
-  errorBox.classList.add("show");
+  const el = $(id);
 
-  errorBox.innerHTML = `
-    <strong>MODEL LOAD / EMBEDDING ERROR</strong><br><br>
-    ${escapeHtml(
-      error?.message ||
-      String(error)
-    )}
-    <br><br>
-    Prüfe, ob diese HTML-Datei über einen
-    Browser/Webserver ausgeführt wird und
-    ob eine Internetverbindung für den ersten
-    Modell-Download vorhanden ist.
-  `;
-
-  addLog(
-    error?.message ||
-    String(error),
-    "error"
+  el.classList.remove(
+    "done",
+    "active"
   );
+
+  if(status==="done"){
+    el.classList.add("done");
+  }
+
+  if(status==="active"){
+    el.classList.add("active");
+  }
+
 }
 
 
-function clearError(){
+/* =========================================================
+   VECTOR MATH
+========================================================= */
 
-  errorBox.classList.remove("show");
+function dot(a,b){
 
-  errorBox.innerHTML = "";
+  let s=0;
+
+  const n =
+    Math.min(
+      a.length,
+      b.length
+    );
+
+  for(let i=0;i<n;i++){
+    s += a[i]*b[i];
+  }
+
+  return s;
 }
 
 
-/* =====================================================
-   ESCAPE
-===================================================== */
+function norm(a){
 
-function escapeHtml(value){
+  let s=0;
 
-  return String(value)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+  for(let i=0;i<a.length;i++){
+    s += a[i]*a[i];
+  }
+
+  return Math.sqrt(s);
 }
 
 
-/* =====================================================
-   PIPELINE UI
-===================================================== */
+function cosine(a,b){
 
-function activateStage(id){
+  const na =
+    norm(a);
 
-  const stages =
-    [
-      "stageText",
-      "stageToken",
-      "stageModel",
-      "stageVector",
-      "stageStore",
-      "stageSearch"
-    ];
+  const nb =
+    norm(b);
 
-  const index =
-    stages.indexOf(id);
+  if(
+    !na ||
+    !nb
+  ){
+    return 0;
+  }
 
-  stages.forEach(
-    (stageId,i)=>{
+  return dot(a,b)/(na*nb);
+}
 
-      const el =
-        $(stageId);
 
-      el.classList.remove(
-        "active",
-        "done"
+function clamp(
+  x,
+  min,
+  max
+){
+
+  return Math.max(
+    min,
+    Math.min(max,x)
+  );
+
+}
+
+
+function cdistAngular(
+  a,
+  b
+){
+
+  return Math.acos(
+    clamp(
+      cosine(a,b),
+      -1,
+      1
+    )
+  );
+
+}
+
+
+function vec3Distance(
+  a,
+  b
+){
+
+  const dx =
+    a[0]-b[0];
+
+  const dy =
+    a[1]-b[1];
+
+  const dz =
+    a[2]-b[2];
+
+  return Math.sqrt(
+    dx*dx+
+    dy*dy+
+    dz*dz
+  );
+
+}
+
+
+function vec3Add(
+  a,
+  b
+){
+
+  return [
+    a[0]+b[0],
+    a[1]+b[1],
+    a[2]+b[2]
+  ];
+
+}
+
+
+function vec3Scale(
+  a,
+  s
+){
+
+  return [
+    a[0]*s,
+    a[1]*s,
+    a[2]*s
+  ];
+
+}
+
+
+function vec3Normalize(
+  a
+){
+
+  const n =
+    Math.sqrt(
+      a[0]*a[0]+
+      a[1]*a[1]+
+      a[2]*a[2]
+    );
+
+  if(!n){
+    return [1,0,0];
+  }
+
+  return [
+    a[0]/n,
+    a[1]/n,
+    a[2]/n
+  ];
+
+}
+
+
+/* =========================================================
+   DETERMINISTIC HASH
+========================================================= */
+
+function hashVector(v){
+
+  let h =
+    2166136261;
+
+  const step =
+    Math.max(
+      1,
+      Math.floor(v.length/32)
+    );
+
+  for(
+    let i=0;
+    i<v.length;
+    i+=step
+  ){
+
+    const x =
+      Math.floor(
+        (v[i]+1)*100000
       );
 
-      if(i < index){
-        el.classList.add("done");
-      }
+    h ^=
+      x;
 
-      if(i === index){
-        el.classList.add("active");
-      }
+    h =
+      Math.imul(
+        h,
+        16777619
+      );
+
+  }
+
+  return (
+    h >>> 0
+  );
+
+}
+
+
+/* =========================================================
+   DATABASE
+========================================================= */
+
+let db = null;
+
+
+function openDB(){
+
+  return new Promise(
+    (resolve,reject)=>{
+
+      const request =
+        indexedDB.open(
+          DB_NAME,
+          DB_VERSION
+        );
+
+      request.onupgradeneeded =
+        event => {
+
+          const database =
+            event.target.result;
+
+          if(
+            !database.objectStoreNames.contains(
+              MEMORY_STORE
+            )
+          ){
+
+            database.createObjectStore(
+              MEMORY_STORE,
+              {
+                keyPath:"id"
+              }
+            );
+
+          }
+
+          if(
+            !database.objectStoreNames.contains(
+              HYPER_STORE
+            )
+          ){
+
+            database.createObjectStore(
+              HYPER_STORE,
+              {
+                keyPath:"id"
+              }
+            );
+
+          }
+
+        };
+
+      request.onsuccess =
+        () => {
+
+          db =
+            request.result;
+
+          resolve(db);
+
+        };
+
+      request.onerror =
+        () =>
+          reject(
+            request.error
+          );
 
     }
   );
@@ -1420,753 +1647,2911 @@ function activateStage(id){
 }
 
 
-function completeStage(id){
+function dbGetAll(
+  storeName
+){
 
-  $(id)
-    .classList
-    .remove("active");
+  return new Promise(
+    (resolve,reject)=>{
 
-  $(id)
-    .classList
-    .add("done");
+      const tx =
+        db.transaction(
+          storeName,
+          "readonly"
+        );
+
+      const store =
+        tx.objectStore(
+          storeName
+        );
+
+      const req =
+        store.getAll();
+
+      req.onsuccess =
+        () =>
+          resolve(
+            req.result || []
+          );
+
+      req.onerror =
+        () =>
+          reject(
+            req.error
+          );
+
+    }
+  );
 
 }
 
 
-/* =====================================================
-   STATUS
-===================================================== */
+function dbPut(
+  storeName,
+  object
+){
 
-function setOffline(){
+  return new Promise(
+    (resolve,reject)=>{
 
-  statusDot
-    .classList
-    .remove("online");
+      const tx =
+        db.transaction(
+          storeName,
+          "readwrite"
+        );
 
-  statusText.textContent =
-    "EMBEDDING CORE OFFLINE";
+      tx.objectStore(
+        storeName
+      ).put(object);
+
+      tx.oncomplete =
+        () => resolve();
+
+      tx.onerror =
+        () =>
+          reject(
+            tx.error
+          );
+
+    }
+  );
+
 }
 
 
-function setOnline(){
+function dbDelete(
+  storeName,
+  id
+){
 
-  statusDot
-    .classList
-    .add("online");
+  return new Promise(
+    (resolve,reject)=>{
 
-  statusText.textContent =
-    "EMBEDDING CORE ONLINE";
+      const tx =
+        db.transaction(
+          storeName,
+          "readwrite"
+        );
+
+      tx.objectStore(
+        storeName
+      ).delete(id);
+
+      tx.oncomplete =
+        () => resolve();
+
+      tx.onerror =
+        () =>
+          reject(
+            tx.error
+          );
+
+    }
+  );
+
 }
 
 
-/* =====================================================
-   MODEL LOADING
-===================================================== */
+/* =========================================================
+   ID GENERATORS
+========================================================= */
+
+function nextMemoryId(){
+
+  let id;
+
+  do{
+
+    id =
+      "MEM-" +
+      String(
+        state.nextId++
+      ).padStart(
+        6,
+        "0"
+      );
+
+  }while(
+    state.memories.some(
+      m => m.id===id
+    )
+  );
+
+  return id;
+
+}
+
+
+function nextHyperId(){
+
+  let id;
+
+  do{
+
+    id =
+      "H-" +
+      String(
+        state.nextHyperId++
+      ).padStart(
+        6,
+        "0"
+      );
+
+  }while(
+    state.hyperedges.some(
+      h => h.id===id
+    )
+  );
+
+  return id;
+
+}
+
+
+/* =========================================================
+   MODEL
+========================================================= */
 
 async function loadModel(){
 
-  if(modelReady){
+  if(
+    state.modelReady ||
+    state.loading
+  ){
     return;
   }
 
-  if(modelLoading){
-    return;
-  }
+  state.loading = true;
 
-  modelLoading = true;
+  $("modelStatus").textContent =
+    "LOADING";
 
-  clearError();
-
-  embedBtn.disabled =
-    true;
-
-  embedBtn.textContent =
-    "LOADING EMBEDDING CORE...";
-
-  activateStage(
-    "stageModel"
-  );
-
-  addLog(
-    "Embedding Core wird gestartet.",
-    "info"
-  );
-
-  addLog(
-    `Modell: ${MODEL}`,
-    "info"
-  );
-
-  addLog(
-    "Erster Start kann deutlich länger dauern.",
-    "warn"
+  log(
+    "Embedding-Modell wird geladen..."
   );
 
   try{
 
-    extractor =
+    env.allowLocalModels = false;
+
+    env.useBrowserCache = true;
+
+    state.extractor =
       await pipeline(
         "feature-extraction",
         MODEL,
         {
+          dtype:"q8",
+          device:"wasm",
+          progress_callback:data => {
 
-          /*
-           * Browser verwendet standardmäßig
-           * eine quantisierte Modellvariante,
-           * wenn verfügbar.
-           */
+            if(
+              data?.status==="progress"
+            ){
 
-          progress_callback:
-            progress => {
-
-              if(
-                progress &&
-                progress.status === "progress"
-              ){
-
-                const percent =
-                  Math.round(
-                    progress.progress || 0
-                  );
-
-                embedBtn.textContent =
-                  `MODEL DOWNLOAD ${percent}%`;
-
-              }
-
-              if(
-                progress &&
-                progress.status === "done"
-              ){
-
-                addLog(
-                  `Modelldatei geladen: ${
-                    progress.file || ""
-                  }`,
-                  "ok"
+              const p =
+                Math.round(
+                  data.progress || 0
                 );
 
-              }
+              $("modelStatus").textContent =
+                p + "%";
 
             }
 
+          }
         }
       );
 
-    modelReady = true;
+    state.modelReady =
+      true;
 
-    completeStage(
-      "stageModel"
-    );
-
-    setOnline();
-
-    addLog(
-      "Embedding Core ONLINE.",
-      "ok"
-    );
-
-    addLog(
-      "384-dimensionale Vektoren verfügbar.",
-      "ok"
-    );
-
-    dimension.textContent =
-      EMBEDDING_DIM;
-
-    embedBtn.textContent =
-      "GENERATE EMBEDDING";
-
-    embedBtn.disabled =
+    state.loading =
       false;
 
-    searchBtn.disabled =
-      memory.length === 0;
+    $("modelStatus").textContent =
+      "READY";
 
-  }
+    log(
+      "Embedding-Modell bereit.",
+      "ok"
+    );
 
-  catch(error){
+  }catch(error){
+
+    state.loading =
+      false;
+
+    $("modelStatus").textContent =
+      "ERROR";
+
+    log(
+      "Modellfehler: " +
+      error.message,
+      "err"
+    );
 
     console.error(error);
-
-    setOffline();
-
-    showError(error);
-
-    embedBtn.textContent =
-      "RETRY MODEL LOAD";
-
-    embedBtn.disabled =
-      false;
-
-  }
-
-  finally{
-
-    modelLoading =
-      false;
 
   }
 
 }
 
 
-/* =====================================================
+/* =========================================================
    EMBEDDING
-===================================================== */
+========================================================= */
 
-async function createEmbedding(
+async function embed(
   text,
-  mode = "passage"
+  mode="passage"
 ){
 
-  if(!text.trim()){
-    throw new Error(
-      "Kein Text vorhanden."
-    );
+  if(!state.modelReady){
+    await loadModel();
   }
 
-  await loadModel();
-
-  if(!extractor){
-
-    throw new Error(
-      "Embedding-Modell ist nicht verfügbar."
-    );
-
-  }
-
-
-  /*
-   * E5 verwendet unterschiedliche Präfixe
-   * für Dokumente und Suchanfragen.
-   *
-   * passage: -> gespeicherter Text
-   * query:   -> Suchanfrage
-   */
-
-  const prepared =
-    `${mode}: ${text.trim()}`;
-
+  const prefix =
+    mode==="query"
+      ? "query: "
+      : "passage: ";
 
   const output =
-    await extractor(
-      prepared,
+    await state.extractor(
+      prefix + text,
       {
         pooling:"mean",
         normalize:true
       }
     );
 
+  let data;
 
-  /*
-   * Transformers.js liefert hier
-   * einen Tensor zurück.
-   */
+  if(
+    output &&
+    output.data
+  ){
 
-  const vector =
-    Array.from(
-      output.data
-    );
+    data =
+      Array.from(
+        output.data
+      );
 
+  }else{
 
-  if(vector.length !== EMBEDDING_DIM){
+    data =
+      output.tolist();
 
-    throw new Error(
-      `Unerwartete Vektordimension: ${
-        vector.length
-      } statt ${EMBEDDING_DIM}.`
-    );
+    if(
+      Array.isArray(data[0])
+    ){
+      data = data[0];
+    }
 
   }
 
-  return vector;
+  return data;
 
 }
 
 
-/* =====================================================
-   VECTOR GENERATION
-===================================================== */
+/* =========================================================
+   NEIGHBORS
+========================================================= */
 
-async function generateEmbedding(){
+function nearestNeighbors(
+  vector,
+  pool=state.memories
+){
+
+  return pool
+    .map(memory => ({
+      memory,
+      score:
+        cosine(
+          vector,
+          memory.vector
+        )
+    }))
+    .sort(
+      (a,b) =>
+        b.score-a.score
+    );
+
+}
+
+
+/* =========================================================
+   ANCHOR SELECTION
+========================================================= */
+
+function chooseAnchors(
+  candidates
+){
+
+  const selected=[];
+
+  if(
+    !candidates.length
+  ){
+    return selected;
+  }
+
+  selected.push(
+    candidates[0]
+  );
+
+  while(
+    selected.length <
+      Math.min(
+        ANCHOR_COUNT,
+        candidates.length
+      )
+  ){
+
+    let best =
+      null;
+
+    let bestScore =
+      -Infinity;
+
+    for(
+      const candidate
+      of candidates
+    ){
+
+      if(
+        selected.includes(
+          candidate
+        )
+      ){
+        continue;
+      }
+
+      let minSemantic =
+        Infinity;
+
+      for(
+        const s
+        of selected
+      ){
+
+        const d =
+          cdistAngular(
+            candidate.memory.vector,
+            s.memory.vector
+          );
+
+        minSemantic =
+          Math.min(
+            minSemantic,
+            d
+          );
+
+      }
+
+      const score =
+        candidate.score +
+        minSemantic*0.4;
+
+      if(
+        score >
+        bestScore
+      ){
+
+        bestScore =
+          score;
+
+        best =
+          candidate;
+
+      }
+
+    }
+
+    if(!best){
+      break;
+    }
+
+    selected.push(best);
+
+  }
+
+  return selected;
+
+}
+
+
+/* =========================================================
+   LOCAL SCALE
+========================================================= */
+
+function localScale(
+  anchors
+){
+
+  if(
+    anchors.length < 2
+  ){
+    return 3;
+  }
+
+  let total=0;
+  let count=0;
+
+  for(
+    let i=0;
+    i<anchors.length;
+    i++
+  ){
+
+    for(
+      let j=i+1;
+      j<anchors.length;
+      j++
+    ){
+
+      total +=
+        vec3Distance(
+          anchors[i].memory.pos3d,
+          anchors[j].memory.pos3d
+        );
+
+      count++;
+
+    }
+
+  }
+
+  const mean =
+    count
+      ? total/count
+      : 3;
+
+  return clamp(
+    mean/1.15,
+    1.5,
+    6
+  );
+
+}
+
+
+/* =========================================================
+   INITIAL POSITION
+========================================================= */
+
+function initialPosition(
+  anchors
+){
+
+  if(!anchors.length){
+    return [0,0,0];
+  }
+
+  let totalWeight=0;
+
+  let p=[
+    0,
+    0,
+    0
+  ];
+
+  for(
+    const anchor
+    of anchors
+  ){
+
+    const weight =
+      Math.max(
+        0.001,
+        anchor.score+1
+      );
+
+    p =
+      vec3Add(
+        p,
+        vec3Scale(
+          anchor.memory.pos3d,
+          weight
+        )
+      );
+
+    totalWeight +=
+      weight;
+
+  }
+
+  return vec3Scale(
+    p,
+    1/totalWeight
+  );
+
+}
+
+
+/* =========================================================
+   SOLVE POSITION FOR NEW NODE ONLY
+========================================================= */
+
+function solveLocalPosition(
+  vector,
+  anchors
+){
+
+  if(!anchors.length){
+    return [0,0,0];
+  }
+
+  if(
+    anchors.length===1
+  ){
+
+    const a =
+      anchors[0];
+
+    const angle =
+      cdistAngular(
+        vector,
+        a.memory.vector
+      );
+
+    const radius =
+      2.5 +
+      angle*1.5;
+
+    const hash =
+      hashVector(vector);
+
+    const theta =
+      (hash%10000)/
+      10000*
+      Math.PI*2;
+
+    return [
+      a.memory.pos3d[0] +
+        Math.cos(theta)*radius,
+
+      a.memory.pos3d[1] +
+        Math.sin(theta)*radius,
+
+      a.memory.pos3d[2]
+    ];
+
+  }
+
+
+  let p =
+    initialPosition(
+      anchors
+    );
+
+  const scale =
+    localScale(
+      anchors
+    );
+
+
+  const seed =
+    hashVector(vector);
+
+  const phi =
+    (seed%100000)/
+    100000*
+    Math.PI*2;
+
+  const z =
+    (((seed>>>8)%1000)/1000-.5)
+    *0.8;
+
+  p[0] +=
+    Math.cos(phi)*0.35;
+
+  p[1] +=
+    Math.sin(phi)*0.35;
+
+  p[2] += z;
+
+
+  for(
+    let iteration=0;
+    iteration<RELAX_ITERATIONS;
+    iteration++
+  ){
+
+    let gradient=[
+      0,
+      0,
+      0
+    ];
+
+    let totalWeight=0;
+
+    for(
+      const anchor
+      of anchors
+    ){
+
+      const target =
+        clamp(
+          cdistAngular(
+            vector,
+            anchor.memory.vector
+          ) * scale,
+          0.8,
+          7
+        );
+
+      const dx =
+        p[0] -
+        anchor.memory.pos3d[0];
+
+      const dy =
+        p[1] -
+        anchor.memory.pos3d[1];
+
+      const dz =
+        p[2] -
+        anchor.memory.pos3d[2];
+
+      const d =
+        Math.sqrt(
+          dx*dx+
+          dy*dy+
+          dz*dz
+        ) || 0.0001;
+
+      const error =
+        d-target;
+
+      const weight =
+        Math.max(
+          0.05,
+          anchor.score+1
+        );
+
+      gradient[0] +=
+        error *
+        dx/d *
+        weight;
+
+      gradient[1] +=
+        error *
+        dy/d *
+        weight;
+
+      gradient[2] +=
+        error *
+        dz/d *
+        weight;
+
+      totalWeight +=
+        weight;
+
+    }
+
+    const step =
+      0.09 *
+      (1-
+        iteration/
+        RELAX_ITERATIONS
+      );
+
+    p[0] -=
+      gradient[0]/
+      totalWeight*
+      step;
+
+    p[1] -=
+      gradient[1]/
+      totalWeight*
+      step;
+
+    p[2] -=
+      gradient[2]/
+      totalWeight*
+      step;
+
+  }
+
+  return p;
+
+}
+
+
+/* =========================================================
+   FIXED POSITION ASSIGNMENT
+========================================================= */
+
+function assignFixedPosition(
+  memory
+){
+
+  /*
+    WICHTIG:
+
+    Diese Funktion wird ausschließlich
+    für den NEUEN Node ausgeführt.
+
+    Bereits gespeicherte Nodes werden
+    niemals neu berechnet.
+  */
+
+  const pool =
+    state.memories.filter(
+      m => m.id!==memory.id
+    );
+
+
+  if(pool.length===0){
+
+    memory.pos3d =
+      [0,0,0];
+
+    memory.anchors=[];
+
+    return;
+
+  }
+
+
+  if(pool.length===1){
+
+    const anchor =
+      pool[0];
+
+    const angle =
+      cdistAngular(
+        memory.vector,
+        anchor.vector
+      );
+
+    const distance =
+      clamp(
+        3 +
+        angle*2,
+        3,
+        6
+      );
+
+    memory.pos3d = [
+      anchor.pos3d[0]+distance,
+      anchor.pos3d[1],
+      anchor.pos3d[2]
+    ];
+
+    memory.anchors=[
+      anchor.id
+    ];
+
+    return;
+
+  }
+
+
+  const candidates =
+    nearestNeighbors(
+      memory.vector,
+      pool
+    );
+
+  const anchors =
+    chooseAnchors(
+      candidates
+    );
+
+  memory.anchors =
+    anchors.map(
+      x => x.memory.id
+    );
+
+  memory.pos3d =
+    solveLocalPosition(
+      memory.vector,
+      anchors
+    );
+
+}
+
+
+/* =========================================================
+   MEMORY CREATION
+========================================================= */
+
+async function createMemory(){
 
   const text =
-    textInput.value.trim();
+    $("memoryText")
+      .value
+      .trim();
 
   if(!text){
-
-    showError({
-      message:
-        "Bitte zuerst einen Satz eingeben."
-    });
-
+    log(
+      "Kein Text eingegeben.",
+      "warn"
+    );
     return;
   }
 
-  clearError();
+  if(
+    !state.modelReady
+  ){
 
-  embedBtn.disabled =
+    await loadModel();
+
+  }
+
+  const type =
+    $("memoryType").value;
+
+  $("storeBtn").disabled =
     true;
 
-  storeBtn.disabled =
-    true;
+  $("pipelineStatus").textContent =
+    "EMBEDDING";
 
-  activateStage(
-    "stageText"
+  pipe(
+    "pipeText",
+    "done"
   );
 
-  addLog(
-    "Text empfangen.",
-    "info"
-  );
-
-  await sleep(200);
-
-  completeStage(
-    "stageText"
-  );
-
-  activateStage(
-    "stageToken"
-  );
-
-  addLog(
-    "Text → Tokenisierung → Modellinput.",
-    "info"
-  );
-
-  await sleep(250);
-
-  completeStage(
-    "stageToken"
-  );
-
-  activateStage(
-    "stageModel"
+  pipe(
+    "pipeEmbedding",
+    "active"
   );
 
   try{
 
-    currentVector =
-      await createEmbedding(
+    log(
+      "Embedding wird berechnet..."
+    );
+
+    const vector =
+      await embed(
         text,
         "passage"
       );
 
-    completeStage(
-      "stageModel"
+    pipe(
+      "pipeEmbedding",
+      "done"
     );
 
-    activateStage(
-      "stageVector"
+    pipe(
+      "pipeVector",
+      "done"
     );
 
-    await sleep(250);
+    const memory = {
 
-    completeStage(
-      "stageVector"
+      id:
+        nextMemoryId(),
+
+      text,
+
+      type,
+
+      vector,
+
+      pos3d:null,
+
+      anchors:[],
+
+      createdAt:
+        new Date().toISOString(),
+
+      positionLocked:false
+
+    };
+
+
+    /*
+      Erst jetzt wird der neue Punkt
+      in den 3D-Raum eingesetzt.
+      Bestehende Punkte bleiben unverändert.
+    */
+
+    assignFixedPosition(
+      memory
     );
 
-    showVector(
-      currentVector
+    memory.positionLocked =
+      true;
+
+    state.memories.push(
+      memory
     );
 
-    renderPoint(
-      currentVector,
-      true
+    await dbPut(
+      MEMORY_STORE,
+      memory
     );
 
-    storeBtn.disabled =
+    state.currentVector =
+      vector;
+
+    state.currentText =
+      text;
+
+    $("vectorNorm").textContent =
+      norm(vector).toFixed(4);
+
+    $("vectorBox").textContent =
+      vector
+        .map(
+          (v,i) =>
+            `${i}: ${v.toFixed(6)}`
+        )
+        .join("  ");
+
+    pipe(
+      "pipe3D",
+      "done"
+    );
+
+    log(
+      `${memory.id} positioniert: ` +
+      `[${memory.pos3d.map(
+        x=>x.toFixed(2)
+      ).join(", ")}]`,
+      "ok"
+    );
+
+    /*
+      Hyperedge-Erzeugung erfolgt
+      deterministisch aus den vorhandenen
+      Vektoren.
+    */
+
+    await autoCreateHyperedge(
+      memory
+    );
+
+    pipe(
+      "pipeHyper",
+      "done"
+    );
+
+    $("pipelineStatus").textContent =
+      "READY";
+
+    $("memoryText").value =
+      "";
+
+    renderAll();
+
+  }catch(error){
+
+    log(
+      "Speicherfehler: " +
+      error.message,
+      "err"
+    );
+
+    console.error(error);
+
+  }finally{
+
+    $("storeBtn").disabled =
       false;
 
-    embedBtn.disabled =
-      false;
+  }
 
-    embedBtn.textContent =
-      "GENERATE EMBEDDING";
+}
 
-    hudStatus.textContent =
-      "VECTOR READY";
 
-    addLog(
-      `Embedding erzeugt: d=${currentVector.length}`,
+/* =========================================================
+   HYPEREDGE DEDUPLICATION
+========================================================= */
+
+function hyperKey(
+  nodeIds
+){
+
+  return [
+    ...nodeIds
+  ]
+    .sort()
+    .join("|");
+
+}
+
+
+function hyperedgeExists(
+  nodeIds
+){
+
+  const key =
+    hyperKey(nodeIds);
+
+  return state.hyperedges.some(
+    h =>
+      hyperKey(
+        h.nodeIds
+      )===key
+  );
+
+}
+
+
+/* =========================================================
+   CREATE HYPEREDGE
+========================================================= */
+
+async function createHyperedge(
+  nodeIds,
+  label="semantic context",
+  type="manual"
+){
+
+  const unique =
+    [...new Set(nodeIds)];
+
+  if(unique.length<3){
+
+    log(
+      "Ein Hyperedge benötigt mindestens 3 Nodes.",
+      "warn"
+    );
+
+    return null;
+
+  }
+
+  const existing =
+    state.memories
+      .filter(
+        m => unique.includes(m.id)
+      );
+
+  if(
+    existing.length !==
+    unique.length
+  ){
+
+    log(
+      "Hyperedge enthält unbekannte Node-ID.",
+      "err"
+    );
+
+    return null;
+
+  }
+
+  if(
+    hyperedgeExists(unique)
+  ){
+
+    log(
+      "Hyperedge existiert bereits.",
+      "warn"
+    );
+
+    return null;
+
+  }
+
+
+  let score=0;
+  let count=0;
+
+  for(
+    let i=0;
+    i<existing.length;
+    i++
+  ){
+
+    for(
+      let j=i+1;
+      j<existing.length;
+      j++
+    ){
+
+      score +=
+        cosine(
+          existing[i].vector,
+          existing[j].vector
+        );
+
+      count++;
+
+    }
+
+  }
+
+  score =
+    count
+      ? score/count
+      : 0;
+
+
+  const hyperedge = {
+
+    id:
+      nextHyperId(),
+
+    nodeIds:unique,
+
+    label,
+
+    type,
+
+    score,
+
+    createdAt:
+      new Date().toISOString()
+
+  };
+
+
+  state.hyperedges.push(
+    hyperedge
+  );
+
+  await dbPut(
+    HYPER_STORE,
+    hyperedge
+  );
+
+  log(
+    `${hyperedge.id} erstellt: ` +
+    `${unique.length} Nodes`,
+    "ok"
+  );
+
+  renderAll();
+
+  return hyperedge;
+
+}
+
+
+/* =========================================================
+   AUTOMATIC SEMANTIC HYPEREDGE
+========================================================= */
+
+async function autoCreateHyperedge(
+  memory
+){
+
+  const pool =
+    state.memories.filter(
+      m =>
+        m.id!==memory.id
+    );
+
+  if(
+    pool.length<2
+  ){
+    return;
+  }
+
+  const neighbors =
+    nearestNeighbors(
+      memory.vector,
+      pool
+    )
+    .filter(
+      x =>
+        x.score >=
+        HYPEREDGE_THRESHOLD
+    )
+    .slice(
+      0,
+      HYPEREDGE_SIZE-1
+    );
+
+  if(
+    neighbors.length<2
+  ){
+    return;
+  }
+
+  const nodeIds = [
+    memory.id,
+    ...neighbors.map(
+      x=>x.memory.id
+    )
+  ];
+
+  await createHyperedge(
+    nodeIds,
+    "COSINE CONTEXT",
+    "semantic-context"
+  );
+
+}
+
+
+/* =========================================================
+   ACTIVE CONTEXT
+========================================================= */
+
+function activateContext(
+  memoryId
+){
+
+  const memory =
+    state.memories.find(
+      m => m.id===memoryId
+    );
+
+  if(!memory){
+    return;
+  }
+
+  const context =
+    new Set();
+
+  context.add(
+    memory.id
+  );
+
+
+  /*
+    Semantisch ähnliche Nodes
+  */
+
+  nearestNeighbors(
+    memory.vector,
+    state.memories
+      .filter(
+        m => m.id!==memory.id
+      )
+  )
+  .slice(0,7)
+  .forEach(
+    x =>
+      context.add(
+        x.memory.id
+      )
+  );
+
+
+  /*
+    Hypergraph-Kontext
+  */
+
+  state.hyperedges
+    .filter(
+      h =>
+        h.nodeIds.includes(
+          memory.id
+        )
+    )
+    .forEach(
+      h =>
+        h.nodeIds.forEach(
+          id =>
+            context.add(id)
+        )
+    );
+
+
+  state.activeContext =
+    context;
+
+  log(
+    `Context aktiviert: ` +
+    `${context.size} Nodes`
+  );
+
+  renderAll();
+
+}
+
+
+/* =========================================================
+   CLEAR CONTEXT
+========================================================= */
+
+function clearContext(){
+
+  state.activeContext.clear();
+
+  renderAll();
+
+}
+
+
+/* =========================================================
+   LOAD DATABASE
+========================================================= */
+
+async function loadDatabase(){
+
+  await openDB();
+
+  state.memories =
+    await dbGetAll(
+      MEMORY_STORE
+    );
+
+  state.hyperedges =
+    await dbGetAll(
+      HYPER_STORE
+    );
+
+
+  /*
+    Alte IDs erkennen
+  */
+
+  let maxMemory=0;
+
+  for(
+    const memory
+    of state.memories
+  ){
+
+    const match =
+      memory.id.match(
+        /^MEM-(\d+)$/
+      );
+
+    if(match){
+
+      maxMemory =
+        Math.max(
+          maxMemory,
+          Number(match[1])
+        );
+
+    }
+
+  }
+
+  state.nextId =
+    maxMemory+1;
+
+
+  let maxHyper=0;
+
+  for(
+    const hyper
+    of state.hyperedges
+  ){
+
+    const match =
+      hyper.id.match(
+        /^H-(\d+)$/
+      );
+
+    if(match){
+
+      maxHyper =
+        Math.max(
+          maxHyper,
+          Number(match[1])
+        );
+
+    }
+
+  }
+
+  state.nextHyperId =
+    maxHyper+1;
+
+
+  /*
+    Legacy-Daten ohne Position
+    werden einmalig positioniert.
+    Danach werden sie ebenfalls gelockt.
+  */
+
+  let migrated=0;
+
+  for(
+    const memory
+    of state.memories
+  ){
+
+    const valid =
+      Array.isArray(
+        memory.pos3d
+      ) &&
+      memory.pos3d.length===3 &&
+      memory.pos3d.every(
+        Number.isFinite
+      );
+
+    if(!valid){
+
+      assignFixedPosition(
+        memory
+      );
+
+      memory.positionLocked =
+        true;
+
+      await dbPut(
+        MEMORY_STORE,
+        memory
+      );
+
+      migrated++;
+
+    }
+
+  }
+
+
+  if(migrated){
+
+    log(
+      `${migrated} Legacy-Memory(s) positioniert.`,
       "ok"
     );
 
   }
 
-  catch(error){
+  log(
+    `DB geladen: ` +
+    `${state.memories.length} Memories, ` +
+    `${state.hyperedges.length} Hyperedges`,
+    "ok"
+  );
 
-    console.error(error);
+}
 
-    showError(error);
 
-    embedBtn.disabled =
-      false;
+/* =========================================================
+   THREE.JS
+========================================================= */
 
-    embedBtn.textContent =
-      modelReady
-        ? "GENERATE EMBEDDING"
-        : "RETRY MODEL LOAD";
+let scene;
+
+let camera;
+
+let renderer;
+
+let controls;
+
+let pointCloud;
+
+let pairGroup;
+
+let hyperGroup;
+
+let anchorGroup;
+
+let raycaster;
+
+let pointer;
+
+let clock;
+
+
+function initThree(){
+
+  scene =
+    new THREE.Scene();
+
+  scene.background =
+    new THREE.Color(
+      0x020408
+    );
+
+  scene.fog =
+    new THREE.FogExp2(
+      0x020408,
+      0.018
+    );
+
+
+  camera =
+    new THREE.PerspectiveCamera(
+      50,
+      1,
+      0.1,
+      1000
+    );
+
+  camera.position.set(
+    0,
+    2,
+    22
+  );
+
+
+  renderer =
+    new THREE.WebGLRenderer({
+      antialias:true,
+      alpha:false
+    });
+
+  renderer.setPixelRatio(
+    Math.min(
+      window.devicePixelRatio,
+      2
+    )
+  );
+
+  renderer.outputColorSpace =
+    THREE.SRGBColorSpace;
+
+  $("scene").appendChild(
+    renderer.domElement
+  );
+
+
+  controls =
+    new OrbitControls(
+      camera,
+      renderer.domElement
+    );
+
+  controls.enableDamping =
+    true;
+
+  controls.dampingFactor =
+    0.06;
+
+  controls.minDistance =
+    2;
+
+  controls.maxDistance =
+    120;
+
+
+  raycaster =
+    new THREE.Raycaster();
+
+  pointer =
+    new THREE.Vector2();
+
+  clock =
+    new THREE.Clock();
+
+
+  pairGroup =
+    new THREE.Group();
+
+  hyperGroup =
+    new THREE.Group();
+
+  anchorGroup =
+    new THREE.Group();
+
+
+  scene.add(
+    pairGroup,
+    hyperGroup,
+    anchorGroup
+  );
+
+
+  createGrid();
+
+  createAxes();
+
+  window.addEventListener(
+    "resize",
+    resizeThree
+  );
+
+  renderer.domElement.addEventListener(
+    "pointerdown",
+    onPointerDown
+  );
+
+
+  resizeThree();
+
+  animate();
+
+}
+
+
+/* =========================================================
+   GRID
+========================================================= */
+
+function createGrid(){
+
+  const grid =
+    new THREE.GridHelper(
+      60,
+      60,
+      0x10232a,
+      0x071116
+    );
+
+  grid.position.y =
+    -6;
+
+  scene.add(
+    grid
+  );
+
+}
+
+
+/* =========================================================
+   AXES
+========================================================= */
+
+function createAxes(){
+
+  const material =
+    new THREE.LineBasicMaterial({
+      color:0x123039,
+      transparent:true,
+      opacity:.5
+    });
+
+  const pointsX=[
+    new THREE.Vector3(-20,0,0),
+    new THREE.Vector3(20,0,0)
+  ];
+
+  const pointsY=[
+    new THREE.Vector3(0,-20,0),
+    new THREE.Vector3(0,20,0)
+  ];
+
+  const pointsZ=[
+    new THREE.Vector3(0,0,-20),
+    new THREE.Vector3(0,0,20)
+  ];
+
+
+  const makeLine =
+    points => {
+
+      const geometry =
+        new THREE.BufferGeometry()
+          .setFromPoints(
+            points
+          );
+
+      return new THREE.Line(
+        geometry,
+        material
+      );
+
+    };
+
+
+  scene.add(
+    makeLine(pointsX),
+    makeLine(pointsY),
+    makeLine(pointsZ)
+  );
+
+}
+
+
+/* =========================================================
+   TYPE COLORS
+========================================================= */
+
+function typeColor(
+  type
+){
+
+  switch(type){
+
+    case "concept":
+      return 0x4ade80;
+
+    case "claim":
+      return 0xffe066;
+
+    case "evidence":
+      return 0xff2ca8;
+
+    case "hypothesis":
+      return 0xb56cff;
+
+    default:
+      return 0x00f5ff;
 
   }
 
 }
 
 
-/* =====================================================
-   VECTOR DISPLAY
-===================================================== */
+/* =========================================================
+   POINT SHADER
+========================================================= */
 
-function showVector(vector){
+const pointVertexShader = `
 
-  vectorDim.textContent =
-    `d = ${vector.length}`;
+attribute float aSelected;
+attribute float aActive;
+attribute float aType;
 
-  dimension.textContent =
-    vector.length;
+varying float vSelected;
+varying float vActive;
+varying float vType;
 
-  /*
-   * Nicht alle 384 Werte direkt in eine
-   * riesige Textwand schreiben.
-   *
-   * Wir zeigen die ersten Werte und
-   * die Dimension vollständig an.
-   */
+void main(){
 
-  const preview =
-    vector
-      .slice(0,60)
-      .map(
-        (v,i)=>
-          `v${i+1}=${v.toFixed(6)}`
-      )
-      .join("\n");
+  vSelected = aSelected;
+  vActive = aActive;
+  vType = aType;
 
-  vectorBox.textContent =
-`${preview}
+  vec4 mvPosition =
+    modelViewMatrix *
+    vec4(position,1.0);
 
-...
+  float size =
+    7.0;
 
-[ ${vector.length} DIMENSIONS ]
+  if(aSelected > 0.5){
+    size = 12.0;
+  }
 
-L2-NORM:
-${vectorNorm(vector).toFixed(8)}`;
+  gl_PointSize =
+    size *
+    (300.0 /
+    max(
+      1.0,
+      -mvPosition.z
+    ));
+
+  gl_Position =
+    projectionMatrix *
+    mvPosition;
+
+}
+`;
+
+
+const pointFragmentShader = `
+
+varying float vSelected;
+varying float vActive;
+varying float vType;
+
+vec3 typeColor(){
+
+  if(vType < 0.5)
+    return vec3(
+      0.0,
+      0.96,
+      1.0
+    );
+
+  if(vType < 1.5)
+    return vec3(
+      0.29,
+      0.87,
+      0.50
+    );
+
+  if(vType < 2.5)
+    return vec3(
+      1.0,
+      0.88,
+      0.40
+    );
+
+  if(vType < 3.5)
+    return vec3(
+      1.0,
+      0.17,
+      0.66
+    );
+
+  return vec3(
+    0.71,
+    0.42,
+    1.0
+  );
+
+}
+
+void main(){
+
+  vec2 uv =
+    gl_PointCoord.xy -
+    vec2(.5);
+
+  float d =
+    length(uv);
+
+  if(d > .5)
+    discard;
+
+  float alpha =
+    smoothstep(
+      .5,
+      .22,
+      d
+    );
+
+  vec3 color =
+    typeColor();
+
+  if(vSelected > .5){
+
+    color =
+      vec3(
+        1.0,
+        .12,
+        .66
+      );
+
+  }
+
+  if(vActive < .5){
+
+    color *= .35;
+    alpha *= .28;
+
+  }
+
+  float glow =
+    1.0 -
+    smoothstep(
+      .05,
+      .5,
+      d
+    );
+
+  color +=
+    glow *
+    .12;
+
+  gl_FragColor =
+    vec4(
+      color,
+      alpha
+    );
+
+}
+`;
+
+
+/* =========================================================
+   POINT CLOUD
+========================================================= */
+
+function typeIndex(
+  type
+){
+
+  switch(type){
+
+    case "concept":
+      return 1;
+
+    case "claim":
+      return 2;
+
+    case "evidence":
+      return 3;
+
+    case "hypothesis":
+      return 4;
+
+    default:
+      return 0;
+
+  }
 
 }
 
 
-/* =====================================================
-   STORE
-===================================================== */
+function makePoints(){
 
-function storeCurrentVector(){
+  if(pointCloud){
 
-  if(!currentVector){
+    scene.remove(
+      pointCloud
+    );
+
+    pointCloud.geometry.dispose();
+
+    pointCloud.material.dispose();
+
+  }
+
+  if(
+    !state.showNodes ||
+    !state.memories.length
+  ){
     return;
   }
 
+
+  const positions=[];
+  const selected=[];
+  const active=[];
+  const types=[];
+
+
+  for(
+    const memory
+    of state.memories
+  ){
+
+    positions.push(
+      ...memory.pos3d
+    );
+
+    selected.push(
+      memory.id===state.selectedId
+        ? 1
+        : 0
+    );
+
+    active.push(
+      state.activeContext.size===0 ||
+      state.activeContext.has(
+        memory.id
+      )
+        ? 1
+        : 0
+    );
+
+    types.push(
+      typeIndex(
+        memory.type
+      )
+    );
+
+  }
+
+
+  const geometry =
+    new THREE.BufferGeometry();
+
+
+  geometry.setAttribute(
+    "position",
+    new THREE.Float32BufferAttribute(
+      positions,
+      3
+    )
+  );
+
+  geometry.setAttribute(
+    "aSelected",
+    new THREE.Float32BufferAttribute(
+      selected,
+      1
+    )
+  );
+
+  geometry.setAttribute(
+    "aActive",
+    new THREE.Float32BufferAttribute(
+      active,
+      1
+    )
+  );
+
+  geometry.setAttribute(
+    "aType",
+    new THREE.Float32BufferAttribute(
+      types,
+      1
+    )
+  );
+
+
+  const material =
+    new THREE.ShaderMaterial({
+
+      vertexShader:
+        pointVertexShader,
+
+      fragmentShader:
+        pointFragmentShader,
+
+      transparent:true,
+
+      depthWrite:false,
+
+      blending:
+        THREE.AdditiveBlending
+
+    });
+
+
+  pointCloud =
+    new THREE.Points(
+      geometry,
+      material
+    );
+
+  scene.add(
+    pointCloud
+  );
+
+}
+
+
+/* =========================================================
+   PAIR LINKS
+========================================================= */
+
+function rebuildPairLinks(){
+
+  pairGroup.clear();
+
+  if(
+    !state.showPairs
+  ){
+    return;
+  }
+
+  const vertices=[];
+  const colors=[];
+
+
+  for(
+    let i=0;
+    i<state.memories.length;
+    i++
+  ){
+
+    for(
+      let j=i+1;
+      j<state.memories.length;
+      j++
+    ){
+
+      const a =
+        state.memories[i];
+
+      const b =
+        state.memories[j];
+
+      const score =
+        cosine(
+          a.vector,
+          b.vector
+        );
+
+      if(
+        score <
+        EDGE_THRESHOLD
+      ){
+        continue;
+      }
+
+
+      vertices.push(
+        ...a.pos3d,
+        ...b.pos3d
+      );
+
+
+      const active =
+        state.activeContext.size===0 ||
+        (
+          state.activeContext.has(a.id) &&
+          state.activeContext.has(b.id)
+        );
+
+
+      const alpha =
+        active
+          ? clamp(
+              (score-EDGE_THRESHOLD)/
+              (1-EDGE_THRESHOLD),
+              .15,
+              .75
+            )
+          : .08;
+
+
+      colors.push(
+        0,
+        0.8,
+        0.95,
+        alpha,
+
+        0,
+        0.8,
+        0.95,
+        alpha
+      );
+
+    }
+
+  }
+
+
+  if(!vertices.length){
+    return;
+  }
+
+
+  const geometry =
+    new THREE.BufferGeometry();
+
+  geometry.setAttribute(
+    "position",
+    new THREE.Float32BufferAttribute(
+      vertices,
+      3
+    )
+  );
+
+  geometry.setAttribute(
+    "color",
+    new THREE.Float32BufferAttribute(
+      colors,
+      4
+    )
+  );
+
+
+  const material =
+    new THREE.LineBasicMaterial({
+      vertexColors:true,
+      transparent:true,
+      depthWrite:false,
+      blending:
+        THREE.AdditiveBlending
+    });
+
+
+  const lines =
+    new THREE.LineSegments(
+      geometry,
+      material
+    );
+
+  pairGroup.add(
+    lines
+  );
+
+}
+
+
+/* =========================================================
+   HYPERGRAPH VISUALIZATION
+========================================================= */
+
+function rebuildHyperedges(){
+
+  hyperGroup.clear();
+
+  if(
+    !state.showHyper
+  ){
+    return;
+  }
+
+
+  for(
+    const hyper
+    of state.hyperedges
+  ){
+
+    const members =
+      hyper.nodeIds
+        .map(
+          id =>
+            state.memories.find(
+              m => m.id===id
+            )
+        )
+        .filter(Boolean);
+
+
+    if(
+      members.length<3
+    ){
+      continue;
+    }
+
+
+    let center=[
+      0,
+      0,
+      0
+    ];
+
+
+    for(
+      const memory
+      of members
+    ){
+
+      center =
+        vec3Add(
+          center,
+          memory.pos3d
+        );
+
+    }
+
+
+    center =
+      vec3Scale(
+        center,
+        1/members.length
+      );
+
+
+    const active =
+      state.activeContext.size===0 ||
+      members.some(
+        m =>
+          state.activeContext.has(
+            m.id
+          )
+      );
+
+
+    const alpha =
+      active
+        ? .55
+        : .08;
+
+
+    /*
+      Der Hyperedge-Hub ist KEIN Memory.
+      Er ist ausschließlich eine visuelle
+      Darstellung der Mehrfachbeziehung.
+    */
+
+    const hubGeometry =
+      new THREE.SphereGeometry(
+        .12,
+        10,
+        10
+      );
+
+
+    const hubMaterial =
+      new THREE.MeshBasicMaterial({
+        color:0xff2ca8,
+        transparent:true,
+        opacity:alpha,
+        depthWrite:false
+      });
+
+
+    const hub =
+      new THREE.Mesh(
+        hubGeometry,
+        hubMaterial
+      );
+
+    hub.position.set(
+      ...center
+    );
+
+    hyperGroup.add(
+      hub
+    );
+
+
+    const vertices=[];
+
+
+    for(
+      const member
+      of members
+    ){
+
+      vertices.push(
+        ...center,
+        ...member.pos3d
+      );
+
+    }
+
+
+    const geometry =
+      new THREE.BufferGeometry();
+
+    geometry.setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute(
+        vertices,
+        3
+      )
+    );
+
+
+    const material =
+      new THREE.LineBasicMaterial({
+        color:0xff2ca8,
+        transparent:true,
+        opacity:alpha,
+        depthWrite:false,
+        blending:
+          THREE.AdditiveBlending
+      });
+
+
+    const lines =
+      new THREE.LineSegments(
+        geometry,
+        material
+      );
+
+
+    hyperGroup.add(
+      lines
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   ANCHOR VISUALIZATION
+========================================================= */
+
+function rebuildAnchors(){
+
+  anchorGroup.clear();
+
+  if(
+    !state.showAnchors
+  ){
+    return;
+  }
+
+
+  const material =
+    new THREE.MeshBasicMaterial({
+      color:0x4ade80,
+      transparent:true,
+      opacity:.45,
+      wireframe:true
+    });
+
+
+  const used =
+    new Set();
+
+
+  for(
+    const memory
+    of state.memories
+  ){
+
+    for(
+      const anchorId
+      of memory.anchors || []
+    ){
+
+      if(
+        used.has(anchorId)
+      ){
+        continue;
+      }
+
+      const anchor =
+        state.memories.find(
+          m => m.id===anchorId
+        );
+
+      if(!anchor){
+        continue;
+      }
+
+      used.add(
+        anchorId
+      );
+
+
+      const geometry =
+        new THREE.SphereGeometry(
+          .18,
+          8,
+          8
+        );
+
+
+      const mesh =
+        new THREE.Mesh(
+          geometry,
+          material
+        );
+
+      mesh.position.set(
+        ...anchor.pos3d
+      );
+
+      anchorGroup.add(
+        mesh
+      );
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   RENDER SCENE
+========================================================= */
+
+function renderScene(){
+
+  makePoints();
+
+  rebuildPairLinks();
+
+  rebuildHyperedges();
+
+  rebuildAnchors();
+
+}
+
+
+/* =========================================================
+   MEMORY LIST
+========================================================= */
+
+function renderMemoryList(){
+
+  const list =
+    $("memoryList");
+
+  list.innerHTML="";
+
+
+  if(
+    !state.memories.length
+  ){
+
+    list.innerHTML =
+      `<div class="empty">
+        Noch keine Memories.
+      </div>`;
+
+    return;
+
+  }
+
+
+  for(
+    const memory
+    of [...state.memories].reverse()
+  ){
+
+    const item =
+      document.createElement("div");
+
+    item.className =
+      "mem-item " +
+      (
+        memory.id===
+        state.selectedId
+          ? "selected"
+          : ""
+      );
+
+
+    item.innerHTML = `
+
+      <div class="mem-top">
+
+        <span class="mem-id">
+          ${escapeHTML(memory.id)}
+        </span>
+
+        <span class="mem-type">
+          ${escapeHTML(
+            memory.type
+          )}
+        </span>
+
+      </div>
+
+      <div class="mem-text">
+        ${escapeHTML(
+          memory.text
+        )}
+      </div>
+
+      <div class="mem-meta">
+
+        <span>
+          3D:
+          ${memory.pos3d
+            .map(
+              x=>x.toFixed(1)
+            )
+            .join(",")}
+        </span>
+
+        <span>
+          H:
+          ${state.hyperedges.filter(
+            h =>
+              h.nodeIds.includes(
+                memory.id
+              )
+          ).length}
+        </span>
+
+      </div>
+    `;
+
+
+    item.addEventListener(
+      "click",
+      () =>
+        selectMemory(
+          memory.id
+        )
+    );
+
+
+    list.appendChild(
+      item
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   HYPEREDGE LIST
+========================================================= */
+
+function renderHyperList(){
+
+  const list =
+    $("hyperList");
+
+  list.innerHTML="";
+
+
+  if(
+    !state.hyperedges.length
+  ){
+
+    list.innerHTML =
+      `<div class="empty">
+        Noch keine Hyperedges.
+      </div>`;
+
+    return;
+
+  }
+
+
+  for(
+    const hyper
+    of [...state.hyperedges].reverse()
+  ){
+
+    const item =
+      document.createElement("div");
+
+    item.className =
+      "hyper-item";
+
+
+    item.innerHTML = `
+
+      <div class="hyper-head">
+
+        <span class="hyper-id">
+          ${escapeHTML(
+            hyper.id
+          )}
+        </span>
+
+        <span class="hyper-score">
+          ${Number(
+            hyper.score || 0
+          ).toFixed(3)}
+        </span>
+
+      </div>
+
+      <div class="hyper-label">
+        ${escapeHTML(
+          hyper.label
+        )}
+      </div>
+
+      <div class="hyper-members">
+        ${hyper.nodeIds
+          .map(
+            id =>
+              escapeHTML(id)
+          )
+          .join(" · ")}
+      </div>
+
+    `;
+
+
+    list.appendChild(
+      item
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   INSPECTOR
+========================================================= */
+
+function selectMemory(
+  id
+){
+
+  const memory =
+    state.memories.find(
+      m => m.id===id
+    );
+
+  if(!memory){
+    return;
+  }
+
+  state.selectedId =
+    id;
+
+  renderInspector(
+    memory
+  );
+
+  renderAll();
+
+  focusMemory(
+    memory
+  );
+
+}
+
+
+function renderInspector(
+  memory
+){
+
+  $("inspector")
+    .classList.remove(
+      "hidden"
+    );
+
+
+  $("inspectorTitle")
+    .textContent =
+      memory.id +
+      " / " +
+      memory.type
+        .toUpperCase();
+
+
+  const hyperedges =
+    state.hyperedges
+      .filter(
+        h =>
+          h.nodeIds.includes(
+            memory.id
+          )
+      )
+      .map(
+        h => h.id
+      );
+
+
+  $("inspectorGrid").innerHTML = `
+
+    <div class="info-key">ID</div>
+    <div class="info-val">
+      ${escapeHTML(memory.id)}
+    </div>
+
+    <div class="info-key">TYPE</div>
+    <div class="info-val">
+      ${escapeHTML(memory.type)}
+    </div>
+
+    <div class="info-key">POSITION</div>
+    <div class="info-val">
+      ${memory.pos3d
+        .map(
+          x=>x.toFixed(4)
+        )
+        .join(", ")}
+    </div>
+
+    <div class="info-key">LOCK</div>
+    <div class="info-val">
+      ${memory.positionLocked
+        ? "FIXED"
+        : "OPEN"}
+    </div>
+
+    <div class="info-key">ANCHORS</div>
+    <div class="info-val">
+      ${
+        memory.anchors?.length
+          ? memory.anchors.join(", ")
+          : "—"
+      }
+    </div>
+
+    <div class="info-key">HYPEREDGES</div>
+    <div class="info-val">
+      ${
+        hyperedges.length
+          ? hyperedges.join(", ")
+          : "—"
+      }
+    </div>
+
+    <div class="info-key">NORM</div>
+    <div class="info-val">
+      ${norm(
+        memory.vector
+      ).toFixed(6)}
+    </div>
+
+  `;
+
+
+  $("inspectorText")
+    .textContent =
+      memory.text;
+
+}
+
+
+/* =========================================================
+   FOCUS CAMERA
+========================================================= */
+
+function focusMemory(
+  memory
+){
+
+  const target =
+    new THREE.Vector3(
+      ...memory.pos3d
+    );
+
+  const direction =
+    camera.position
+      .clone()
+      .sub(
+        controls.target
+      )
+      .normalize();
+
+
+  controls.target.copy(
+    target
+  );
+
+
+  camera.position.copy(
+    target
+      .clone()
+      .add(
+        direction.multiplyScalar(
+          7
+        )
+      )
+  );
+
+  controls.update();
+
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+async function runQuery(){
+
   const text =
-    textInput.value.trim();
+    $("queryInput")
+      .value
+      .trim();
 
   if(!text){
     return;
   }
 
-  memoryCounter++;
-
-  const record = {
-
-    id:
-      `MEM-${String(
-        memoryCounter
-      ).padStart(4,"0")}`,
-
-    text,
-
-    vector:
-      [...currentVector],
-
-    created:
-      new Date().toISOString()
-
-  };
-
-  memory.push(record);
-
-  activateStage(
-    "stageStore"
-  );
-
-  completeStage(
-    "stageStore"
-  );
-
-  renderMemory();
-
-  searchBtn.disabled =
-    false;
-
-  memoryCount.textContent =
-    memory.length;
-
-  addLog(
-    `${record.id} im Vector Store gespeichert.`,
-    "ok"
-  );
-
-  storeBtn.disabled =
-    true;
-
-}
-
-
-/* =====================================================
-   MEMORY UI
-===================================================== */
-
-function renderMemory(){
-
-  memoryList.innerHTML = "";
-
-  if(memory.length === 0){
-
-    memoryList.innerHTML =
-      `<div style="color:#405861;font-size:10px">
-        VECTOR STORE EMPTY
-       </div>`;
-
-    return;
-  }
-
-  memory.forEach(
-    record => {
-
-      const el =
-        document.createElement("div");
-
-      el.className =
-        "memory";
-
-      el.innerHTML = `
-
-        <div class="memoryId">
-          ${record.id}
-        </div>
-
-        <div class="memoryText">
-          ${escapeHtml(record.text)}
-        </div>
-
-      `;
-
-      el.onclick = () => {
-
-        textInput.value =
-          record.text;
-
-        currentVector =
-          [...record.vector];
-
-        showVector(
-          currentVector
-        );
-
-        renderPoint(
-          currentVector,
-          true
-        );
-
-        hudStatus.textContent =
-          record.id;
-
-      };
-
-      memoryList.appendChild(
-        el
-      );
-
-    }
-  );
-
-}
-
-
-/* =====================================================
-   COSINE SIMILARITY
-===================================================== */
-
-function dot(a,b){
-
-  let sum = 0;
-
-  for(
-    let i=0;
-    i<a.length;
-    i++
-  ){
-
-    sum +=
-      a[i] * b[i];
-
-  }
-
-  return sum;
-
-}
-
-
-function vectorNorm(v){
-
-  let sum = 0;
-
-  for(
-    let i=0;
-    i<v.length;
-    i++
-  ){
-
-    sum +=
-      v[i] * v[i];
-
-  }
-
-  return Math.sqrt(sum);
-
-}
-
-
-function cosineSimilarity(a,b){
-
-  const numerator =
-    dot(a,b);
-
-  const denominator =
-    vectorNorm(a) *
-    vectorNorm(b);
-
   if(
-    denominator === 0
+    !state.memories.length
   ){
 
-    return 0;
-
-  }
-
-  return (
-    numerator /
-    denominator
-  );
-
-}
-
-
-/* =====================================================
-   SEARCH
-===================================================== */
-
-async function runSearch(){
-
-  const query =
-    queryInput.value.trim();
-
-  if(!query){
-
-    showError({
-      message:
-        "Bitte eine Suchanfrage eingeben."
-    });
+    log(
+      "Keine Memories vorhanden.",
+      "warn"
+    );
 
     return;
+
   }
 
-  if(memory.length === 0){
 
-    showError({
-      message:
-        "Der Vector Store ist leer."
-    });
-
-    return;
-  }
-
-  clearError();
-
-  searchBtn.disabled =
+  $("queryBtn").disabled =
     true;
 
-  activateStage(
-    "stageSearch"
-  );
-
-  addLog(
-    `Query: "${query}"`,
-    "info"
+  pipe(
+    "pipeEmbedding",
+    "active"
   );
 
   try{
 
-    const queryVector =
-      await createEmbedding(
-        query,
+    log(
+      "Query-Embedding..."
+    );
+
+    const vector =
+      await embed(
+        text,
         "query"
       );
 
+    state.queryVector =
+      vector;
+
+
     const results =
-      memory
-        .map(
-          record => ({
+      nearestNeighbors(
+        vector,
+        state.memories
+      );
 
-            ...record,
 
-            score:
-              cosineSimilarity(
-                queryVector,
-                record.vector
-              )
-
-          })
-        )
-        .sort(
-          (a,b)=>
-            b.score - a.score
-        );
-
-    renderRanking(
+    renderQueryResults(
       results
     );
 
-    completeStage(
-      "stageSearch"
+
+    /*
+      Query aktiviert keinen Node
+      automatisch. Sie liefert nur
+      eine semantische Ordnung.
+    */
+
+    pipe(
+      "pipeEmbedding",
+      "done"
     );
 
-    addLog(
-      `${results.length} Vektoren verglichen.`,
-      "ok"
+  }catch(error){
+
+    log(
+      "Query-Fehler: " +
+      error.message,
+      "err"
     );
 
-    addLog(
-      `Top-1 Cosine: ${results[0].score.toFixed(6)}`,
-      "ok"
-    );
+  }finally{
 
-    hudStatus.textContent =
-      "SEARCH COMPLETE";
-
-  }
-
-  catch(error){
-
-    console.error(error);
-
-    showError(error);
-
-  }
-
-  finally{
-
-    searchBtn.disabled =
+    $("queryBtn").disabled =
       false;
 
   }
@@ -2174,310 +4559,636 @@ async function runSearch(){
 }
 
 
-/* =====================================================
-   RANKING
-===================================================== */
+/* =========================================================
+   QUERY RESULTS
+========================================================= */
 
-function renderRanking(results){
-
-  ranking.innerHTML = "";
-
-  if(!results.length){
-
-    ranking.innerHTML =
-      `<div style="color:#405861;font-size:10px">
-        NO RESULT
-       </div>`;
-
-    return;
-  }
-
-
-  const maxScore =
-    Math.max(
-      ...results.map(
-        r => r.score
-      )
-    );
-
-
-  results.forEach(
-    (record,index)=>{
-
-      const item =
-        document.createElement("div");
-
-      item.className =
-        "rank";
-
-
-      /*
-       * Balken ist reine Visualisierung.
-       *
-       * Der eigentliche Wert bleibt
-       * der Cosinuswert.
-       */
-
-      const visualWidth =
-        maxScore > 0
-          ? (
-              record.score /
-              maxScore
-            ) * 100
-          : 0;
-
-
-      item.innerHTML = `
-
-        <div class="rankTop">
-
-          <span>
-            #${index+1}
-            ${record.id}
-          </span>
-
-          <span class="rankScore">
-            COSINE
-            ${record.score.toFixed(6)}
-          </span>
-
-        </div>
-
-        <div class="bar">
-
-          <div
-            class="barFill"
-            style="width:${visualWidth}%">
-          </div>
-
-        </div>
-
-        <div
-          style="
-          margin-top:7px;
-          color:#718b92;
-          font-size:9px;
-          line-height:1.4">
-
-          ${escapeHtml(
-            record.text
-          )}
-
-        </div>
-
-      `;
-
-      ranking.appendChild(
-        item
-      );
-
-    }
-  );
-
-}
-
-
-/* =====================================================
-   3D VECTOR VISUALIZATION
-===================================================== */
-
-function renderPoint(
-  vector,
-  current = false
+function renderQueryResults(
+  results
 ){
 
-  if(!vector ||
-     vector.length < 3){
+  const box =
+    $("queryResults");
+
+  box.innerHTML="";
+
+
+  results
+    .slice(0,12)
+    .forEach(
+      result => {
+
+        const item =
+          document.createElement("div");
+
+        item.className =
+          "result";
+
+
+        item.innerHTML = `
+
+          <span class="result-id">
+            ${escapeHTML(
+              result.memory.id
+            )}
+          </span>
+
+          <span class="result-text">
+            ${escapeHTML(
+              result.memory.text
+            )}
+          </span>
+
+          <span class="result-score">
+            ${result.score.toFixed(3)}
+          </span>
+
+        `;
+
+
+        item.addEventListener(
+          "click",
+          () =>
+            selectMemory(
+              result.memory.id
+            )
+        );
+
+
+        box.appendChild(
+          item
+        );
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   CONTEXT UI
+========================================================= */
+
+function renderContext(){
+
+  const box =
+    $("contextList");
+
+  box.innerHTML="";
+
+
+  $("contextCounter")
+    .textContent =
+      state.activeContext.size;
+
+
+  if(
+    !state.activeContext.size
+  ){
+
+    box.innerHTML =
+      `<div class="empty">
+        Kein aktiver Kontext.
+      </div>`;
+
     return;
+
   }
 
 
-  /*
-   * WICHTIG:
-   *
-   * Das ist keine PCA/t-SNE/UMAP-
-   * Projektion.
-   *
-   * Wir zeigen hier absichtlich
-   * direkt v1, v2, v3.
-   *
-   * Das dient dem mathematischen
-   * Verständnis des Vektors.
-   */
+  for(
+    const id
+    of state.activeContext
+  ){
 
+    const chip =
+      document.createElement("div");
 
-  const x =
-    vector[0];
+    chip.className =
+      "context-chip";
 
-  const y =
-    vector[1];
+    chip.textContent =
+      id;
 
-  const z =
-    vector[2];
-
-
-  /*
-   * Nur visuelle Skalierung.
-   */
-
-  const sx =
-    50 + x * 35;
-
-  const sy =
-    50 - y * 35;
-
-
-  const depth =
-    Math.max(
-      .5,
-      Math.min(
-        1.5,
-        1 + z
-      )
+    box.appendChild(
+      chip
     );
-
-
-  const point =
-    document.createElement("div");
-
-  point.className =
-    "point";
-
-  point.style.left =
-    `${sx}%`;
-
-  point.style.top =
-    `${sy}%`;
-
-  point.style.transform =
-    `translate(-50%,-50%)
-     scale(${depth})`;
-
-  point.title =
-    `v1=${x.toFixed(5)}
-v2=${y.toFixed(5)}
-v3=${z.toFixed(5)}`;
-
-
-  $("scene")
-    .appendChild(
-      point
-    );
-
-
-  /*
-   * Nach einigen Punkten nicht
-   * unendlich viele DOM-Punkte sammeln.
-   */
-
-  const points =
-    $("scene")
-      .querySelectorAll(
-        ".point"
-      );
-
-  if(points.length > 25){
-
-    points[0].remove();
 
   }
 
 }
 
 
-/* =====================================================
-   UTIL
-===================================================== */
+/* =========================================================
+   MAIN RENDER
+========================================================= */
 
-function sleep(ms){
+function renderAll(){
 
-  return new Promise(
-    resolve =>
-      setTimeout(
-        resolve,
-        ms
-      )
+  $("nodeCount")
+    .textContent =
+      state.memories.length;
+
+  $("hyperCount")
+    .textContent =
+      state.hyperedges.length;
+
+  $("memoryCounter")
+    .textContent =
+      state.memories.length;
+
+  $("hyperCounter")
+    .textContent =
+      state.hyperedges.length;
+
+
+  renderMemoryList();
+
+  renderHyperList();
+
+  renderContext();
+
+  renderScene();
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHTML(
+  value
+){
+
+  return String(
+    value ?? ""
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+/* =========================================================
+   POINTER
+========================================================= */
+
+function onPointerDown(
+  event
+){
+
+  if(!pointCloud){
+    return;
+  }
+
+
+  const rect =
+    renderer.domElement
+      .getBoundingClientRect();
+
+
+  pointer.x =
+    (
+      event.clientX-
+      rect.left
+    ) /
+    rect.width *
+    2 -
+    1;
+
+
+  pointer.y =
+    -(
+      (
+        event.clientY-
+        rect.top
+      ) /
+      rect.height
+    ) *
+    2 +
+    1;
+
+
+  raycaster.setFromCamera(
+    pointer,
+    camera
+  );
+
+
+  const intersections =
+    raycaster.intersectObject(
+      pointCloud
+    );
+
+
+  if(
+    !intersections.length
+  ){
+    return;
+  }
+
+
+  const index =
+    intersections[0].index;
+
+
+  if(
+    index===undefined
+  ){
+    return;
+  }
+
+
+  const memory =
+    state.memories[index];
+
+  if(memory){
+
+    selectMemory(
+      memory.id
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+function resizeThree(){
+
+  const container =
+    $("scene");
+
+  const width =
+    container.clientWidth;
+
+  const height =
+    container.clientHeight;
+
+
+  if(
+    !width ||
+    !height
+  ){
+    return;
+  }
+
+
+  camera.aspect =
+    width/height;
+
+  camera.updateProjectionMatrix();
+
+
+  renderer.setSize(
+    width,
+    height,
+    false
   );
 
 }
 
 
-/* =====================================================
-   INITIAL BOOT
-===================================================== */
+/* =========================================================
+   RESET VIEW
+========================================================= */
 
-addLog(
-  "NEURAL MEMORY Interface gestartet.",
-  "ok"
-);
+function resetView(){
 
-addLog(
-  "UI bereit.",
-  "ok"
-);
+  camera.position.set(
+    0,
+    2,
+    22
+  );
 
-addLog(
-  "Embedding Core wartet auf Benutzeraktion.",
-  "info"
-);
+  controls.target.set(
+    0,
+    0,
+    0
+  );
 
-addLog(
-  `Target Model: ${MODEL}`,
-  "info"
-);
+  controls.update();
 
-addLog(
-  "Dimension: 384",
-  "info"
-);
-
-addLog(
-  "Vector Store: IN-MEMORY",
-  "info"
-);
-
-addLog(
-  "Cosine Similarity: ACTIVE",
-  "info"
-);
+}
 
 
-/* =====================================================
-   EVENTS
-===================================================== */
+/* =========================================================
+   ANIMATION
+========================================================= */
 
-embedBtn.addEventListener(
-  "click",
-  generateEmbedding
-);
+function animate(){
 
-storeBtn.addEventListener(
-  "click",
-  storeCurrentVector
-);
+  requestAnimationFrame(
+    animate
+  );
 
-searchBtn.addEventListener(
-  "click",
-  runSearch
-);
+  controls.update();
+
+  renderer.render(
+    scene,
+    camera
+  );
+
+}
 
 
-queryInput.addEventListener(
-  "keydown",
-  event => {
+/* =========================================================
+   UI EVENTS
+========================================================= */
 
-    if(
-      event.key === "Enter"
-    ){
+$("storeBtn")
+  .addEventListener(
+    "click",
+    createMemory
+  );
 
-      runSearch();
+
+$("memoryText")
+  .addEventListener(
+    "keydown",
+    event => {
+
+      if(
+        event.ctrlKey &&
+        event.key==="Enter"
+      ){
+
+        createMemory();
+
+      }
 
     }
+  );
+
+
+$("queryBtn")
+  .addEventListener(
+    "click",
+    runQuery
+  );
+
+
+$("queryInput")
+  .addEventListener(
+    "keydown",
+    event => {
+
+      if(
+        event.key==="Enter"
+      ){
+
+        runQuery();
+
+      }
+
+    }
+  );
+
+
+$("createHyperBtn")
+  .addEventListener(
+    "click",
+    async () => {
+
+      const ids =
+        $("hyperMembers")
+          .value
+          .split(",")
+          .map(
+            x=>x.trim()
+          )
+          .filter(Boolean);
+
+      const label =
+        $("hyperLabel")
+          .value
+          .trim() ||
+        "MANUAL CONTEXT";
+
+
+      const result =
+        await createHyperedge(
+          ids,
+          label,
+          "manual"
+        );
+
+
+      if(result){
+
+        $("hyperMembers")
+          .value="";
+
+        $("hyperLabel")
+          .value="";
+
+      }
+
+    }
+  );
+
+
+$("activateContextBtn")
+  .addEventListener(
+    "click",
+    () => {
+
+      if(
+        state.selectedId
+      ){
+
+        activateContext(
+          state.selectedId
+        );
+
+      }
+
+    }
+  );
+
+
+$("clearContext")
+  .addEventListener(
+    "click",
+    clearContext
+  );
+
+
+$("closeInspector")
+  .addEventListener(
+    "click",
+    () => {
+
+      $("inspector")
+        .classList.add(
+          "hidden"
+        );
+
+    }
+  );
+
+
+$("resetView")
+  .addEventListener(
+    "click",
+    resetView
+  );
+
+
+$("toggleNodes")
+  .addEventListener(
+    "click",
+    event => {
+
+      state.showNodes =
+        !state.showNodes;
+
+      event.currentTarget
+        .classList.toggle(
+          "on",
+          state.showNodes
+        );
+
+      renderScene();
+
+    }
+  );
+
+
+$("togglePairs")
+  .addEventListener(
+    "click",
+    event => {
+
+      state.showPairs =
+        !state.showPairs;
+
+      event.currentTarget
+        .classList.toggle(
+          "on",
+          state.showPairs
+        );
+
+      renderScene();
+
+    }
+  );
+
+
+$("toggleHyper")
+  .addEventListener(
+    "click",
+    event => {
+
+      state.showHyper =
+        !state.showHyper;
+
+      event.currentTarget
+        .classList.toggle(
+          "on",
+          state.showHyper
+        );
+
+      renderScene();
+
+    }
+  );
+
+
+$("toggleAnchors")
+  .addEventListener(
+    "click",
+    event => {
+
+      state.showAnchors =
+        !state.showAnchors;
+
+      event.currentTarget
+        .classList.toggle(
+          "on",
+          state.showAnchors
+        );
+
+      renderScene();
+
+    }
+  );
+
+
+/* =========================================================
+   BOOT
+========================================================= */
+
+async function boot(){
+
+  log(
+    "NEURAL MEMORY startet..."
+  );
+
+  $("thresholdValue")
+    .textContent =
+      EDGE_THRESHOLD.toFixed(2);
+
+  $("hyperSizeValue")
+    .textContent =
+      HYPEREDGE_SIZE;
+
+
+  initThree();
+
+
+  try{
+
+    await loadDatabase();
+
+  }catch(error){
+
+    log(
+      "IndexedDB Fehler: " +
+      error.message,
+      "err"
+    );
 
   }
-);
+
+
+  renderAll();
+
+
+  loadModel()
+    .catch(
+      error =>
+        console.error(error)
+    );
+
+}
+
+
+boot();
 
 </script>
 
 </body>
-</html>wie kann man das jetzt nutzen?
+</html>
